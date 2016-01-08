@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_marginTop="29dp"
+        android:text="注册"
+        android:textColor="#333333"
+        android:textSize="15sp"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:background="@null"
+
+        android:layout_marginTop="43dp"
+        android:padding="8dp"
+        android:hint="邮箱"
+        android:singleLine="true"
+        android:maxLength="40"
+        android:textSize="12sp"
+        android:gravity="center_vertical"
+        android:textColor="#333333"
+        android:textColorHint="#999999"
+        android:id="@+id/load_et_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <View
+        android:background="#ffbbbbbb"
+        android:layout_width="match_parent"
+        android:layout_height="0.25dp"/>
+    <EditText
+        android:background="@null"
+        android:layout_marginTop="38dp"
+        android:padding="8dp"
+        android:inputType="textWebPassword"
+        android:hint="密码"
+        android:singleLine="true"
+        android:maxLength="40"
+        android:textSize="12sp"
+        android:gravity="center_vertical"
+        android:textColor="#333333"
+        android:textColorHint="#999999"
+        android:id="@+id/load_et_pwd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <View
+        android:background="#ffbbbbbb"
+        android:layout_width="match_parent"
+        android:layout_height="0.25dp"/>
+    <EditText
+        android:background="@null"
+        android:layout_marginTop="38dp"
+        android:padding="8dp"
+        android:inputType="textWebPassword"
+        android:hint="确认密码"
+        android:singleLine="true"
+        android:maxLength="40"
+        android:gravity="center_vertical"
+        android:textSize="12sp"
+        android:textColor="#333333"
+        android:textColorHint="#999999"
+        android:id="@+id/load_et_pwd_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <View
+        android:background="#ffbbbbbb"
+        android:layout_width="match_parent"
+        android:layout_height="0.25dp"/>
+
+        <CheckBox
+            android:layout_marginTop="8dp"
+            android:scaleY="0.5"
+            android:scaleX="0.5"
+            android:layout_gravity="right"
+            android:layout_marginRight="-85dp"
+            android:id="@+id/rigest_radiobutton"
+            android:button="@drawable/checkbox_selector"
+            android:paddingLeft="22dp"
+            android:text="同意《艺术世纪服务条款》"
+            android:textColor="#777777"
+            android:textSize="24dp"
+            android:singleLine="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+    <TextView
+        android:paddingTop="15dp"
+        android:paddingBottom="15dp"
+        android:gravity="center"
+        android:layout_marginTop="12dp"
+        android:id="@+id/load_btn_regist"
+        android:background="#ffbbbbbb"
+        android:textColor="#ffffff"
+        android:textSize="15sp"
+        android:text="注册"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+<!--
+
+
+
+-->
+
+
+
+
+</LinearLayout>

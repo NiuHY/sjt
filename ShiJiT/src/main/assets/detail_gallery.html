@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;">
+    <title>金坛详情页</title>
+    <link href="src/css/reset.css" rel="stylesheet">
+    <link href="src/css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="src/js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="src/js/vue.js"></script>
+    <script type="text/javascript" src="src/js/hammer.min.js"></script>
+    <script type="text/javascript" src="src/js/index.js"></script>
+    <script type="text/javascript" src="src/js/autoLayouter_v2.1.1.js"></script>
+  </head>
+<body class="img-body" id="1210">
+<div id="gallery-detail">
+    <div class="detail-head">
+        <img v:src="{{gallery_cover}}"/>
+    </div> 
+    <div class="detail-wrap" id="detail-wrap">
+        <div class="detail-info">
+            <h3 class="gallery-h3">
+                <p class="gallery-title">{{decodeURIComponent(gallery_name)}}</p>
+                <p class="gallery-title en-name">{{decodeURIComponent(gallery_en_name)}}</p>
+            </h3>
+            <p class="time" v-if="gallery_open_time">{{gallery_open_time}}</p>
+            <p class="place"  v-if="gallery_location">{{gallery_country + gallery_province + gallery_city + decodeURIComponent(gallery_location)}}</p>
+            <p class="build-time"  v-if="gallery_build_time">{{decodeURIComponent(gallery_build_time)}}</p>
+            <!-- <p class="category"  v-if="gallery_category == 1">艺术馆</p>
+            <p class="category"  v-if="gallery_category == 2">展览</p>
+            <p class="category"  v-if="gallery_category == 3">专业作品</p>
+            <p class="category"  v-if="gallery_category == 4">信息</p> -->
+            <p class="website"  v-if="gallery_url">{{decodeURIComponent(gallery_url)}}</p>
+            <p class="phone"  v-if="gallery_phone">{{decodeURIComponent(gallery_phone)}}</p>
+        </div>
+        <div class="powered-by clearfix">
+            <div class="powered-cont">
+                <p><i>Powered by</i><span>艺术云图</span></p>
+            </div>
+        </div>
+        <div class="story-wrap">
+            <div class="gallery-intro">
+                <h3 class="story-title">概况</h3>
+                <p>{{decodeURIComponent(gallery_description)}}</p>
+                <h3 class="story-title">艺术品</h3>
+            </div>
+            <div class="gallery-list">
+                <div class="water-full"></div>
+                <!-- <div class="loading"></div> -->
+            </div>
+        </div>
+    </div>
+    <div class="share_gray">
+        <img src="" />
+        <div class="text_intro">
+            <p></p>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+var totalTime = 1500;
+var initTime =50;
+var host = 'http://cmm.yuntoo.com/';
+// var host = '';
+var imgsArr =[];
+var imgIndex = 0;
+var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
+var screenHeight = document.documentElement.clientHeight || document.body.clientHeight;
+var shareObj = {};
+// var ADS = {};
+// ADS.getDetailId = function(){
+//     return 125;
+// }
+waitADS();
+function waitADS(){
+if(initTime < totalTime && typeof ADS == 'undefined'){
+    var getADS = setTimeout(waitADS,50)
+    initTime += 50;
+}else{
+    clearTimeout('getADS');
+    getADS = null;
+    var ADSid = ADS.getDetailId() + '';
+    var url = host + 'api/gallery/' + ADSid;
+    var space = Math.ceil(0.046*screenWidth);
+    var $textIntro = $('.text_intro');
+    var arr = [0,0];
+    var wrapWidth = $('.gallery-list').width();
+    var space = {
+        xSpace:6,
+        ySpace:3
+    }; 
+    var listWidth = (wrapWidth - space.xSpace)/2;
+    var $textIntro = $('.text_intro');
+    $('.detail-rotate').css('border-left-width',screenWidth + 'px');
+    $('body').on('click','.gallery-story',function(){
+        var imgJson = JSON.stringify(imgsArr);
+        var imgIndex = $(this).index();
+        // console.log(imgsArr);
+        try{
+            ADS.startImgPreview(imgJson, imgIndex);
+        }catch(e){
+            console.log(e);
+        }
+    });
+    $.ajax({
+        url : url,
+        data:{
+            client_type:4,
+            client_version:1.0,
+            uuid:'abcd'
+        },
+        type : 'get',
+        success: function(data){
+            var data = JSON.parse(data);
+            if(!data.success){
+                   $('body').empty().css('height',screenHeight).addClass('fali-loading');
+            }else if(data.success){
+                data = data.data;
+                var storyId = data.gallery_id;
+                var storyUrl = host + 'api/gallery/' + storyId + '/item_list';
+                var coverSize = data.cover_size || '750,750';
+                var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
+                var topPos = (275-bgHeight)/2;
+                shareObj.cover = data.gallery_cover;
+                shareObj.title = decodeURIComponent(data.gallery_name);
+                shareObj.intro = decodeURIComponent(data.gallery_description);
+                shareObj.id = data.gallery_id;
+                shareObj.href = host + 'share/gallery/' + shareObj.id +'/?client_version=1.0.0';
+                shareObj = JSON.stringify(shareObj);
+                try{
+                    ADS.setSP('share',shareObj);
+                }catch(e){
+                    console.log(e);
+                }
+                $('title').text(decodeURIComponent(data.gallery_name));
+                $('body').css({
+                    'background':'#fff url(' + data.gallery_cover + ') no-repeat 0 ' + topPos + 'px',
+                    'background-size' : '100% auto',
+                    'background-attachment' : 'fixed'
+                });
+                new Vue({
+                  el: '#gallery-detail',
+                  data: data
+                });
+                $.ajax({
+                    url:storyUrl,
+                    data:{
+                        client_type:4,
+                        client_version:1.0,
+                        uuid:'abcd'
+                    },
+                    success: function(data){
+                        var data = JSON.parse(data);
+                        var $parent = $('.water-full');
+                        if(data.success){
+                            data = data.data;
+                            waterFull($parent,data)
+                        }
+                    }
+                });
+            }          
+        },
+        error : function(error){
+            console.log(error);
+        } 
+    });
+    function waterFull(parent,data){
+        var children = '';
+        var data = data;
+        var divHeight,$lastDiv,divStyle,max;
+        // console.log(data);
+        loadEach(data);
+        function loadEach(data){
+            if(data.length < 1){
+                // $('.loading').fadeOut();
+                return;
+            }else{
+                var img = new Image();
+                var eachData = data[0];
+                var coverData = eachData.image_url;
+                var id = eachData.id;
+                // var type = coverData.resource_description.type; listWidth
+                var url = eachData.image_url;
+                var coverW = eachData.image_width;
+                var coverH = eachData.image_height;
+                var artworkName = eachData.artwork_name ? decodeURIComponent(eachData.artwork_name) : '';
+                var artworkArtistName = eachData.artwork_artist_name ? decodeURIComponent(eachData.artwork_artist_name) : '';
+                imgsArr.push({
+                    url:url,
+                    resourceId:eachData.artwork_id,
+                    galleryId:eachData.gallery_id,
+                    ImageDescription:artworkName,
+                    artworkArtistName:artworkArtistName
+                });
+                img.src = url;
+                imgIndex ++;
+                // img.onload = function(){
+                    divHeight = coverH*listWidth/coverW;
+                    children = '<div class="gallery-story" style="height:'+ divHeight +'px;" data-intro-text="'+ artworkName +'"><div class="gallery-img"><img src="'+ url +'"/></div><div class="gallery-story-cont"><div class="bottom-layer"><span class="story-text">'+ artworkName +'</span></div></div></div>'; 
+                    parent.append(children);
+                    $lastDiv = parent.find('.gallery-story:last');
+                    if(arr[0] > arr[1]){  //第一个高度大于第二个,将div放到第二个里面
+                        divStyle = {
+                            top: arr[1] + space.ySpace + 'px',
+                            left: listWidth + space.xSpace + 'px',
+                            width:listWidth,
+                            opacity:0
+                            // height:divHeight
+                        } 
+                        arr[1] = arr[1] + divHeight + space.ySpace; 
+                    }else{              //第一个高度等于第二个高度或者第一个高度小于第二个高度,div放入第一个里面
+                        divStyle = { 
+                            top: arr[0] + space.ySpace + 'px',
+                            left:0,
+                            width:listWidth,
+                            opacity:0
+                            // height:divHeight
+                        }
+                        arr[0] = arr[0] + divHeight + space.ySpace; 
+                    }
+                    max = Math.max.apply(null,arr);
+                    parent.css('height',max);
+                    $lastDiv.css(divStyle).animate({'opacity':1},400);
+                    data.shift();
+                    img = null;
+                    loadEach(data);
+                // }
+            }
+        }               
+    };  
+    }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/sharelayout"
+    android:background="#bb000000"
+    android:orientation="vertical"
+    >
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:layout_marginTop="170dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+        <ImageButton
+            android:id="@+id/share_btn_qq"
+            android:background="@drawable/share_qq"
+            android:layout_width="75dp"
+            android:layout_height="75dp"/>
+        <ImageButton
+            android:id="@+id/share_btn_weibo"
+            android:background="@drawable/share_weibo"
+            android:layout_marginLeft="25dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+        <ImageButton
+            android:id="@+id/share_btn_wenxin"
+            android:background="@drawable/share_wechat"
+            android:layout_width="75dp"
+            android:layout_height="75dp"/>
+        <ImageButton
+            android:id="@+id/share_btn_friend"
+            android:background="@drawable/share_friend"
+            android:layout_marginLeft="25dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7"
+        android:orientation="horizontal"
+        android:gravity="center"
+        >
+        <ImageButton
+            android:id="@+id/share_btn_copyLink"
+            android:background="@drawable/share_link"
+            android:layout_width="80dp"
+            android:layout_height="80dp"/>
+        <ImageButton
+            android:id="@+id/share_btn_collect"
+            android:background="@drawable/share_collect"
+            android:layout_marginLeft="25dp"
+            android:layout_width="75dp"
+            android:layout_height="75dp"/>
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

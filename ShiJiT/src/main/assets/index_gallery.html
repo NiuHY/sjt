@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+    <title>金坛首页</title>
+    <link href="src/css/reset.css" rel="stylesheet">
+    <link href="src/css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="src/js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="src/js/vue.js"></script>
+    <script type="text/javascript" src="src/js/hammer.min.js"></script>
+    <script type="text/javascript" src="src/js/index.js"></script>
+    <script type="text/javascript" src="src/js/autoLayouter_v2.1.1.js"></script>
+  </head>
+<body class="img-body">
+<div class="gallery-header-scroll">
+  <h3>全球艺馆</h3>
+</div>
+<div class="gallery-header"></div>
+<div class="gallery-header-intro">
+  <div class="header-text">
+        <p class="en-title"><span>Art Gallery</span></p>
+        <p class="title"><span>全球艺馆</p>
+    </div>
+</div>
+<div id="galleryIndex">
+    <div class="detail-wrap" id="detail-wrap" style="background:transparent; padding-top:0px;" >
+        <!-- <div class="wrap-rotate-gallery"><div class="detail-rotate-gallery"></div></div> -->
+        <div class="gallery-index">
+            <div class="gallery-item">
+              <div class="gallery-index-list" v-for="item in items"  track-by="$index" data-get-id="{{item.gallery_id}}">
+                <div v-bind:style="listHeight">
+                    <div class="gallery-cover">
+                      <img v-bind:src="item.gallery_cover"/>
+                    </div>
+                    <div class="gallery-content">
+                      <div class="gallery-short-info">
+                          <div class="gallery-title">{{decodeURIComponent(item.gallery_name)}}</div>
+                          <div class="gallery-title-en">{{decodeURIComponent(item.gallery_en_name)}}</div>
+                      </div>
+                    </div>
+                  </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+$(function(){
+   var host = 'http://cmm.yuntoo.com/';
+   // var host = '';
+   var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
+   var url = host + 'api/gallery';
+   var recommedUrl = host + 'api/gallery/recommend';
+   var param = {
+      client_type:4,
+      client_version:1.0,
+      uuid:'abcd'
+   };
+   var tilt;
+   tilt = screenWidth/Math.abs(parseInt($('.gallery-index').css('margin-top')));
+   $.ajax({
+    type:'get',
+    url:recommedUrl,
+    data:param,
+    success : function(data){
+      var data = JSON.parse(data);
+      if(data.success){
+        var coverSize = data.data.cover_size || '750,750';
+        var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
+        var topPos = (275-bgHeight)/2;
+        $('body').css({
+          'background':'#f2f2f2 url(' + data.data[0].gallery_cover + ') no-repeat 0 ' + topPos + 'px',
+          'background-size' : '100% auto',
+          'background-attachment' : 'fixed'
+        });
+      }
+    }
+   });
+   $.ajax({
+        type:'get',
+        url:url,
+        data:param,
+        success:function(data){
+            var data = JSON.parse(data);
+            var items = data.data;
+            new Vue({
+              el: '#galleryIndex',
+              data: {
+                items:items,
+                listHeight:{
+                  height : screenWidth + 'px'
+                }
+              }  
+            });
+            var img = $('.gallery-cover').first().find('img')[0];
+            img.style.display = 'none';
+            var src = $('.gallery-cover').first().find('img').attr('src');
+            var isloaded = false;
+            var canvas = document.createElement('canvas');
+            var cxt = canvas.getContext('2d');
+            canvas.width = screenWidth;
+            canvas.height = screenWidth;
+            var map = [];
+            var j = 0;
+            var clip = 0;
+            var heightLength = screenWidth/tilt;
+            var eachLine
+            for(var i = 0;i < heightLength;i++){
+              eachLine = i*tilt;
+              for(var j = 0;j<screenWidth; j++){
+                if(eachLine < (j-3)){
+                  clip = 0;
+                  map.push(clip);
+                }else if(eachLine < (j - 2)){
+                  clip = 36;
+                  map.push(clip);
+                }else if(eachLine < (j - 1)){
+                  clip = 72;
+                  map.push(clip);
+                }else if(eachLine < j){
+                  clip = 108;
+                  map.push(clip);
+                }else if(eachLine < j + 1){
+                  clip = 144;
+                  map.push(clip);
+                }else if(eachLine < j + 2){
+                  clip = 180;
+                  map.push(clip);
+                }else if(eachLine < j + 3){
+                  clip = 216;
+                  map.push(clip);
+                }else{
+                  clip = 255;
+                  map.push(clip);
+                }
+              }
+            }
+            // console.log(JSON.stringify(map));
+            img.crossOrigin = 'anonymous';
+            var data2 = new Date();
+            img.onload = function(){
+              if(!isloaded){
+                // var data3 = new Date();
+                // console.log('load img use time: ' + (data3 - data2));
+                cxt.drawImage(img,0,0,screenWidth,screenWidth);
+                var imgData = cxt.getImageData(0,0,screenWidth,screenWidth);
+                var x = 0, y = 0;
+                var dataLength = imgData.data.length/tilt;
+                // for(var i = 0; i < imgData.data.length;i+=4){
+                //     x = (i%(4*screenWidth))/4;
+                //     y = Math.floor(i/(4*screenWidth));
+                //     if(x > y*tilt || x == y*tilt){
+                //       // imgData.data[i + 0] = 0;
+                //       // imgData.data[i + 1] = 0;
+                //       // imgData.data[i + 2] = 0;
+                //       imgData.data[i + 3] = 0;
+                //     }
+                //   }
+                // console.log(heightLength,map.length,dataLength);
+                for(var i=0;i<dataLength;i+=4){
+                  imgData.data[i + 3] = map[i/4];
+                }
+                cxt.putImageData(imgData,0,0);
+                img.src = canvas.toDataURL('image/png');
+                img.style.display = 'block';
+                // var data4 = new Date();
+                // console.log('canvas use time: ' + (data4 - data3));
+                isloaded = true;
+              }
+            }
+
+        }
+   });
+   $('body').on('click','.gallery-index-list',function(){
+        var id = $(this).data('getId') + '';
+        console.log(id);
+        if(typeof ADS != 'undefined'){
+            ADS.startDetailActivity (id,3);
+        }
+   });
+   var progress,dist,distScorllTop;
+   var ischange = true;
+   var $headerText = $('.gallery-header-intro');
+   var $headerTitle = $headerText.find('.title').find('span').first();
+   var $enTitle = $('.en-title');
+   var offsetLeft = $headerTitle.offset().left;
+   distScorllTop = $headerTitle.offset().top;
+   var titleWidth = $headerTitle.width();
+   var $scrollHead = $('.gallery-header-scroll');
+   dist = screenWidth/2 - offsetLeft - titleWidth/2;
+   var trans = {
+      x:0,
+      y:0
+   }
+   $(document).on('scroll',function(){
+    var scrollTop = $(document).scrollTop();
+    progress = Math.min(Math.max(scrollTop/distScorllTop,0),1);
+    trans.x = progress*dist;
+    // trans.y = (progress == 1) ? scrollTop-distScorllTop : 0;
+    //顶部开始变形
+    if(progress < 1){
+       $headerTitle.stop().show().css({'transform':'translate3d(' + trans.x + 'px,' + 0 + 'px,0)'});
+      // $headerText.find('.title').css({'transform':'translate3d(0,' + trans.y + 'px,0)'});
+      $enTitle.css({'opacity':Math.max(0,(1-progress*1.2))});
+      $scrollHead.find('h3').stop().hide();
+      $scrollHead.stop().fadeIn(100);
+    }else if(progress == 1){
+      $headerTitle.hide();
+      $scrollHead.find('h3').stop().show();
+    }
+    if(progress < 0.1){
+      $scrollHead.stop().fadeOut(100);
+    }
+    // else if(progress == 1){
+    //   $headerText.css({'position':'relative','z-index':'11'});
+    // }
+   })
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="distributionType" value="LOCAL" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="D:\YT_DEVELOP\environment\AndroidStudio\gradle\gradle-2.8" />
+        <option name="gradleJvm" value="1.7" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/ShiJiT" />
+            <option value="$PROJECT_DIR$/TableDemo" />
+            <option value="$PROJECT_DIR$/android-gif-drawable" />
+            <option value="$PROJECT_DIR$/pullToRefreshLibrary" />
+            <option value="$PROJECT_DIR$/temptest" />
+            <option value="$PROJECT_DIR$/touchImageView" />
+          </set>
+        </option>
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

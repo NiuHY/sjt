@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.xxx.test.ui.DragLayout_2
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/fl_titile"
+        android:background="#bbaa83"
+        android:layout_width="match_parent"
+        android:layout_height="230dp">
+
+    </FrameLayout>
+
+    <cn.xxx.test.ui.DF_ContentView
+        android:id="@+id/fl_content"
+        android:background="#99ff0000"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/main_listview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></ListView>
+    </cn.xxx.test.ui.DF_ContentView>
+
+    <FrameLayout
+        android:layout_gravity="bottom"
+        android:background="#0030ff"
+        android:layout_width="match_parent"
+        android:layout_height="230dp">
+
+    </FrameLayout>
+
+</cn.xxx.test.ui.DragLayout_2>

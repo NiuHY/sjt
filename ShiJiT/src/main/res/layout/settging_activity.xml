@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:background="@drawable/settings_bg"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/bt_back"
+        android:padding="5dp"
+        android:scaleType="centerInside"
+        android:background="#99ffffff"
+        android:src="@drawable/icon_back"
+        android:layout_width="42dp"
+        android:layout_height="42dp"/>
+    <LinearLayout
+        android:layout_marginTop="42dp"
+        android:layout_marginLeft="42dp"
+        android:layout_marginRight="42dp"
+        android:layout_marginBottom="49dp"
+        android:background="#e4ffffff"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:padding="18dp"
+            >
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <TextView
+                    android:layout_gravity="center_horizontal"
+                    android:text="中华世纪坛"
+                    android:textColor="#000"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="23dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+                <TextView
+                    android:textColor="#aa010000"
+                    android:text="    艺术世纪APP是针对诸众美育提升的人类文明优秀成果共享平台。平台由“世界艺展”、“世界艺馆”、“中华世纪坛”三个模块组成。\n
+    “世界艺馆”整合了世界顶级博物馆、艺术馆及收藏和展示人类优秀文明成果的机构的高清数字珍藏，通过便捷、人性化的交互体验方式供诸众研究、学习、交流和飨用。\n
+    “世界艺展”是即时检索和深度浏览当下世界重要文艺机构正在上演的优秀的展览、演出、放映等文化展事，是您掌控世界艺术格局，履行艺术之旅的工具书。\n
+    “中华世纪坛”将为诸众推出能够代表世界艺术、当代艺术、艺术科技、艺术影像、艺术剧目五个艺术面向的优秀的示范项目。引领您进入中华世纪坛的实体空间，享受不可或缺的超级现场体验。\n
+    艺术世纪APP内容服务和技术支持由艺术云图独家提供。\n\n
+    联系我们：yishushiji@sina.cn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingExtra="10dp"
+                    android:textSize="13sp"
+                    />
+            </LinearLayout>
+
+        </ScrollView>
+
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="#e2e2e2"/>
+        <LinearLayout
+            android:id="@+id/setting_share"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:background="@drawable/settings_share"
+                android:layout_width="18dp"
+                android:layout_height="18dp"/>
+            <TextView
+                android:layout_marginLeft="15dp"
+                android:text="推荐给好友"
+                android:textColor="#999999"
+                android:textSize="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="#e2e2e2"/>
+        <LinearLayout
+            android:id="@+id/setting_trash"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:background="@drawable/settings_trash"
+                android:layout_width="18dp"
+                android:layout_height="18dp"/>
+            <TextView
+                android:layout_marginLeft="15dp"
+                android:text="清 除 缓 存"
+                android:textColor="#999999"
+                android:textSize="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="#e2e2e2"/>
+        <LinearLayout
+            android:id="@+id/setting_logout"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:background="@drawable/settings_logout"
+                android:layout_width="18dp"
+                android:layout_height="18dp"/>
+            <TextView
+                android:layout_marginLeft="15dp"
+                android:text="退 出 登 陆"
+                android:textColor="#ff2942"
+                android:textSize="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

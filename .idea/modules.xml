@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/ShiJiT/ShiJiT.iml" filepath="$PROJECT_DIR$/ShiJiT/ShiJiT.iml" />
+      <module fileurl="file://$PROJECT_DIR$/StudioTest.iml" filepath="$PROJECT_DIR$/StudioTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TableDemo/TableDemo.iml" filepath="$PROJECT_DIR$/TableDemo/TableDemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-gif-drawable/android-gif-drawable.iml" filepath="$PROJECT_DIR$/android-gif-drawable/android-gif-drawable.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pullToRefreshLibrary/pullToRefreshLibrary.iml" filepath="$PROJECT_DIR$/pullToRefreshLibrary/pullToRefreshLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/temptest/temptest.iml" filepath="$PROJECT_DIR$/temptest/temptest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/touchImageView/touchImageView.iml" filepath="$PROJECT_DIR$/touchImageView/touchImageView.iml" />
+    </modules>
+  </component>
+</project>

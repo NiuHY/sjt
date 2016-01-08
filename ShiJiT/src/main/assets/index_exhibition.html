@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+    <title>展览首页</title>
+    <link href="src/css/reset.css" rel="stylesheet">
+    <link href="src/css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="src/js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="src/js/vue.js"></script>
+    <script type="text/javascript" src="src/js/hammer.js"></script>
+    <script type="text/javascript" src="src/js/index.js"></script>
+    <script type="text/javascript" src="src/js/autoLayouter_v2.1.1.js"></script>
+  </head>
+<body class="img-body">
+<div class="exhi-header-scroll">
+  <h3>世界艺展</h3>
+</div>
+<div class="exhi-header"></div>
+<div class="exhi-header-intro">
+    <div class="header-text">
+        <p class="en-title"><span>Exhibitions</span></p>
+        <p class="title"><span>世界艺展</span></p>
+    </div>
+</div>
+<div class="detail-wrap" id="detail-wrap" style="background:#f2f2f2;">
+<div class="wrap-rotate"><div class="detail-rotate"></div></div>
+<div id="exhiIndex">
+    <div class="exhi-content">
+        <div class="exhi-items">
+        </div>
+    </div>
+</div>
+</div>
+<script type="text/javascript">
+$(function(){
+   var host = 'http://cmm.yuntoo.com/';
+   // var host = '';
+   var url = host + 'api/exhibition';
+   var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
+   var listWidth = $('.exhi-items').innerWidth();
+   $.ajax({
+        type:'get',
+        url:url,
+        data:{
+          client_type:4,
+          client_version:1.0,
+          uuid:'abcd'
+        },
+        success:function(data){
+            var data = JSON.parse(data);
+            var items = data.data;
+            var imgArr = [];
+            var leftWidth,rightWidth;
+            var coverSize = items.cover_size || '750,750';
+            var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
+            var topPos = (275-bgHeight)/2;
+            $('body').css({
+                'background':'#f2f2f2 url(' + items[0].exhibition_cover + ') no-repeat 0' + topPos + 'px',
+                'background-size' : '100% auto',
+                'background-attachment' : 'fixed'
+            });
+            $.each(items,function(k,v){
+                if(k%2 === 0){
+                    var dateObj = new GetDate(v.exhibition_start_time);
+                    var listHtml = ' <div class="exhi-list" data-get-id="'+ v.exhibition_id +'">\
+                       <div class="exhi-list-head clearfix">\
+                           <div class="exhi-list-head-left">\
+                               <p>'+ dateObj.getMonth() +'</p>\
+                               <p>'+ dateObj.getDate() +'</p>\
+                           </div>\
+                           <div class="exhi-list-head-right">\
+                               <h3>' + decodeURIComponent(v.exhibition_title) +'</h3>\
+                           </div>\
+                       </div>\
+                       <div class="exhi-list-body clearfix">\
+                           <div class="exhi-list-body-left">\
+                           </div>\
+                           <div class="exhi-list-body-right"/>\
+                           </div>\
+                           <div class="exhi-list-body-bottom"/>\
+                           </div>\
+                       </div>\
+                    </div>';
+                    $('.exhi-items').append(listHtml);
+                    leftWidth = $('.exhi-list-body-left').outerWidth() + parseInt($('.exhi-list-body-left').css('margin-left'));
+                    rightWidth = listWidth - leftWidth;
+                    $('.exhi-list-body-right').css({width:rightWidth});
+                    imgArr.push([v.exhibition_image_array[0].image_url,v.exhibition_image_array[1].image_url,v.exhibition_image_array[2].image_url]);
+                }else if(k%2 === 1){
+                    var dateObj = new GetDate(v.exhibition_start_time);
+                    var listHtml = ' <div class="exhi-list"  data-get-id="'+ v.exhibition_id +'">\
+                       <div class="exhi-list-head clearfix">\
+                           <div class="exhi-list-head-left">\
+                               <p>'+ dateObj.getMonth() +'</p>\
+                               <p>'+ dateObj.getDate() +'</p>\
+                           </div>\
+                           <div class="exhi-list-head-right">\
+                               <h3>' + decodeURIComponent(v.exhibition_title) +'</h3>\
+                           </div>\
+                       </div>\
+                       <div class="exhi-list-body clearfix">\
+                           <div class="exhi-list-body-left">\
+                           </div>\
+                           <div class="exhi-list-body-right"/>\
+                           </div>\
+                           <div class="exhi-list-body-bottom"/>\
+                           </div>\
+                       </div>\
+                    </div>';
+                    $('.exhi-items').append(listHtml);
+                     leftWidth = $('.exhi-list-body-left').outerWidth() + parseInt($('.exhi-list-body-left').css('margin-left'));
+                    rightWidth = listWidth - leftWidth;
+                    $('.exhi-list-body-right').css({width:rightWidth});
+                    imgArr.push(v.exhibition_image_array[0].image_url);
+                }
+            });
+            var $list = $('.exhi-list');
+            $.each($list,function(k,v){
+                if(k%2 === 0){
+                    var $box = $(v).find('.exhi-list-body-right');
+                    var render = new RenderImg($box,imgArr[k]);
+                    render.typeOne($box);
+                    dateObj = null;
+                }else if(k%2 === 1){
+                    var $box = $(v).find('.exhi-list-body-right');
+                    var render = new RenderImg($box,imgArr[k]);
+                    render.typeTwo($box);
+                    dateObj = null;
+                }
+            });
+        }
+   });
+    function RenderImg($parent,arr){
+        var boxWidth = $parent.outerWidth();
+        var boxHeight = $parent.outerHeight();
+        var space = 6;
+        var topStyle = {
+            top : 0,
+            left : 0,
+            width : boxWidth,
+            height : boxHeight/2 - space/2,
+        };
+        var rightStyle = {
+            top : boxHeight/2 + space/2,
+            left : boxWidth/2 + space/2,
+            width : boxWidth/2 - space/2,
+            height : boxHeight/2 - space/2,
+        };
+        var leftStyle = {
+            top : boxHeight/2 + space/2,
+            left : 0,
+            width : boxWidth/2 - space/2,
+            height : boxHeight/2 - space/2,
+        };
+        var fullStyle ={
+            top:0,
+            let :0,
+            width: boxWidth,
+            height:boxHeight
+        }
+        var inputHtmlOne = '<div class="img-layout">\
+                                <div class="layout-top"></div>\
+                                <div class="layout-left"></div>\
+                                <div class="layout-right"></div>\
+                            </div>';
+        var inputHtmlTwo = '<div class="img-layout"><div class="layout-full"></div></div>'
+        this.typeOne = function($parent){
+            // console.log($parent);
+            $parent.append(inputHtmlOne);
+            $parent.find('.layout-top').css(topStyle);
+            $parent.find('.layout-left').css(leftStyle);
+            $parent.find('.layout-right').css(rightStyle);
+            $.each(arr,function(k,v){
+                if(k === 0){
+                    var $layoutTop = $parent.find('.layout-top');
+                    getImgStyle(v,topStyle.width,topStyle.height,$layoutTop);  
+                }else if(k === 1){
+                    var $layoutTop = $parent.find('.layout-left');
+                    getImgStyle(v,leftStyle.width,leftStyle.height,$layoutTop);  
+                }else if(k === 2){
+                    var $layoutTop = $parent.find('.layout-right');
+                    getImgStyle(v,rightStyle.width,rightStyle.height,$layoutTop);  
+                }  
+            })
+        }
+        this.typeTwo = function($parent){
+            $parent.append(inputHtmlTwo);
+            $parent.find('.layout-full').css(fullStyle);
+            var $layoutTop = $parent.find('.layout-full');
+            getImgStyle(arr,fullStyle.width,fullStyle.height,$layoutTop);  
+        }
+    }
+    function GetDate(time){
+        this.time = new Date(time);
+        this.getMonth = function(){
+            try{
+               var month = this.time.getMonth();
+               return getShortName(month);  
+            }catch(e){
+                console.log(e);
+            }  
+        };
+        this.getDate = function(){
+            try{
+               var day = this.time.getDate();
+               return day;  
+            }catch(e){
+                console.log(e);
+            }  
+        }
+        return this;
+    }
+    function getShortName(string){
+        var shortName;
+        var array = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        return shortName = array[string];
+    }
+    function getImgStyle(imgUrl,boxW,boxH,boxClass){
+        //imgW,imgH为图片实际的宽高
+        var img = new Image();
+        img.src = imgUrl;
+        var goalWidth,goalHeight,width,height,imgStyle;
+        img.onload = function(){
+            width = img.width;
+            height = img.height;
+            if(width/height > 1){       //宽度过大
+                goalWidth = width*boxH/height; //按高度算后，图片缩放后的宽度
+                if(goalWidth > boxW || goalWidth === boxW){
+                    imgStyle = {
+                        'height':'100%', 
+                        'margin-left':-(goalWidth - boxW)/2
+                    }
+                }else{
+                    goalHeight = boxW*height/width;
+                    imgStyle = {
+                        'width':'100%',
+                        'margin-top': -(goalHeight - boxH)/2
+                    }
+                }
+            }else{
+                //高度过大
+                goalHeight = boxW*height/width;
+                if(goalHeight > boxH || goalHeight === boxH){
+                    imgStyle = {
+                        'width':'100%',
+                        'margin-top': -(goalHeight - boxH)/2
+                    }
+                }else{
+                    goalWidth = width*boxH/height;
+                    imgStyle = {
+                        'height':'100%', 
+                        'margin-left':-(goalWidth - boxW)/2
+                    }
+                }
+            }
+            boxClass.append('<img src="'+ imgUrl +'" />');
+            boxClass.find('img').css(imgStyle).animate({opacity:1},400);
+            boxClass = null;
+        }
+    }
+    $('body').on('click','.exhi-list',function(){
+        var id = $(this).data('getId') + '';
+        console.log(id);
+        if(typeof ADS != 'undefined'){
+            ADS.startDetailActivity (id,2);
+        }
+   });
+   var progress,dist,distScorllTop;
+   var ischange = true;
+   var $headerText = $('.exhi-header-intro');
+   var $headerTitle = $headerText.find('.title').find('span').first();
+   var $enTitle = $('.en-title');
+   var offsetLeft = $headerTitle.offset().left;
+   var $dateText =  $headerText.find('.title').find('.header-date');
+   distScorllTop = $headerTitle.offset().top;
+   var titleWidth = $headerTitle.width();
+   var $scrollHead = $('.exhi-header-scroll');
+   dist = screenWidth/2 - offsetLeft - titleWidth/2;
+   var trans = {
+      x:0,
+      y:0
+   }
+   $(document).on('scroll',function(){
+        var scrollTop = $(document).scrollTop();
+        progress = Math.min(Math.max(scrollTop/distScorllTop,0),1);
+        trans.x = progress*dist;
+        //顶部开始变形
+        if(progress < 1){
+           $headerTitle.stop().show().css({'-webkit-transform':'translate3d(' + trans.x + 'px,' + 0 + 'px,0)'});
+          $enTitle.css({'opacity':Math.max(0,(1-progress*1.2))});
+          $dateText.css({'opacity':Math.max(0,(1-progress*1.2))});
+          $scrollHead.find('h3').stop().hide();
+          $scrollHead.stop().fadeIn(100);
+        }else if(progress == 1){
+          $headerTitle.hide();
+          $scrollHead.find('h3').stop().show();
+        }
+        if(progress < 0.1){
+          $scrollHead.stop().fadeOut(100);
+        }
+   })
+});
+</script>
+</body>
+</html>

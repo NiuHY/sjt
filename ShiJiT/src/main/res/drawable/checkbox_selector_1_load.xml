@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<item android:state_checked="true" android:drawable="@drawable/ytzh_cb_1_c" />
+    <item android:state_checked="false" android:drawable="@drawable/ytzh_cb_1_n" />
+    <item android:drawable="@drawable/ytzh_cb_1_n" />
+</selector>

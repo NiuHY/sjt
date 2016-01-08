@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!-- 选择器 -->
+    <color name="btn_bg_n">#ff0099FF</color>
+    <color name="btn_bg_p">#66722c2a</color>
+    <color name="tv_c_n">#ffffac42</color>
+    <color name="tv_c_p">#66722c2a</color>
+
+</resources>

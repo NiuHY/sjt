@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <FrameLayout
+        android:id="@+id/fl_inner"
+        android:layout_width="fill_parent"
+        android:layout_height="77dp"
+        >
+
+        <LinearLayout
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" >
+
+            <ImageView
+                android:id="@+id/pull_to_refresh_image"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+
+            <View
+                android:id="@+id/loading_view_1"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:background="@drawable/load_shape_1"/>
+            <View
+                android:id="@+id/loading_view_2"
+                android:layout_marginLeft="5dp"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:background="@drawable/load_shape_2"/>
+
+            <View
+                android:id="@+id/loading_view_3"
+                android:layout_marginLeft="5dp"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:background="@drawable/load_shape_3"/>
+            <View
+                android:id="@+id/loading_view_4"
+                android:layout_marginLeft="5dp"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
+                android:background="@drawable/load_shape_4"/>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</merge>

@@ -1,0 +1,3 @@
+include ':ShiJiT', ':temptest', ':android-gif-drawable', ':TableDemo'
+include ':touchImageView'
+include ':pullToRefreshLibrary'

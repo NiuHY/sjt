@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta HTTP-EQUIV="Content-Type" CONTENT="text/html">
+    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+    <title>金坛详情页</title>
+    <link href="src/css/reset.css" rel="stylesheet">
+    <link href="src/css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="src/js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="src/js/vue.js"></script>
+    <script type="text/javascript" src="src/js/hammer.min.js"></script>
+    <script type="text/javascript" src="src/js/index.js"></script>
+    <script type="text/javascript" src="src/js/autoLayouter_v2.1.1.js"></script>
+  </head>
+<body class="img-body" id="153">
+<div id="exhibition-detail">
+    <div class="detail-head">
+        <img :src="cover"/>
+    </div> 
+    <div class="detail-wrap" id="detail-wrap">
+        <div class="detail-info">
+            <h3>{{decodeURIComponent(exhibition_title)}}</h3>
+            <p class="date">{{exhibition_start_time | getDay}}-{{exhibition_end_time | getDay}}  <span>({{exhibition_start_time | denyDay exhibition_end_time}})</span></p>
+            <p class="place" v-if="exhibition_location">{{decodeURIComponent(exhibition_location)}}</p>
+            <p class="time" v-if="exhibition_open_time">{{exhibition_open_time}}</p>
+        </div>
+        <div class="story-wrap">
+            <div class="story-title"></div>
+            <div class="share_story">
+                <div class="share_cont"> </div>
+            </div>
+        </div>
+        <div></div>
+        <div class="powered-by clearfix">
+            <div class="powered-cont">
+                <p><i>Powered by</i><span>艺术云图</span></p>
+            </div>
+        </div>
+    </div>
+    <div class="share_gray">
+        <img src="" />
+        <div class="text_intro">
+            <h3></h3>
+            <p></p>
+        </div>
+    </div> 
+</div>
+<script type="text/javascript">
+var totalTime = 1500;
+var initTime =50;
+var host = 'http://cmm.yuntoo.com/';
+var imgsArr = [];
+var imgIndex = 0;
+var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
+var screenHeight = document.documentElement.clientHeight || document.body.clientHeight;
+// var ADS = {};
+// ADS.getDetailId = function(){
+//     return 88;
+// };
+waitADS();
+function waitADS(){
+    if(initTime < totalTime && typeof ADS == 'undefined'){
+        var getADS = setTimeout(waitADS,50)
+        initTime += 50;
+        console.log(initTime);
+    }else{
+        clearTimeout('getADS');
+        getADS = null;
+        var ADSid = ADS.getDetailId() + '';
+// $(function(){
+    // var id = ADS.getDetailId();
+    // var host = 'http://cmm.yuntoo.com/';
+    // var id = $('body').attr('id');
+    var url = host + 'api/exhibition/' + ADSid;
+    var space = Math.ceil(0.046*screenWidth);
+    var $textIntro = $('.text_intro');
+    $('.detail-rotate').css('border-left-width',screenWidth + 'px');
+    Vue.filter('getDay', function (value) {
+        return value.split(' ')[0].split('-').join('.');
+    });
+    Vue.filter('denyDay', function (value1,value2) {
+        var now = new Date();
+        var start = new Date(value1.split(' ')[0].replace(/-/g,'/'));
+        var end = new Date(value2.split(' ')[0].replace(/-/g,'/'));
+        var timer;
+        if(now - start < 0 ){
+            timer = Math.floor((now - start)/(1000*60*60*24));
+            return '还有' + timer + '天开始';
+        }else if(now - start > 0 && now - end < 0){
+            return '进行中';
+        }else if(now - end > 0){
+            return '已结束';
+        }
+    });
+    $('body').on('click','.share_cont img,.share_cov img',function(){
+        var imgJson = JSON.stringify(imgsArr);
+        var imgIndex = $(this).data('imgindex');
+        // console.log(imgJson);
+        try{
+            ADS.startImgPreview(imgJson, imgIndex);
+        }catch(e){
+            console.log(e);
+        }
+    });
+    $.ajax({
+        url : url,
+        data:{
+            client_type:4,
+            client_version:1.0,
+            uuid:'abcd'
+        },
+        type : 'get',
+        success: function(data){
+            var data = JSON.parse(data);
+            if(!data.success){
+                   $('body').empty().css('height',screenHeight).addClass('fali-loading'); 
+            }else if(data.success){
+                data = data.data;
+                var storyId = data.exhibition_ref_story_id;
+                var storyUrl = host + 'api/story/' + storyId;
+                var shareObj = {};
+                var coverSize = data.cover_size || '750,750';
+                var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
+                var topPos = (275-bgHeight)/2;
+                shareObj.cover = data.exhibition_cover;
+                shareObj.title = decodeURIComponent(data.exhibition_title);
+                shareObj.intro = data.exhibition_start_time.split(' ')[0].split('-').join('.') + ' - ' + data.exhibition_end_time.split(' ')[0].split('-').join('.');
+                shareObj.id = data.exhibition_id;
+                shareObj.href = host + 'share/exhibition/' + shareObj.id +'/?client_version=1.0.0';
+                shareObj = JSON.stringify(shareObj);
+                try{
+                    ADS.setSP('share',shareObj);
+                }catch(e){
+                    console.log(e);
+                }
+                $('body').css({
+                    'background':'url(' + data.exhibition_cover + ') no-repeat 0 ' + topPos + 'px',
+                    'background-size' : '100% auto',
+                    'background-attachment' : 'fixed'
+                });
+                new Vue({
+                  el: '#exhibition-detail',
+                  data: data
+                });
+                $.ajax({
+                    url:storyUrl,
+                    data:{
+                        client_type:4,
+                        client_version:1.0,
+                        uuid:'abcd'
+                    },
+                    success: function(data){
+                        var data = JSON.parse(data);
+                        if(data.success){
+                            data = data.data;
+                            shareData(data);
+                        }
+                    }
+                });
+            }
+            // shareData(data);
+            function shareData(data){
+                var data = data;
+                var textData;
+                var dataArr = [];
+                var story_details = data.story_resource ? JSON.parse(data.story_resource).resource_array_data : JSON.parse(data.story_details);
+                $('body').css({'width':screenWidth,'overflow-x':'hidden'});
+                $('.story-title').text(decodeURIComponent(data.story_title));
+                // $('html').css({'width':screenWidth,'overflow-x':'hidden','overflow-y':'visible','margin' : '0 auto'})
+                $('.story-wrap').css({'margin-left' : Math.ceil(0.046*screenWidth),'margin-right' : Math.ceil(0.046*screenWidth)});
+                fixedWidth = $('.share_story').width(); //中间内容宽度
+                screenW = screenWidth;
+                //遍历数据，并放入dataArr数组中
+                $.each(story_details,function(key,val){
+                    var storyDetail = story_details[key].resource_description;
+                    var storyPro = story_details[key].professional_info || '';
+                    var artistName = $.trim(storyPro.artist_name);
+                    var productionInfo = function(storyPro){
+                        var product = [];
+                        delete storyPro['production_id'];
+                        delete storyPro['artist_name'];
+                        for(i in storyPro){
+                            if($.trim(storyPro[i]).length > 0){
+                                product.push(storyPro[i]);
+                            }
+                        }
+                        product = product.join(',       ');
+                        return product;
+                    }
+                    var productionText =  productionInfo(storyPro);
+                    if(storyDetail.type == 1 || storyDetail.type == 3){
+                        dataArr.push({
+                            'textData' : val.resource_description.TextInfo,
+                            'resouceType' : storyDetail.type,
+                            'TextAlignment' : storyDetail.TextAlignment, 
+                        });
+                    }else if(storyDetail.type == 2 || storyDetail.type == 4){
+                        dataArr.push({
+                            'url' : val.image_url,
+                            'ImageSize' :  storyDetail.ImageSize,
+                            'ImageCropRect' : storyDetail.ImageCropRect || storyDetail.CoverCropRect,
+                            'ImageDisplayWidthRate' : storyDetail.ImageDisplayWidthRate  || storyDetail.CoverDisplayWidthRate || 0.90625,
+                            'ImageDescription' : $.trim(storyDetail.CoverDescription) || $.trim(storyDetail.ImageDescription) || '',
+                            'ImageCropRectRate' : storyDetail.ImageCropRectRate || '',  //R值存在则赋值，不存在设置空
+                            'resouceType' : storyDetail.type,
+                            'isprofessional' : storyPro,
+                            'artistName' : artistName,
+                            'productionName' : productionText,
+                            'imgIndex' : imgIndex
+                        });
+                        imgsArr.push({                      //只存放图片资源
+                            'url' :  val.image_url,
+                            'resourceId' : val.resource_id,
+                            'ImageSize' :  storyDetail.ImageSize,
+                            'ImageCropRect' : storyDetail.ImageCropRect || storyDetail.CoverCropRect,
+                            'ImageDisplayWidthRate' : storyDetail.ImageDisplayWidthRate || storyDetail.CoverDisplayWidthRate || 0.90625,
+                            'ImageDescription' : $.trim(storyDetail.CoverDescription) || $.trim(storyDetail.ImageDescription) || '',
+                            'ImageCropRectRate' : storyDetail.CoverCropRectRate || storyDetail.ImageCropRectRate || '',  //R值存在则赋值，不存在设置空
+                            'isprofessional' : storyPro,
+                            'artistName' : artistName,
+                            'productionName' : productionText,
+                            'imgIndex' : imgIndex
+                        });
+                        imgIndex ++;
+                    }
+                    
+                });
+                var $cont = $('.share_cont');
+                $.each(dataArr,function(key,val){
+                    if(val.textData){           //判断是文字还是图片
+                        if(val.resouceType == 1){    //此处为内容
+                            $cont.append('<div class="cont_text" style="width:'+ fixedWidth +'px;'+ textAlign(val.TextAlignment) +'"><div class="text_control">'+ changeP(val.textData) +'</div></div>');
+                        }
+                    }else if(val.url){         //判断图片
+                            if(parseFloat(val.ImageDisplayWidthRate)*100 > 90){
+                                $cont.append('<div><div class="share_img_list" style="'+ divStyle(val.ImageDisplayWidthRate,val.ImageCropRect) +'overflow:hidden;"></div><p class="img_desc" data-artistName="'+ val.artistName +'" data-productionName="'+ (val.productionName || val.ImageDescription) +'" data-hastorypro="'+ (val.isprofessional ? 1 : 0) +'">'+ ellipsiStr(fixedWidth-10,val.ImageDescription) +'</p></div>');
+                            }else{
+                                $cont.append('<div><div class="share_img_list" style="'+ divStyle(val.ImageDisplayWidthRate,val.ImageCropRect) +';overflow:hidden;"></div></div>');
+                            }
+                        // }     
+                    }
+                })
+                var $contDsc = $cont.find('.img_desc');  // 如果图片没有描述文字，则去掉图片下面的img_desc。
+                for(var i=0;i<$contDsc.length;i++){
+                    if(!$.trim($contDsc.eq(i).text())){
+                       $contDsc.eq(i).remove();
+                    }
+                }
+                $('.loading').hide();
+                autoLayouter.exe($('img:first').closest('div'),'', $cont.children('div')); 
+                $('.share_cont').height(autoLayouter.screenh + 5);
+            //    $('.share_cont').width(screenW);
+                var $imgList = $('.share_img_list');
+                $.each($imgList,function(k,v){
+                    var $that = $(this);
+                    $that.isLoaded = false;
+                    lazyLoad(k,v,$that)
+                    $(window).on('scroll',function(){
+                        lazyLoad(k,v,$that)
+                    })
+                });
+                function lazyLoad(k,v,$that){
+                    var offsetTop,scrollTop,getDistance;
+                    offsetTop = $that.offset().top;
+                    scrollTop = $(window).scrollTop();
+                    getDistance = offsetTop - scrollTop;
+                    if(getDistance < screenHeight*2 && !$that.isLoaded){
+                        if(imgsArr[0].ImageCropRectRate){
+                            var img = new Image();
+                            var arry,width,height,x,y,clipWidth,clipHeight;
+                            arry = imgsArr[k].ImageCropRectRate.split(',');
+                            img.src = imgsArr[k].url;
+                            $(v).append('<section><figure><div class="clip_area"><img src="'+ imgsArr[k].url +'" style="opacity:0;"data-imgIndex = "'+ imgsArr[k].imgIndex +'"/></div></figure></section>');
+                            img.onload = function(){        //图片加载完成后计算rect，加入dom
+                                width = img.width;
+                                height = img.height;
+                                x = width*parseFloat(arry[0]).toString() || 0;
+                                y = height*parseFloat(arry[1]).toString() || 0;
+                                clipWidth = width*parseFloat(arry[2]).toString();
+                                clipHeight = height*parseFloat(arry[3]).toString();
+                                rect = x + ',' + y + ',' + clipWidth + ',' + clipHeight;
+                                $(v).find('section').attr({'scaleWith-R':widthRate(imgsArr[k].ImageDisplayWidthRate).rateDot,style:scaleStyle(imgsArr[k].ImageDisplayWidthRate,rect)});
+                                $(v).find('figure').attr('style',figureStyle(rect));
+                                $(v).find('img').stop().animate({opacity:1},300);
+                                img = null;
+                            }
+                        }else{          //无R值则直接加入到dom中
+                            $(v).append('<section data-scale="' + widthRate(imgsArr[k].ImageDisplayWidthRate).rateDot + '-NoR" style="'+ scaleStyle(imgsArr[k].ImageDisplayWidthRate,imgsArr[k].ImageCropRect) +'"><figure style="'+ figureStyle(imgsArr[k].ImageCropRect) +'"><div class="clip_area"><img src="'+ imgsArr[k].url +'" style="opacity:0;"/></div></figure></section>');
+                             $(v).find('img').stop().animate({opacity:1},300);
+                        }
+                        $that.isLoaded = true;
+                    }
+                }   
+            }
+            function divStyle(scale,rect){      //设置显示每个图块大小
+                var arry = rect.split(',');
+                var scale = (widthRate(scale).rateDot*screenW)/figureObj(rect).width;       //缩放，图片占浏览器大小px: 画框原始大小px 
+                scale = Math.floor(scale*Math.pow(10,6))/Math.pow(10,6);
+                return style = 'width:' + Math.floor(figureObj(rect).width*scale) + 'px; height:'+ Math.floor(figureObj(rect).height*scale) + 'px;';
+            }
+            function textAlign(str){
+                var align;
+                str = parseInt(str);
+                switch(str){
+                    case 0:
+                        return align = 'text-align:left;';
+                        break;
+                    case 1:
+                        return align = 'text-align:center;';
+                        break;
+                    case 2:
+                        return align = 'text-align:right;';
+                        break;
+                    case 3 :
+                        return align = 'text-align:justify;text-justify:inter-word;';
+                    default :
+                        return align = 'text-align:left;';
+                }
+            }
+            function changeP(str){
+               str = str.replace(/\n|\r|(\r\n)|(\u0085)|(\u2028)|(\u2029)/g, "<p></p>");
+                var re = /(<p>)\1/g;
+                while (str.match(re) != null) {
+                    str = str.replace(re, "$1");
+                }
+                return str;
+            }
+            function scaleStyle(scale,rect){             //外围块级图片样式,scale相对自身缩放
+                var arry = rect.split(',');
+                var top = parseInt(arry[1],10);
+                var left = parseInt(arry[0],10);
+                var scale = (widthRate(scale).rateDot*screenW)/figureObj(rect).width;       //缩放，图片占浏览器大小px: 画框原始大小px 
+                scale = Math.floor(scale*Math.pow(10,6))/Math.pow(10,6);
+                var transformScale;
+                var marginTop = -Math.floor(top*scale + figureObj(rect).height*((1-scale)/2));
+                var marginLeft = -Math.floor(left*scale + figureObj(rect).width*((1-scale)/2));
+                return transformScale = 'transform:scale('+ scale +');-moz-transform:scale('+ scale +');-webkit-transform:scale(' + scale +');-o-transform:scale('+ scale +');-ms-transform:scale('+ scale +');margin-top:'+ marginTop +'px;margin-left:'+ marginLeft +'px;width:'+ figureObj(rect).width +'px;height:'+ figureObj(rect).height +'px;';
+            }
+
+            function figureObj(rect){       //figuer范围信息
+                var arry = rect.split(',');
+                return {'width' : Math.floor(parseInt(arry[2],10)) ,'height' :  Math.floor(parseInt(arry[3],10)),'marginTop' : - Math.floor(parseInt(arry[1],10)),'marginLeft' : - Math.floor(parseInt(arry[0],10))}
+            }
+
+            function figureStyle(rect){      //定义相框的宽高值
+                var size = size;
+                var style;
+                return style = 'width:' + figureObj(rect).width +'px; height:'+ figureObj(rect).height +'px;'
+            }
+
+            function scale(rate,rect){
+                var  toggleScale = widthRate(rate).rateDot * parseInt(screenW,10) - space * 0;  //目标宽 = 缩放比例（0.33） * 屏幕宽度
+                var  made = parseInt(figureObj(rect).width,10);       //实际宽(实际单个相框的实际宽度)
+                return toggleScale/made;                //目标宽度除以实际相框的宽度
+            }
+            function widthRate(rate){   //缩放比例
+                if(!rate){
+                    rate = 1;
+                }
+                if(rate){
+                    return  {'ratePrecent': parseFloat(rate,10)*100 + '%','rateDot' : parseFloat(rate,10)}
+                }
+            }
+            function ellipsiStr(width,str){
+                var amoutWidth = width *2;
+                var preWidth = 0;
+                for (var i = 0; i< str.length; i++){
+                    if(preWidth < amoutWidth){
+                        if (str[i].match(/[^\x00-\xff]/ig) != null){        //全角 
+                            preWidth += 14
+                        }else{                          //半角
+                            preWidth += 7;
+                        }
+                    }else{
+                        return str = str.substr(0,i) + '...';
+                    }
+                }
+                return str;  
+            }         
+        },
+        error : function(error){
+            console.log(error);
+        } 
+    });
+// });
+    }
+}
+</script>
+</body>
+</html>

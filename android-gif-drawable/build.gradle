@@ -1,0 +1,48 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:1.5.0'
+    }
+}
+
+apply plugin: 'com.android.library'
+apply from: 'gradle-mvn-push.gradle'
+apply from: 'ndk.gradle'
+
+repositories {
+    jcenter()
+}
+
+project.version = VERSION_NAME
+project.group = GROUP
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion '23.0.1'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_7
+        targetCompatibility JavaVersion.VERSION_1_7
+    }
+    defaultConfig {
+        versionName project.version
+        minSdkVersion 8
+        targetSdkVersion 23
+        consumerProguardFiles 'consumer-proguard-rules.pro'
+    }
+}
+
+dependencies {
+    provided 'com.android.support:support-annotations:23.1.1'
+    testCompile 'junit:junit:4.12'
+}
+
+afterEvaluate { project ->
+    android.libraryVariants.all { variant ->
+        tasks.androidJavadocs.doFirst {
+            classpath += files(variant.javaCompile.classpath.files)
+        }
+    }
+}

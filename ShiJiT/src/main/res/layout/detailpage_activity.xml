@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <com.handmark.pulltorefresh.library.PullToRefreshWebView
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/pull_refresh_webview"
+        android:background="#FFFFFF"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        ptr:ptrMode="disabled" />
+
+    <ImageButton
+        android:id="@+id/bt_back"
+        android:background="@drawable/icon_back_bg_red"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingLeft="4dp"
+        android:paddingRight="6dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/icon_back"
+        android:layout_marginLeft="13dp"
+        android:layout_marginTop="18dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"/>
+
+</FrameLayout>
