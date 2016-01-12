@@ -79,22 +79,22 @@ public class SearchTabView extends LinearLayout {
             viewGroup_item.setLayoutParams(new LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1));
             viewGroup_item.addView(textView);
 
-            // 添加一个计数 TextView
-            TextView tv_count = new TextView(UIUtils.getContext());
-            FrameLayout.LayoutParams tv_count_layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            tv_count_layoutParams.gravity = Gravity.BOTTOM + Gravity.RIGHT;
-            tv_count_layoutParams.rightMargin = UIUtils.dip2Px(3);
-            tv_count.setLayoutParams(tv_count_layoutParams);
-            tv_count.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9);
-            tv_count.setTextColor(0xffff0000);
-            viewGroup_item.addView(tv_count);
+//            // 添加一个计数 TextView
+//            TextView tv_count = new TextView(UIUtils.getContext());
+//            FrameLayout.LayoutParams tv_count_layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+//            tv_count_layoutParams.gravity = Gravity.BOTTOM + Gravity.RIGHT;
+//            tv_count_layoutParams.rightMargin = UIUtils.dip2Px(3);
+//            tv_count.setLayoutParams(tv_count_layoutParams);
+//            tv_count.setTextSize(TypedValue.COMPLEX_UNIT_SP, 9);
+//            tv_count.setTextColor(0xffff0000);
+//            viewGroup_item.addView(tv_count);
 
             addView(viewGroup_item); // 添加到布局
 
             // 把条目对应数据放到集合中
             TabItem tabItem = new TabItem();
             tabItem.tv_content = textView;
-            tabItem.tv_count = tv_count;
+//            tabItem.tv_count = tv_count;//计数
             tabItems.add(tabItem); // 添加到选择集合
 
             // 设置点击回调

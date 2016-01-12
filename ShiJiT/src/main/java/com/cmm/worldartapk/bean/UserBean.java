@@ -16,6 +16,12 @@ public class UserBean {
         public String session_key;
         public String is_band;
 
+        public String is_pro;
+        public String user_avatar;
+        public String user_email;
+        public String user_intro;
+        public String user_nickname;
+
         @Override
         public String toString() {
             return "UserData{" +

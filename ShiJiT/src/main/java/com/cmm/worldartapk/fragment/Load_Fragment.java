@@ -30,7 +30,6 @@ import com.cmm.worldartapk.utils.LogUtils;
 import com.cmm.worldartapk.utils.UIUtils;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import cn.sharesdk.framework.Platform;
 import cn.sharesdk.framework.PlatformActionListener;
@@ -45,6 +44,7 @@ import cn.sharesdk.wechat.friends.Wechat;
 public class Load_Fragment extends BaseFragment {
 
     private static final String URL_SIGNIN = "api/signin/";
+    private static final String URL_OTHERLOGIN = "api/other_login/";
 
     private EditText mLoadEtEmail; //邮箱
     private EditText mLoadEtPwd; //密码
@@ -56,6 +56,7 @@ public class Load_Fragment extends BaseFragment {
     private View contentView;
     private int currentColor;
     private PAListener paListener;
+    private String yuntoo_user_intro;
 
     @Override
     protected View initFragmentView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -185,6 +186,9 @@ public class Load_Fragment extends BaseFragment {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                UIUtils.showToastSafe("正在打开请求授权信息页面，请稍后...");
+
                 switch (v.getId()) {
                     case R.id.load_btn_load: //登陆
 
@@ -202,6 +206,11 @@ public class Load_Fragment extends BaseFragment {
 
                         //新浪微博登陆
                         Platform weibo = ShareSDK.getPlatform(getActivity(), SinaWeibo.NAME);
+
+                        if (!weibo.isClientValid()){
+                            UIUtils.showToastSafe("没有找到新浪微博客户端，请检查");
+                            return;
+                        }
                         //如果授权就移除授权信息
                         if (weibo.isValid()){
                             weibo.removeAccount();
@@ -259,7 +268,7 @@ public class Load_Fragment extends BaseFragment {
         }
 
         //获取密码
-        String pwd = mLoadEtPwd.getText().toString().trim();
+        final String pwd = mLoadEtPwd.getText().toString().trim();
         if (TextUtils.isEmpty(pwd)) {
             UIUtils.showToastSafe("密码不能为空");
 
@@ -272,36 +281,72 @@ public class Load_Fragment extends BaseFragment {
 
         // 判断是否使用云图账号登陆，如果不使用，就用注册的账号登陆，如果使用更换请求url
         // 登陆url  http://h5.yuntoo.com/api/signin/
-        String loadUrl = Const.BASE_URL;
+        String loginUrl = Const.BASE_URL;
 
         if (mLoadBtnUseYt.isChecked()){
             //选中 云图登陆
-            loadUrl = "http://h5.yuntoo.com/api/signin/";
+            loginUrl = "http://h5.yuntoo.com/api/signin/";
         }else{
-            loadUrl = loadUrl + URL_SIGNIN;
+            loginUrl = loginUrl + URL_SIGNIN;
         }
 
 
         //拿到邮箱和密码，请求登陆
-        NetUtils.getDataByNet_POST(getActivity(), loadUrl, RequestMapData.params_load(email, pwd), new UserInfoParser(), new MyNetWorkObject.SuccessListener() {
+        NetUtils.getDataByNet_POST(getActivity(), loginUrl, RequestMapData.params_load(email, pwd), new UserInfoParser(), new MyNetWorkObject.SuccessListener() {
             @Override
             public void onSuccess(Object data) {
                 UserBean user = ((UserBean)data);
                 boolean isSuccess = user.success.equals("1");
 
                 if (isSuccess){
-                    //保存用户登陆信息到 UserInfo 中
-                    UserInfo.getUserInfo().USER_ID = user.data.user_id;
-                    UserInfo.getUserInfo().SESSION_KEY = user.data.session_key;
-                    UserInfo.getUserInfo().IS_BAND = user.data.is_band;
 
-                    UIUtils.showToastSafe("登陆成功" + UserInfo.getUserInfo().USER_ID);
+                    //如果用云图账号，就继续请求第三方登陆
+                    if (mLoadBtnUseYt.isChecked()){
+                        //得到信息
+//                        // 云图用户专有的 介绍什么的
+//                        UserInfo.getUserInfo().USER_INTRO = user.data.user_intro; // 用户介绍
+//                        UserInfo.getUserInfo().NICKNAME = user.data.user_nickname; // 昵称
+//                        UserInfo.getUserInfo().AVATAR = user.data.user_avatar; // 用户头像
+//                        UserInfo.getUserInfo().EMAIL = user.data.user_email; // 用户邮箱
+//                        UserInfo.getUserInfo().IS_PRO = user.data.is_pro; // ???
 
-                    // 登陆成功就关闭登陆页
-                    getActivity().finish();
+                        //第三方请求需要的参数
+                        HashMap<String, String> otherLoginParams = new HashMap<>();
+
+                        otherLoginParams.put("email", user.data.user_email); // 邮箱
+                        otherLoginParams.put("password", pwd); // 密码
+                        otherLoginParams.put("nickname", user.data.user_nickname); // 昵称
+                        otherLoginParams.put("accesstoken", ""); // 令牌
+                        otherLoginParams.put("expires_at", ""); // 有效期
+                        otherLoginParams.put("avatar", user.data.user_avatar); // 用户头像
+                        otherLoginParams.put("platformname", "yuntoo"); // 平台  wxsession、sina、yuntoo
+                        otherLoginParams.put("profileURL", user.data.is_pro); // 简介？
+                        otherLoginParams.put("user_name", user.data.user_email); // 用户名
+                        otherLoginParams.put("user_id", user.data.user_id); // 用户id
+                        otherLoginParams.put("user_intro", user.data.user_intro); // 用户介绍
+
+                        //用户介绍保存一份，用来在登陆成功时记录
+                        yuntoo_user_intro = user.data.user_intro;
+
+
+                        //请求第三方登陆接口
+                        load_3_Request(otherLoginParams);
+                    }else {
+                        //不是云图账号，登陆
+                        //先清空数据
+                        UserInfo.setUserInfo();
+
+                        //保存用户登陆信息到 UserInfo 中
+                        UserInfo.getUserInfo().USER_ID = user.data.user_id;
+                        UserInfo.getUserInfo().SESSION_KEY = user.data.session_key;
+
+                        UIUtils.showToastSafe("登陆成功" + UserInfo.getUserInfo().USER_ID);
+                        // 登陆成功就关闭登陆页
+                        getActivity().finish();
+                    }
 
                 }else{
-                    UIUtils.showToastSafe("登陆失败");
+                    UIUtils.showToastSafe("登陆失败" + user.error_message);
                 }
             }
 
@@ -309,8 +354,6 @@ public class Load_Fragment extends BaseFragment {
             public void onError(String msg) {
                 UIUtils.showToastSafe("登陆失败 ："+msg);
             }
-
-
         });
     }
 
@@ -318,38 +361,120 @@ public class Load_Fragment extends BaseFragment {
     private class PAListener implements PlatformActionListener {
         @Override
         public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
+
+//            platform.removeAccount(true);
+
             UIUtils.showToastSafe("授权完成");
 
-            //遍历hashMapa
-            for(Map.Entry entry : hashMap.entrySet()){
-                LogUtils.i("key == " + entry.getKey() + "  value == " + entry.getValue());
-            }
+            //第三方请求需要的参数
+            HashMap<String, String> otherLoginParams = new HashMap<>();
 
-//            //解析部分用户资料字段
-//            String id,name,description,profile_image_url;
-//            id=hashMap.get("id").toString();//ID
-//            name=hashMap.get("name").toString();//用户名
-//            description=hashMap.get("description").toString();//描述
-//            profile_image_url=hashMap.get("profile_image_url").toString();//头像链接
-//            String str="ID: "+id+";\n"+
-//                    "用户名： "+name+";\n"+
-//                    "描述："+description+";\n"+
-//                    "用户头像地址："+profile_image_url;
-//            System.out.println("用户资料: "+str);
-//
-//            System.out.println("============"+hashMap.toString());
+            otherLoginParams.put("email", ""); // 邮箱
+            otherLoginParams.put("password", ""); // 密码
+            otherLoginParams.put("nickname", ""); // 昵称
+            otherLoginParams.put("accesstoken", ""); // 令牌
+            otherLoginParams.put("expires_at", ""); // 有效期
+            otherLoginParams.put("avatar", ""); // 用户头像
+            otherLoginParams.put("platformname", ""); // 平台  wxsession、sina、yuntoo
+            otherLoginParams.put("profileURL", ""); // 简介？
+            otherLoginParams.put("user_name", ""); // 用户名
+            otherLoginParams.put("user_id", ""); // 用户id
+            otherLoginParams.put("user_intro", ""); // 用户介绍
+
+
+            //遍历查看hashMapa
+//            for(Map.Entry entry : hashMap.entrySet()){
+//                LogUtils.i("  " + platform.getName() + "    key == " + entry.getKey() + "  value == " + entry.getValue());
+//            }
+
+               switch (platform.getName()){
+                    case "SinaWeibo": // 新浪微博
+
+                        otherLoginParams.put("nickname", hashMap.get("name").toString());
+                        otherLoginParams.put("avatar", hashMap.get("avatar_large").toString());
+                        otherLoginParams.put("platformname", "sina");
+                        otherLoginParams.put("profileURL", hashMap.get("profile_url").toString());
+                        otherLoginParams.put("user_name", hashMap.get("name").toString());
+                        otherLoginParams.put("user_id", hashMap.get("id").toString());
+
+                        break;
+                    case "Wechat": //微信
+
+                        otherLoginParams.put("nickname", hashMap.get("nickname").toString());
+                        otherLoginParams.put("avatar", hashMap.get("headimgurl").toString());
+                        otherLoginParams.put("platformname", "wxsession");
+                        otherLoginParams.put("user_name", hashMap.get("nickname").toString());
+                        otherLoginParams.put("user_id", hashMap.get("unionid").toString());
+
+                        break;
+                    default:
+                        break;
+                }
+
+
+            //得到对应参数，第三方登陆请求
+            load_3_Request(otherLoginParams);
+
         }
 
         @Override
         public void onError(Platform platform, int i, Throwable throwable) {
+            platform.removeAccount(true);
+            LogUtils.e("错误", throwable);
             UIUtils.showToastSafe("授权错误");
         }
 
         @Override
         public void onCancel(Platform platform, int i) {
+            platform.removeAccount(true);
             UIUtils.showToastSafe("授权取消");
         }
     }
+
+    /**
+     * 第三方登陆请求，需要信息参数
+     * @param params  请求参数
+     */
+    private void load_3_Request(HashMap<String, String> params) {
+
+        String requestUrl = Const.BASE_URL + URL_OTHERLOGIN;
+
+        NetUtils.getDataByNet_POST(getActivity(), requestUrl, RequestMapData.params_otherLogin(params), new UserInfoParser(), new MyNetWorkObject.SuccessListener() {
+            @Override
+            public void onSuccess(Object data) {
+
+                UserBean user = ((UserBean)data);
+                boolean isSuccess = user.success.equals("1");
+
+                if (isSuccess){
+                    //先清空数据
+                    UserInfo.setUserInfo();
+
+                    //保存用户登陆信息到 UserInfo 中
+                    UserInfo.getUserInfo().USER_ID = user.data.user_id;
+                    UserInfo.getUserInfo().SESSION_KEY = user.data.session_key;
+                    UserInfo.getUserInfo().IS_BAND = user.data.is_band;
+
+                    //判断是否是云图登陆，如果是就保存其用户简介
+                    if (mLoadBtnUseYt.isChecked() && !TextUtils.isEmpty(yuntoo_user_intro)){
+                        UserInfo.getUserInfo().USER_INTRO = yuntoo_user_intro;
+                    }
+
+                    UIUtils.showToastSafe("登陆成功");
+                    // 登陆成功就关闭登陆页
+                    getActivity().finish();
+                }else {
+                    UIUtils.showToastSafe("登陆失败" + user.error_message);
+                }
+            }
+
+            @Override
+            public void onError(String msg) {
+                LogUtils.e("第三方登陆失败" + msg);
+            }
+        });
+    }
+
     /**
      * 校验邮箱
      * @param editText

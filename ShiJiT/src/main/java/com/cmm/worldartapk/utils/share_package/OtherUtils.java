@@ -3,6 +3,7 @@ package com.cmm.worldartapk.utils.share_package;
 import android.app.Activity;
 import android.graphics.Bitmap;
 
+import com.cmm.worldartapk.utils.LogUtils;
 import com.cmm.worldartapk.utils.SJT_UI_Utils;
 import com.cmm.worldartapk.utils.UIUtils;
 
@@ -74,7 +75,7 @@ public class OtherUtils {
 
         if (target.equals(SinaWeibo.NAME)){
             //新浪微博的参数
-            shareParams.setText(info + url);
+            shareParams.setText(title + " " + url);
             shareParams.setImageUrl(imageUrl);
         }else{
             shareParams.setTitle(title);
@@ -113,8 +114,8 @@ public class OtherUtils {
             public void onError(Platform platform, int i, Throwable throwable) {
                 platform.removeAccount(true);
                 SJT_UI_Utils.showDialog(activity, "分享失败", false);
-//                LogUtils.e(platform.toString(), throwable);
-//                LogUtils.e("分享失败");
+                LogUtils.e(platform.toString(), throwable);
+                LogUtils.e("分享失败");
             }
 
             @Override

@@ -18,11 +18,11 @@ import com.handmark.pulltorefresh.library.PullToRefreshWebView;
  */
 public class PullRefreshUtils {
 
-    private static WebView webView;
+//    private static WebView webView;
 
     public static WebView setListener_PRWebView(PullToRefreshWebView pullToRefreshWebView){
 
-        webView = pullToRefreshWebView.getRefreshableView();
+        final WebView webView = pullToRefreshWebView.getRefreshableView();
 
         // 添加错误页面
         final View errorPagerView = View.inflate(UIUtils.getContext(), R.layout.webview_errorpager, null);
@@ -59,6 +59,8 @@ public class PullRefreshUtils {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
+                        //获取当前 展示的WebView，刷新
+
                         webView.reload();
                         UIUtils.showToastSafe("下拉");
                         refreshView.onRefreshComplete();

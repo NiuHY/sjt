@@ -25,9 +25,9 @@
         <p class="title"><span>世界艺展</span></p>
     </div>
 </div>
-<div class="detail-wrap" id="detail-wrap" style="background:#f2f2f2;">
+<div class="detail-wrap" id="detail-wrap">
 <div class="wrap-rotate"><div class="detail-rotate"></div></div>
-<div id="exhiIndex">
+<div id="exhiIndex" class="wrap-body">
     <div class="exhi-content">
         <div class="exhi-items">
         </div>
@@ -57,14 +57,17 @@ $(function(){
             var coverSize = items.cover_size || '750,750';
             var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
             var topPos = (275-bgHeight)/2;
-            $('body').css({
-                'background':'#f2f2f2 url(' + items[0].exhibition_cover + ') no-repeat 0' + topPos + 'px',
-                'background-size' : '100% auto',
-                'background-attachment' : 'fixed'
-            });
+            bgObj.bgUrl = items[0].exhibition_cover;
+            bgObj.pos = (275-bgHeight)/2;
+            bgObj.bgCss = {
+              'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
+              'background-size' : '100% auto',
+              'background-attachment' : 'fixed'
+            };
+            $('body').css(bgObj.bgCss);
             $.each(items,function(k,v){
                 if(k%2 === 0){
-                    var dateObj = new GetDate(v.exhibition_start_time);
+                    var dateObj = new GetDate(v.exhibition_start_time.split(' ')[0]);
                     var listHtml = ' <div class="exhi-list" data-get-id="'+ v.exhibition_id +'">\
                        <div class="exhi-list-head clearfix">\
                            <div class="exhi-list-head-left">\
@@ -90,7 +93,7 @@ $(function(){
                     $('.exhi-list-body-right').css({width:rightWidth});
                     imgArr.push([v.exhibition_image_array[0].image_url,v.exhibition_image_array[1].image_url,v.exhibition_image_array[2].image_url]);
                 }else if(k%2 === 1){
-                    var dateObj = new GetDate(v.exhibition_start_time);
+                    var dateObj = new GetDate(v.exhibition_start_time.split(' ')[0]);
                     var listHtml = ' <div class="exhi-list"  data-get-id="'+ v.exhibition_id +'">\
                        <div class="exhi-list-head clearfix">\
                            <div class="exhi-list-head-left">\

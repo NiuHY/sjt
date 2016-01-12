@@ -34,8 +34,8 @@
                 <h3 class="info-type type1"  v-if="item.information_type == 1"><span>展览</span></h3>
                 <h3 class="info-type type2" v-if="item.information_type == 2"><span>演出</span></h3>
                 <h3 class="info-type type3" v-if="item.information_type == 3"><span>活动</span></h3>
-                <p class="info-title">{{decodeURIComponent(item.information_title).trim()}}</p>
-                <p class="info-intro">{{decodeURIComponent(item.information_description).trim()}}</p>
+                <p class="info-title" v-text="decodeURIComponent(item.information_title).trim()"></p>
+                <p class="info-intro" v-text="decodeURIComponent(item.information_description).trim()"></p>
             </div>
         </div>
     </div>
@@ -74,11 +74,14 @@ $(function(){
         var coverSize = data.cover_size || '750,750';
         var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
         var topPos = (275-bgHeight)/2;
-        $('body').css({
-            'background':'#f2f2f2 url(' + items[0].information_cover + ') no-repeat 0 ' + topPos + 'px',
-            'background-size' : '100% auto',
-            'background-attachment' : 'fixed'
-        });
+        bgObj.bgUrl = items[0].information_cover;
+        bgObj.pos = (275-bgHeight)/2;
+        bgObj.bgCss = {
+          'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
+          'background-size' : '100% auto',
+          'background-attachment' : 'fixed'
+        };
+        $('body').css(bgObj.bgCss);
         new Vue({
           el: '#infoIndex',
           data: {items:items}

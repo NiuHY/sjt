@@ -37,6 +37,7 @@ public class RegistFragment extends BaseFragment {
     private EditText mLoadEtEmail; //邮箱
     private EditText mLoadEtPwd; //密码
     private EditText mLoadEtPwd_2; //确认密码
+    private EditText mLoadEtNickname; //昵称
     private TextView mLoadBtnRegist; //注册
     private CheckBox mRigestRadiobutton; //单选按钮
 
@@ -61,6 +62,7 @@ public class RegistFragment extends BaseFragment {
         mLoadEtEmail = (EditText) contentView.findViewById(R.id.load_et_email);
         mLoadEtPwd = (EditText) contentView.findViewById(R.id.load_et_pwd);
         mLoadEtPwd_2 = (EditText) contentView.findViewById(R.id.load_et_pwd_2);
+        mLoadEtNickname = (EditText) contentView.findViewById(R.id.load_et_nickname);
         mLoadBtnRegist = (TextView) contentView.findViewById(R.id.load_btn_regist);
         mRigestRadiobutton = (CheckBox) contentView.findViewById(R.id.rigest_radiobutton);
     }
@@ -75,10 +77,12 @@ public class RegistFragment extends BaseFragment {
         //设置点击监听
         setViewClickListener(mLoadBtnRegist);
 
-        //给三个输入框设置变更监听
+        //给输入框设置变更监听
         setTextChangeL(mLoadEtEmail);
         setTextChangeL(mLoadEtPwd);
         setTextChangeL(mLoadEtPwd_2);
+        setTextChangeL(mLoadEtNickname);
+
 
         //给选择框设置变更监听
         mRigestRadiobutton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -94,6 +98,7 @@ public class RegistFragment extends BaseFragment {
     //文本输入框标记
     private boolean et_email = false;
     private boolean et_pwd = false;
+    private boolean et_nickname = false;
     /**
      * 给文本输入框设置文本变更监听
      *
@@ -129,6 +134,13 @@ public class RegistFragment extends BaseFragment {
                     }else{
                         et_pwd = false;
                     }
+                } else if (editText.getId() == R.id.load_et_nickname) {
+                    //昵称
+                    if (!TextUtils.isEmpty(editText.getText().toString().trim())){
+                        et_nickname = true;
+                    }else{
+                        et_nickname = false;
+                    }
                 }
                 //登陆按钮变色
                 changeButtonBG();
@@ -143,7 +155,7 @@ public class RegistFragment extends BaseFragment {
 
     private void changeButtonBG(){
         //如果两个标记都正确才设置
-        if (et_email && et_pwd){
+        if (et_email && et_pwd && et_nickname){
             mLoadBtnRegist.setBackground(DrawableUtils.createSelector(new ColorDrawable(((LoadActivity) getActivity()).getCurrentColor()), new ColorDrawable(0x55787878)));
         }else {
             mLoadBtnRegist.setBackgroundColor(0xffbbbbbb);
@@ -163,7 +175,7 @@ public class RegistFragment extends BaseFragment {
                 switch (v.getId()) {
                     case R.id.load_btn_regist: //注册
 
-                        //点击注册按钮  判断邮箱 密码 和是否选中
+                        //点击注册按钮  判断邮箱 密码 昵称 和 是否 同意注册信息
                         userRegist();
 
                         break;
@@ -206,6 +218,17 @@ public class RegistFragment extends BaseFragment {
             return;
         }
 
+        //获取昵称
+        String nickname = mLoadEtNickname.getText().toString().trim();
+        if (TextUtils.isEmpty(nickname)){
+            UIUtils.showToastSafe("昵称为空");
+            if (anim == null) {
+                anim = AnimationUtils.loadAnimation(UIUtils.getContext(), R.anim.shake_anim);
+            }
+            mLoadEtNickname.startAnimation(anim);
+            return;
+        }
+
         //是否选中RadioButton
         if (!mRigestRadiobutton.isChecked()){
             UIUtils.showToastSafe("不同意");
@@ -219,8 +242,8 @@ public class RegistFragment extends BaseFragment {
         // 登陆url
         String registUrl = Const.BASE_URL + URL_SIGNUP;
 
-        //拿到邮箱和密码，请求注册
-        NetUtils.getDataByNet_POST(getActivity(), registUrl, RequestMapData.params_regist(email, pwd), new UserInfoParser(), new MyNetWorkObject.SuccessListener() {
+        //拿到邮箱 密码 昵称，请求注册
+        NetUtils.getDataByNet_POST(getActivity(), registUrl, RequestMapData.params_regist(email, pwd, nickname), new UserInfoParser(), new MyNetWorkObject.SuccessListener() {
             @Override
             public void onSuccess(Object data) {
                 //判断请求结果是否成功，如果成功就关闭这个页面，回显数据到登陆页面
@@ -234,7 +257,7 @@ public class RegistFragment extends BaseFragment {
                     // 返回登陆页
                     ((LoadActivity)getActivity()).backLoadPager();
                 }else{
-                    UIUtils.showToastSafe("注册失败");
+                    UIUtils.showToastSafe("注册失败：" + userTemp.error_message);
                 }
             }
 

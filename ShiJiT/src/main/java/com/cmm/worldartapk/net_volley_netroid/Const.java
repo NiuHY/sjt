@@ -19,4 +19,17 @@ public class Const {
     public static final int PAGER1_COLOR = 0xffFFAC42;
     public static final int PAGER2_COLOR = 0xffFF7D7D;
     public static final int PAGER3_COLOR = 0xff3EBEFF;
+
+    //是否在非WIFI下 加载数据
+    public static boolean isWifi = false;
+    //是否在判断wifi状态
+    private static boolean judgeWifiState = false;
+
+    //同步方法 get/set
+    public static synchronized boolean getJudgeWifiState(){
+        return judgeWifiState;
+    }
+    public static synchronized void setJudgeWifiState(boolean flag){
+        Const.judgeWifiState = flag;
+    }
 }

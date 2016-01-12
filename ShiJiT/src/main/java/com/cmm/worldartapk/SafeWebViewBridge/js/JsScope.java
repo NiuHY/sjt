@@ -198,8 +198,11 @@ public class JsScope {
             case "user_id":
                 userInfo = UserInfo.getUserInfo().USER_ID;
                 break;
-            case "session_key":
+            case "session_key": //sessionKey
                 userInfo = UserInfo.getUserInfo().SESSION_KEY;
+                break;
+            case "user_intro": //云图用户信息
+                userInfo = UserInfo.getUserInfo().USER_INTRO;
                 break;
             default:
                 break;

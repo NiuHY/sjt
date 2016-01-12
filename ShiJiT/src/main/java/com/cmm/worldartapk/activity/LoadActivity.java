@@ -1,6 +1,7 @@
 package com.cmm.worldartapk.activity;
 
 import android.content.Intent;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -102,6 +103,19 @@ public class LoadActivity extends BaseActivity {
                 startActivity(new Intent(LoadActivity.this, SettingActivity.class));
             }
         });
+    }
+
+    //返回键
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK){
+            if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                //有注册页，先返回登陆页
+                backLoadPager();
+                return true;
+            }
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     /**

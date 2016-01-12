@@ -12,14 +12,16 @@
     <script type="text/javascript" src="src/js/vue.js"></script>
     <script type="text/javascript" src="src/js/hammer.min.js"></script>
     <script type="text/javascript" src="src/js/index.js"></script>
+    <script type="text/javascript" src="src/js/iscroll.js"></script>
     <script type="text/javascript" src="src/js/autoLayouter_v2.1.1.js"></script>
   </head>
-<body class="img-body" id="14">
+<body id="14">
+<div class="img-body" id="wrapper">
 <div id="information-detail">
-    <div class="detail-head" style="display:none;">
+    <!-- <div class="detail-head" style="display:none;">
         <img v:src="{{information_cover}}"/>
-    </div> 
-    <div class="detail-wrap" id="detail-wrap" style="background:#f2f2f2;">
+    </div>  -->
+    <div class="detail-wrap-scroll" id="detail-wrap" style="background:#f2f2f2;">
         <div class="wrap-rotate"><div class="detail-rotate"></div></div>
         <div class="information-detail">
             <div class="ditail-type">
@@ -27,7 +29,7 @@
                 <div v-if="information_type == 2" class="green-type"><span>活动</span></div>
                 <div v-if="information_type == 3" class="blue-type"><span>演出</span></div>
             </div>
-            <p>{{decodeURIComponent(information_description)}}</p>
+            <p v-text="decodeURIComponent(information_description)"></p>
         </div>
         <div class="story-wrap">
             <div class="story-title"></div>
@@ -35,7 +37,6 @@
                 <div class="share_cont"></div>
             </div>
         </div>
-        <div></div>
     </div>
     <div class="share_gray">
         <img src="" />
@@ -45,11 +46,13 @@
         </div>
     </div> 
 </div>
+</div>
 <script type="text/javascript">
 // var id = '15';
 var totalTime = 1500;
 var initTime =50;
 var host = 'http://cmm.yuntoo.com/';
+// var host = '';
 var imgsArr = [];
 var imgIndex = 0;
 var shareObj ={};
@@ -71,6 +74,7 @@ function waitADS(){
         var screenHeight = document.documentElement.clientHeight || document.body.clientHeight;
         var space = Math.ceil(0.046*screenWidth);
         $('.detail-rotate').css('border-left-width',screenWidth + 'px');
+        var myScroll = new IScroll('#wrapper');
         Vue.filter('getDay', function (value) {
             return value.split(' ')[0].split('-').join('.');
         });
@@ -109,6 +113,8 @@ function waitADS(){
                     var coverSize = data.cover_size || '750,750';
                     var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
                     var topPos = (275-bgHeight)/2;
+                    bgObj.bgUrl = data.information_cover;
+                    bgObj.pos = (275-bgHeight)/2;
                     shareObj.cover = data.information_cover;
                     shareObj.title = decodeURIComponent(data.information_title);
                     shareObj.intro = decodeURIComponent(data.information_description);
@@ -120,11 +126,12 @@ function waitADS(){
                     }catch(e){
                         console.log(e);
                     }
-                    $('body').css({
-                        'background':'#f2f2f2 url(' + data.information_cover + ') no-repeat 0 ' + topPos + 'px',
+                    bgObj.bgCss = {
+                        'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
                         'background-size' : '100% auto',
                         'background-attachment' : 'fixed'
-                    });
+                    }
+                    $('body').css(bgObj.bgCss);
                     new Vue({
                       el: '#information-detail',
                       data: data
@@ -148,7 +155,7 @@ function waitADS(){
                 // shareData(data);
                 function shareData(data){
                     var data = data;
-                    var textData;
+                    var textData,$cont;
                     var dataArr = [];
                     var story_details = data.story_resource ? JSON.parse(data.story_resource).resource_array_data : JSON.parse(data.story_details);
                     $('body').css({'width':screenWidth,'overflow-x':'hidden'});
@@ -212,7 +219,7 @@ function waitADS(){
                         }
                        
                     });
-                    var $cont = $('.share_cont');
+                    $cont = $('.share_cont');
                     $.each(dataArr,function(key,val){
                         if(val.textData){           //判断是文字还是图片
                             if(val.resouceType == 1){    //此处为内容
@@ -220,9 +227,9 @@ function waitADS(){
                             }
                         }else if(val.url){         //判断图片
                                 if(parseFloat(val.ImageDisplayWidthRate)*100 > 90){
-                                    $cont.append('<div><div class="share_img_list" style="'+ divStyle(val.ImageDisplayWidthRate,val.ImageCropRect) +'overflow:hidden;"></div><p class="img_desc" data-artistName="'+ val.artistName +'" data-productionName="'+ (val.productionName || val.ImageDescription) +'" data-hastorypro="'+ (val.isprofessional ? 1 : 0) +'">'+ ellipsiStr(fixedWidth-10,val.ImageDescription) +'</p></div>');
+                                    $cont.append('<div><div class="share_img_list_information" style="'+ divStyle(val.ImageDisplayWidthRate,val.ImageCropRect) +'overflow:hidden;"></div><p class="img_desc" data-artistName="'+ val.artistName +'" data-productionName="'+ (val.productionName || val.ImageDescription) +'" data-hastorypro="'+ (val.isprofessional ? 1 : 0) +'">'+ ellipsiStr(fixedWidth-10,val.ImageDescription) +'</p></div>');
                                 }else{
-                                    $cont.append('<div><div class="share_img_list" style="'+ divStyle(val.ImageDisplayWidthRate,val.ImageCropRect) +';overflow:hidden;"></div></div>');
+                                    $cont.append('<div><div class="share_img_list_information" style="'+ divStyle(val.ImageDisplayWidthRate,val.ImageCropRect) +';overflow:hidden;"></div></div>');
                                 }
                             // }
                                 
@@ -237,7 +244,7 @@ function waitADS(){
                     $('.loading').hide();
                     autoLayouter.exe($('img:first').closest('div'),'', $cont.children('div')); 
                     $('.share_cont').height(autoLayouter.screenh + 5);
-                    var $imgList = $('.share_img_list');
+                    var $imgList = $('.share_img_list_information');
                     $.each($imgList,function(k,v){
                         var $that = $(this);
                         $that.isLoaded = false;
@@ -246,6 +253,7 @@ function waitADS(){
                             lazyLoad(k,v,$that)
                         })
                     });
+                    myScroll.refresh();
                     function lazyLoad(k,v,$that){
                         var offsetTop,scrollTop,getDistance;
                         offsetTop = $that.offset().top;

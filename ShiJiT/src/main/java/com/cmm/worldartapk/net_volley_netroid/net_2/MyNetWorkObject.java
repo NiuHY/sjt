@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 
+import com.cmm.worldartapk.net_volley_netroid.Const;
 import com.cmm.worldartapk.net_volley_netroid.Netroid;
 import com.cmm.worldartapk.utils.LogUtils;
 import com.cmm.worldartapk.utils.UIUtils;
@@ -108,31 +109,42 @@ public class MyNetWorkObject {
                 successListener.onError("无法连接网络！");
             }
             return;
-        } else if (!NetUtils.isWifiConnected()) {
-            //不是wifi
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setMessage("没有连接 WIFI 是否继续加载？");
-            builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
+        } else if (!Const.isWifi && !NetUtils.isWifiConnected()) {
+            //如果有线程在进行判断，就不进行判断
+            if (!Const.getJudgeWifiState()){
+                //记录自己正在判断
+                Const.setJudgeWifiState(true);
 
-                    //请求
-                    if (METHOD == Request.Method.POST) {
-                        postRequest();
-                    } else {
-                        get();
+                //不是wifi
+                AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                builder.setMessage("没有连接 WIFI 是否继续加载？");
+                builder.setPositiveButton("继续", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        //记录 允许加载，每次只判断一次
+                        Const.isWifi = true;
+
+                        //请求
+                        if (METHOD == Request.Method.POST) {
+                            postRequest();
+                        } else {
+                            get();
+                        }
                     }
-                }
-            });
-            builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (successListener != null){
-                        successListener.onError("取消访问！");
+                });
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (successListener != null){
+                            successListener.onError("取消访问！");
+                        }
+                        //如果点取消，下次还进行判断
+                        Const.setJudgeWifiState(false);
                     }
-                }
-            });
-            builder.show();
+                });
+                builder.show();
+            }
         } else {
             //是wifi，正常请求
             //请求

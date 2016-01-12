@@ -17,12 +17,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <android.support.v4.view.ViewPager
-        android:layout_marginLeft="12.5dp"
-        android:layout_marginRight="12.5dp"
-        android:id="@+id/search_content_vp"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent">
+
+        <android.support.v4.view.ViewPager
+            android:layout_marginLeft="12.5dp"
+            android:layout_marginRight="12.5dp"
+            android:id="@+id/search_content_vp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </FrameLayout>
+
 
 
 </LinearLayout>

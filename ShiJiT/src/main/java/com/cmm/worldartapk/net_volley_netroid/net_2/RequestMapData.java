@@ -3,6 +3,7 @@ package com.cmm.worldartapk.net_volley_netroid.net_2;
 import android.os.SystemClock;
 import android.text.TextUtils;
 
+import com.cmm.worldartapk.base.UserInfo;
 import com.cmm.worldartapk.utils.PackageUtils;
 import com.cmm.worldartapk.utils.SystemUtils;
 
@@ -54,7 +55,7 @@ public class RequestMapData {
         paramsMap.put("client_type", "5");
         paramsMap.put("uuid", SystemUtils.getIMEI());
         paramsMap.put("client_version", PackageUtils.getVersionCode() +"");
-        paramsMap.put("session_key", "hxr");
+        paramsMap.put("session_key", UserInfo.getUserInfo().SESSION_KEY);
 
         return paramsMap;
     }
@@ -91,7 +92,7 @@ public class RequestMapData {
      * 注册请求参数
      * @return
      */
-    public static Map<String, String> params_regist(String email, String password) {
+    public static Map<String, String> params_regist(String email, String password, String nickname) {
 
         HashMap<String, String> paramsMap = new HashMap<String, String>(baseParamsMap());
 
@@ -100,7 +101,7 @@ public class RequestMapData {
 
         paramsMap.put("email", email);
         paramsMap.put("password", password);
-        paramsMap.put("nickname", SystemClock.currentThreadTimeMillis() +"");
+        paramsMap.put("nickname", nickname);
 
         return paramsMap;
     }
@@ -108,10 +109,22 @@ public class RequestMapData {
 
     public static Map<String, String> setCollectString(String loadUrl) {
 
-        HashMap<String, String> paramsMap = new HashMap<String, String>();
+        HashMap<String, String> paramsMap = new HashMap<String, String>(baseParamsMap());
 
         paramsMap.put("collectUrl", loadUrl);
 
         return paramsMap;
+    }
+
+    /**
+     * 第三方登陆
+     * @param params 参数 map集合
+     * @return
+     */
+    public static Map<String, String> params_otherLogin(HashMap<String, String> params) {
+
+        params.putAll(baseParamsMap());
+
+        return params;
     }
 }

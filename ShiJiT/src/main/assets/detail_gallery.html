@@ -21,18 +21,18 @@
     <div class="detail-wrap" id="detail-wrap">
         <div class="detail-info">
             <h3 class="gallery-h3">
-                <p class="gallery-title">{{decodeURIComponent(gallery_name)}}</p>
-                <p class="gallery-title en-name">{{decodeURIComponent(gallery_en_name)}}</p>
+                <p class="gallery-title" v-text="decodeURIComponent(gallery_name)"></p>
+                <p class="gallery-title en-name" v-text="decodeURIComponent(gallery_en_name)"></p>
             </h3>
-            <p class="time" v-if="gallery_open_time">{{gallery_open_time}}</p>
-            <p class="place"  v-if="gallery_location">{{gallery_country + gallery_province + gallery_city + decodeURIComponent(gallery_location)}}</p>
-            <p class="build-time"  v-if="gallery_build_time">{{decodeURIComponent(gallery_build_time)}}</p>
+            <p class="time" v-if="gallery_open_time" v-text="gallery_open_time"></p>
+            <p class="place"  v-if="gallery_location" v-text="gallery_country + gallery_province + gallery_city + decodeURIComponent(gallery_location)"></p>
+            <p class="build-time"  v-if="gallery_build_time" v-text="decodeURIComponent(gallery_build_time)"></p>
             <!-- <p class="category"  v-if="gallery_category == 1">艺术馆</p>
             <p class="category"  v-if="gallery_category == 2">展览</p>
             <p class="category"  v-if="gallery_category == 3">专业作品</p>
             <p class="category"  v-if="gallery_category == 4">信息</p> -->
-            <p class="website"  v-if="gallery_url">{{decodeURIComponent(gallery_url)}}</p>
-            <p class="phone"  v-if="gallery_phone">{{decodeURIComponent(gallery_phone)}}</p>
+            <p class="website"  v-if="gallery_url" v-text="decodeURIComponent(gallery_url)"></p>
+            <p class="phone"  v-if="gallery_phone" v-text="decodeURIComponent(gallery_phone)"></p>
         </div>
         <div class="powered-by clearfix">
             <div class="powered-cont">
@@ -42,7 +42,7 @@
         <div class="story-wrap">
             <div class="gallery-intro">
                 <h3 class="story-title">概况</h3>
-                <p>{{decodeURIComponent(gallery_description)}}</p>
+                <p v-text="decodeURIComponent(gallery_description)"></p>
                 <h3 class="story-title">艺术品</h3>
             </div>
             <div class="gallery-list">
@@ -70,7 +70,7 @@ var screenHeight = document.documentElement.clientHeight || document.body.client
 var shareObj = {};
 // var ADS = {};
 // ADS.getDetailId = function(){
-//     return 125;
+//     return 1185;
 // }
 waitADS();
 function waitADS(){
@@ -117,11 +117,17 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
                    $('body').empty().css('height',screenHeight).addClass('fali-loading');
             }else if(data.success){
                 data = data.data;
+                data.gallery_country = data.gallery_country ? data.gallery_country : '';
+                data.gallery_province = data.gallery_province ? data.gallery_province : '';
+                data.gallery_city = data.gallery_city ? data.gallery_city : '';
+                data.gallery_location = data.gallery_location ? data.gallery_location : '';
                 var storyId = data.gallery_id;
                 var storyUrl = host + 'api/gallery/' + storyId + '/item_list';
                 var coverSize = data.cover_size || '750,750';
                 var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
                 var topPos = (275-bgHeight)/2;
+                bgObj.bgUrl = data.gallery_cover;
+                bgObj.pos = (275-bgHeight)/2;
                 shareObj.cover = data.gallery_cover;
                 shareObj.title = decodeURIComponent(data.gallery_name);
                 shareObj.intro = decodeURIComponent(data.gallery_description);
@@ -134,11 +140,12 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
                     console.log(e);
                 }
                 $('title').text(decodeURIComponent(data.gallery_name));
-                $('body').css({
-                    'background':'#fff url(' + data.gallery_cover + ') no-repeat 0 ' + topPos + 'px',
-                    'background-size' : '100% auto',
-                    'background-attachment' : 'fixed'
-                });
+                bgObj.bgCss = {
+                        'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
+                        'background-size' : '100% auto',
+                        'background-attachment' : 'fixed'
+                    }
+                $('body').css(bgObj.bgCss);
                 new Vue({
                   el: '#gallery-detail',
                   data: data
@@ -165,39 +172,47 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
             console.log(error);
         } 
     });
-    function waterFull(parent,data){
-        var children = '';
-        var data = data;
-        var divHeight,$lastDiv,divStyle,max;
-        // console.log(data);
-        loadEach(data);
-        function loadEach(data){
-            if(data.length < 1){
-                // $('.loading').fadeOut();
-                return;
-            }else{
-                var img = new Image();
-                var eachData = data[0];
-                var coverData = eachData.image_url;
-                var id = eachData.id;
-                // var type = coverData.resource_description.type; listWidth
-                var url = eachData.image_url;
-                var coverW = eachData.image_width;
-                var coverH = eachData.image_height;
-                var artworkName = eachData.artwork_name ? decodeURIComponent(eachData.artwork_name) : '';
-                var artworkArtistName = eachData.artwork_artist_name ? decodeURIComponent(eachData.artwork_artist_name) : '';
-                imgsArr.push({
-                    url:url,
-                    resourceId:eachData.artwork_id,
-                    galleryId:eachData.gallery_id,
-                    ImageDescription:artworkName,
-                    artworkArtistName:artworkArtistName
-                });
-                img.src = url;
-                imgIndex ++;
-                // img.onload = function(){
+        function waterFull(parent,data){
+            loadEach(parent,data);  
+            var $galleryImg = $('.gallery-img:empty()');
+            $.each($galleryImg,function(k,v){
+               var img = new Image();
+                img.src = $(v).data('imgUrl');
+                img.onload = function(){
+                    $(v).append('<img src="'+img.src +'"/>');
+                } 
+            });           
+        };
+        function loadEach(parent,data){
+            var divHeight,$lastDiv,divStyle,max;
+            var data = data;
+            var children = '';
+            $.each(data,function(k,v){
+                if(data.length < 1){
+                    // $('.loading').fadeOut();
+                    return;
+                }else{
+                    var img = new Image();
+                    var eachData = v;
+                    var coverData = eachData.image_url;
+                    var id = eachData.id;
+                    // var type = coverData.resource_description.type; listWidth
+                    var url = eachData.image_url;
+                    var coverW = eachData.image_width;
+                    var coverH = eachData.image_height;
+                    var artworkName = eachData.artwork_name ? decodeURIComponent(eachData.artwork_name) : '';
+                    var artworkArtistName = eachData.artwork_artist_name ? decodeURIComponent(eachData.artwork_artist_name) : '';
+                    imgsArr.push({
+                        url:url,
+                        resourceId:eachData.artwork_id,
+                        galleryId:eachData.gallery_id,
+                        ImageDescription:artworkName,
+                        artworkArtistName:artworkArtistName
+                    });
+                    img.src = url;
+                    imgIndex ++;
                     divHeight = coverH*listWidth/coverW;
-                    children = '<div class="gallery-story" style="height:'+ divHeight +'px;" data-intro-text="'+ artworkName +'"><div class="gallery-img"><img src="'+ url +'"/></div><div class="gallery-story-cont"><div class="bottom-layer"><span class="story-text">'+ artworkName +'</span></div></div></div>'; 
+                    children = '<div class="gallery-story" style="height:'+ divHeight +'px;" data-intro-text="'+ artworkName +'"><div class="gallery-img" data-img-url="'+ url +'"></div><div class="gallery-story-cont"><div class="bottom-layer"><span class="story-text">'+ artworkName +'</span></div></div></div>'; 
                     parent.append(children);
                     $lastDiv = parent.find('.gallery-story:last');
                     if(arr[0] > arr[1]){  //第一个高度大于第二个,将div放到第二个里面
@@ -205,7 +220,7 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
                             top: arr[1] + space.ySpace + 'px',
                             left: listWidth + space.xSpace + 'px',
                             width:listWidth,
-                            opacity:0
+                            // opacity:0
                             // height:divHeight
                         } 
                         arr[1] = arr[1] + divHeight + space.ySpace; 
@@ -214,21 +229,20 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
                             top: arr[0] + space.ySpace + 'px',
                             left:0,
                             width:listWidth,
-                            opacity:0
+                            // opacity:0
                             // height:divHeight
                         }
                         arr[0] = arr[0] + divHeight + space.ySpace; 
                     }
                     max = Math.max.apply(null,arr);
                     parent.css('height',max);
-                    $lastDiv.css(divStyle).animate({'opacity':1},400);
-                    data.shift();
+                    $lastDiv.css(divStyle);
+                    // data.shift();
                     img = null;
-                    loadEach(data);
-                // }
-            }
-        }               
-    };  
+                    // loadEach(data);
+                }
+            })
+        }  
     }
 }
 </script>

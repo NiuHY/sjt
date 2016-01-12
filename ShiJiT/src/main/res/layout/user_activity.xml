@@ -4,10 +4,13 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <WebView
-        android:id="@+id/user_webview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    <com.handmark.pulltorefresh.library.PullToRefreshWebView
+        xmlns:ptr="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/user_webview_fl"
+        android:background="#FFFFFF"
+        android:layout_height="fill_parent"
+        android:layout_width="fill_parent"
+        ptr:ptrMode="disabled" />
 
     <ImageButton
         android:id="@+id/bt_back"

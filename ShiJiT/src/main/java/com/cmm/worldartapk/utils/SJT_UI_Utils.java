@@ -56,10 +56,10 @@ public class SJT_UI_Utils {
 
     /**
      * 判断用户是否登陆
-     * @return 返回是否有 user id
+     * @return 返回是否有 SESSION_KEY
      */
     public static boolean userState(){
-        if (TextUtils.isEmpty(UserInfo.getUserInfo().USER_ID)){
+        if (TextUtils.isEmpty(UserInfo.getUserInfo().SESSION_KEY)){
             return false;
         }else{
             return true;

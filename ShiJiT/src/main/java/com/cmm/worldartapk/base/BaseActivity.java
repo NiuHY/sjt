@@ -39,6 +39,9 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //添加到已经打开的Activity集合
+        UIUtils.getActivityList().add(this);
+
         //设置全屏
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -101,11 +104,13 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         //取消注册
         if(myNetReceiver!=null){
             unregisterReceiver(myNetReceiver);
         }
+
+        //从Activity集合中移除
+        UIUtils.getActivityList().remove(this);
     }
 
     // 接收WebView对象

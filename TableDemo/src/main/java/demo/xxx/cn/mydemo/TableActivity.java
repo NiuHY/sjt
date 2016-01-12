@@ -8,7 +8,7 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class TableActivity extends AppCompatActivity {
 
     private LinearLayout linearLayout;
 

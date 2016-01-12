@@ -391,6 +391,9 @@ public class DetailPageActivity extends BaseActivity {
                     windowManager.removeView(dfWindowView);
                     isWindowViewShow = false;
                 }
+
+                //提示点击成功
+                UIUtils.showToastSafe("正在启动分享...");
             }
         });
     }
@@ -715,7 +718,17 @@ public class DetailPageActivity extends BaseActivity {
 
                         //去 收藏，传 id 和收藏类型
                         // TODO 图片的 id
-                        collect(imageId, COLLECT_TYPE_ARTWORK);
+                        if (SJT_UI_Utils.userState()) {
+                            if (!TextUtils.isEmpty(ConstJS_F.detailId)){
+                                collect(imageId, COLLECT_TYPE_ARTWORK);
+                            }else {
+                                SJT_UI_Utils.showDialog(DetailPageActivity.this, "收藏失败", false);
+                            }
+
+                        } else {
+                            UIUtils.showToastSafe("请登陆...");
+                            startActivity(new Intent(DetailPageActivity.this, LoadActivity.class));
+                        }
                     }
                 });
 
@@ -759,13 +772,13 @@ public class DetailPageActivity extends BaseActivity {
             @Override
             public void onSuccess(Object data) {
                 SJT_UI_Utils.showDialog(DetailPageActivity.this, "收藏成功", true);
-                UIUtils.showToastSafe("请求成功" + data);
+                LogUtils.e("收藏成功" + data);
             }
 
             @Override
             public void onError(String msg) {
                 //请求失败，隐藏
-                UIUtils.showToastSafe("请求失败 ：" + msg);
+                UIUtils.showToastSafe("收藏失败 ：" + msg);
             }
         });
     }

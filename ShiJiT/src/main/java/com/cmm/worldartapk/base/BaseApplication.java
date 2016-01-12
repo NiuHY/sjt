@@ -1,10 +1,14 @@
 package com.cmm.worldartapk.base;
 
+import android.app.Activity;
 import android.app.Application;
 import android.os.Handler;
 import android.os.Looper;
 
 import com.cmm.worldartapk.net_volley_netroid.Netroid;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import cn.sharesdk.framework.ShareSDK;
 
@@ -28,6 +32,9 @@ public class BaseApplication extends Application {
     //
     private static boolean initFlag = false;
     private static int a = 1;
+
+    //记录打开的Activity 的集合
+    private static List<Activity> allActivity;
 
     @Override
     public void onCreate() {
@@ -57,6 +64,14 @@ public class BaseApplication extends Application {
         //Returns the identifier of the calling thread, which be used with setThreadPriority(int, int).
         this.mMainThreadId = android.os.Process.myTid();
         this.mLooper = getMainLooper();
+
+        //初始化记录Activity的集合
+        allActivity = new ArrayList<>();
+    }
+
+    //获取这个集合的方法
+    public static List<Activity> getActivityList(){
+        return allActivity;
     }
 
     public static BaseApplication getApplication() {

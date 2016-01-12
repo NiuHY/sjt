@@ -1,5 +1,6 @@
 package com.cmm.worldartapk.fragment;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,7 +11,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.view.animation.TranslateAnimation;
 import android.webkit.WebView;
 import android.widget.ImageView;
@@ -105,6 +105,13 @@ public abstract class WebViewBaseFragment extends BaseFragment {
     private void initHomeButton(View btn_group_view, int pagetIndex) {
         //查找三个按钮
         btn_more = (ImageView) btn_group_view.findViewById(R.id.home_btn_more);
+        btn_more.setLayerType(View.LAYER_TYPE_SOFTWARE, null);//关闭这个按钮的硬件加速
+
+//        Canvas canvas = new Canvas();
+//        canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG
+//                | Paint.FILTER_BITMAP_FLAG));
+//        btn_more.draw(canvas);
+
         btn_search = (ImageView) btn_group_view.findViewById(R.id.home_btn_search);
         btn_user = (ImageView) btn_group_view.findViewById(R.id.home_btn_user);
 
@@ -178,7 +185,8 @@ public abstract class WebViewBaseFragment extends BaseFragment {
      */
     private void quickHint() {
         isShow_btn = false;
-        btn_more.clearAnimation();
+//        btn_more.clearAnimation();
+        btn_more.setRotation(0f);
         btn_search.setVisibility(View.GONE);
         btn_user.setVisibility(View.GONE);
     }
@@ -192,10 +200,13 @@ public abstract class WebViewBaseFragment extends BaseFragment {
         isShow_btn = true;
 
         //自己旋转
-        RotateAnimation rotateAnimation = new RotateAnimation(0f, 45f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotateAnimation.setDuration(250L);
-        rotateAnimation.setFillAfter(true);
-        btn_more.startAnimation(rotateAnimation);
+        ObjectAnimator.ofFloat(btn_more, "rotation", 0f, 45f).setDuration(250L).start();
+        btn_more.invalidate();
+
+//        RotateAnimation rotateAnimation = new RotateAnimation(0f, 45f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+//        rotateAnimation.setDuration(250L);
+//        rotateAnimation.setFillAfter(true);
+//        btn_more.startAnimation(rotateAnimation);
 
         //显示动画
         btn_search.setVisibility(View.VISIBLE);
@@ -212,10 +223,13 @@ public abstract class WebViewBaseFragment extends BaseFragment {
         isShow_btn = false;
 
         //自己旋转
-        RotateAnimation rotateAnimation = new RotateAnimation(45f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotateAnimation.setDuration(250L);
-        rotateAnimation.setFillAfter(true);
-        btn_more.startAnimation(rotateAnimation);
+        ObjectAnimator.ofFloat(btn_more, "rotation", 45f, 0f).setDuration(250L).start();
+        btn_more.invalidate();
+
+//        RotateAnimation rotateAnimation = new RotateAnimation(45f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+//        rotateAnimation.setDuration(250L);
+//        rotateAnimation.setFillAfter(true);
+//        btn_more.startAnimation(rotateAnimation);
 
         //隐藏动画
         hintAnim(-1f, 220L, btn_search);

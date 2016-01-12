@@ -21,6 +21,7 @@ import android.widget.RelativeLayout;
 import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.base.BaseActivity;
 import com.cmm.worldartapk.fragment.FragmentFactory;
+import com.cmm.worldartapk.publicinfo.ConstInfo;
 import com.cmm.worldartapk.utils.DrawableUtils;
 import com.cmm.worldartapk.utils.LogUtils;
 import com.cmm.worldartapk.utils.UIUtils;
@@ -98,8 +99,12 @@ public class MainActivity extends BaseActivity {
         //初始化首页ViewPager
         intiHomeVP();
 
-        //
-        startActivity(new Intent(this, SplashActivity.class));
+        // 判断是否已经打开了应用，如果打开就不再显示欢迎；页
+        if(!ConstInfo.isOpenApp){
+            startActivity(new Intent(this, SplashActivity.class));
+            ConstInfo.isOpenApp = true;
+        }
+
     }
 
     private void intiHomeVP() {
@@ -199,6 +204,7 @@ public class MainActivity extends BaseActivity {
                     }
                     //加载动画
                     showLoadingAnim();
+
                 }
             }
         });
@@ -229,13 +235,13 @@ public class MainActivity extends BaseActivity {
 
             //显示加载
             loadingPagerView.setVisibility(View.VISIBLE);
-            // 500ms 后隐藏
+            // 200ms 后隐藏
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     loadingPagerView.setVisibility(View.GONE);
                 }
-            }, 500L);
+            }, 200L);
 
             //显示后重置
             isSelected = false;

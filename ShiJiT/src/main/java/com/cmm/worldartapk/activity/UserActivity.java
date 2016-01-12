@@ -7,6 +7,8 @@ import android.widget.ImageButton;
 import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.base.BaseActivity;
 import com.cmm.worldartapk.publicinfo.ConstInfo;
+import com.cmm.worldartapk.ui.PullRefreshUtils;
+import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 
 /**
  * Created by Administrator on 2015/12/18.
@@ -15,6 +17,8 @@ public class UserActivity extends BaseActivity {
 
     private View contentView;
     private int loadCategory;
+    //用户中心对应的webView url
+    private String USER_URL = "http://www.baidu.com";
 
     @Override
     protected void init() {
@@ -69,6 +73,20 @@ public class UserActivity extends BaseActivity {
                 startActivity(new Intent(UserActivity.this, SettingActivity.class));
             }
         });
+
+
+
+        //内容WebView
+        PullToRefreshWebView pullToRefreshWebView = (PullToRefreshWebView) findViewById(R.id.user_webview_fl);
+        // 初始化 webView
+        webView = PullRefreshUtils.setListener_PRWebView(pullToRefreshWebView);
+        // 当前Activity绑定的webView
+        setWebView(webView);
+
+
+        //加载 url
+        webView.loadUrl(USER_URL);
+
     }
 
 

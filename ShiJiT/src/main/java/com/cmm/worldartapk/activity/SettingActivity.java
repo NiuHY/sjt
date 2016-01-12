@@ -1,9 +1,9 @@
 package com.cmm.worldartapk.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ClipboardManager;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.view.KeyEvent;
 import android.view.View;
@@ -18,9 +18,11 @@ import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.base.BaseActivity;
 import com.cmm.worldartapk.base.UserInfo;
 import com.cmm.worldartapk.utils.DataCleanManager;
-import com.cmm.worldartapk.utils.share_package.OtherUtils;
 import com.cmm.worldartapk.utils.SJT_UI_Utils;
 import com.cmm.worldartapk.utils.UIUtils;
+import com.cmm.worldartapk.utils.share_package.OtherUtils;
+
+import java.util.List;
 
 import cn.sharesdk.sina.weibo.SinaWeibo;
 import cn.sharesdk.tencent.qq.QQ;
@@ -38,6 +40,7 @@ public class SettingActivity extends BaseActivity {
     private WindowManager windowManager;
     private View dfWindowView;
     private boolean isWindowViewShow;
+    private String downloadUrl;
 
     @Override
     protected void init() {
@@ -69,10 +72,14 @@ public class SettingActivity extends BaseActivity {
         View trashView = findViewById(R.id.setting_trash);
         View logoutView = findViewById(R.id.setting_logout);
 
+
+        //应用下载地址
+        downloadUrl = "http://event.yuntoo.com/yishushiji";
+
         shareView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                OtherUtils.setShareData(SettingActivity.this, "应用名称", "应用地址", "应用信息", "http://f1.sharesdk.cn/imgs/2014/02/26/owWpLZo_638x960.jpg");
+                OtherUtils.setShareData(SettingActivity.this, "邀请你参观「艺术世纪」的世界艺术馆", downloadUrl, "掌控未来美学", "https://mmbiz.qlogo.cn/mmbiz/KFj6wBflVBuZVeySJnBuPo9PPfPu2XkBgBw0ChZUVbZ5l9Y3VicKmdiaIqn6kwS35ojg3vibfNmFSkP5PMBNSYicUQ/0?wx_fmt=png");
                 showShareWindow();
             }
         });
@@ -93,77 +100,66 @@ public class SettingActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 
-                //获得view对象
-                View view = View.inflate(SettingActivity.this, R.layout.setting_exit_dialog, null);
+                //判断是否登陆，如果登陆才退出
+                if (SJT_UI_Utils.userState()){
+                    //获得view对象
+                    View view = View.inflate(SettingActivity.this, R.layout.setting_exit_dialog, null);
 
-                //创建对话框(设置边框都为0)，指定view对象
-                AlertDialog.Builder builder = new AlertDialog.Builder(SettingActivity.this);
-                final AlertDialog dialog = builder.create();
-                dialog.setView(view, 0, 0, 0, 0);
+                    //创建对话框(设置边框都为0)，指定view对象
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(SettingActivity.this);
+                    final AlertDialog dialog = builder.create();
+                    dialog.setView(view, 0, 0, 0, 0);
 
 
-                //初始化 控件
-                TextView exit = (TextView) view.findViewById(R.id.setting_bt_exit);
-                TextView cancel = (TextView) view.findViewById(R.id.setting_bt_cancel);
+                    //初始化 控件
+                    TextView exit = (TextView) view.findViewById(R.id.setting_bt_exit);
+                    TextView cancel = (TextView) view.findViewById(R.id.setting_bt_cancel);
 
-                //设置点击事件
-                exit.setOnClickListener(new View.OnClickListener() {
+                    //设置点击事件
+                    exit.setOnClickListener(new View.OnClickListener() {
 
-                    @Override
-                    public void onClick(View v) {
-                        //确认退出
-                        //清空 UserInfo类中保存的信息 清空sp中保存的 userInfo键
-                        UserInfo.setUserInfo();//设置为null
+                        @Override
+                        public void onClick(View v) {
+                            //确认退出
+                            //清空 UserInfo类中保存的信息 清空sp中保存的 userInfo键
+//                        LogUtils.e("退出登陆前" + UserInfo.getUserInfo().SESSION_KEY);
+                            //清除用户信息
+                            UserInfo.setUserInfo();//设置为null
+//                        LogUtils.e("退出登陆后" + UserInfo.getUserInfo().SESSION_KEY);
 
-//                        SJT_UI_Utils.getSharedPreferences().
+                            //点击按钮后 关闭对话框
+                            dialog.dismiss();
 
-                        startActivity(new Intent(SettingActivity.this, MainActivity.class));
-                        //点击按钮后 关闭对话框
-                        dialog.dismiss();
-                    }
-                });
-                cancel.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //取消  点击按钮后 关闭对话框
-                        dialog.dismiss();
-                    }
-                });
-
-//                //默认
-//
-//                AlertDialog.Builder builder = new AlertDialog.Builder(SettingActivity.this);
-//                builder.setMessage("确认退出吗？");
-//                builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        //确认退出
-//                        UIUtils.showToastSafe("退出登陆");
+                            //遍历Activity集合，返回主页
+                            List<Activity> allActivity = UIUtils.getActivityList();
+                            for (int i = allActivity.size()-1; i >= 0; i--) {
+                                Activity activity = allActivity.get(i);
+                                if (!(activity instanceof MainActivity)){
+                                    activity.finish();
+                                }else {
+                                    break;
+                                }
+                            }
+                            //单一任务栈方式 待
 //                        startActivity(new Intent(SettingActivity.this, MainActivity.class));
-//                    }
-//                });
-//                builder.setNegativeButton("取消", null);
-//
-//                AlertDialog dialog = builder.create();
-//
-//                Window dialogWindow = dialog.getWindow();
-//
-//                // 获取dialog中的view 设置字体颜色
-////                View dialogView = dialogWindow.getDecorView();
-////                setViewFontColor(dialogView, 0xffff0000);
-//
-//                //显示在下边
-//                WindowManager.LayoutParams lp = dialogWindow.getAttributes();
-//                lp.y = UIUtils.dip2Px(150); // 新位置Y坐标
-//
-//
-//// dialog.onWindowAttributesChanged(lp);
-////(当Window的Attributes改变时系统会调用此函数)
-//                dialogWindow .setAttributes(lp);
-////                dialogWindow.setGravity(Gravity.BOTTOM);
-//                dialogWindow.setBackgroundDrawable(new ColorDrawable(0xaa666666));
 
-                dialog.show();
+                        }
+                    });
+                    cancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            //取消  点击按钮后 关闭对话框
+                            dialog.dismiss();
+                        }
+                    });
+
+                    dialog.show();
+                }else {
+                    //还没登陆
+                    SJT_UI_Utils.showDialog(SettingActivity.this, "还没登陆", false);
+                }
+
+
             }
         });
     }
@@ -288,10 +284,8 @@ public class SettingActivity extends BaseActivity {
                         //获取剪贴板管理器，复制到剪贴板
                         ClipboardManager jtb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                         //TODO
-//                        ClipData clipData = new ClipData();
-//                        jtb.setPrimaryClip(clipData);
-                        jtb.setText("应用下载地址");
-                        UIUtils.showToastSafe(jtb.getText().toString().trim());
+                        jtb.setText(downloadUrl);
+                        SJT_UI_Utils.showDialog(SettingActivity.this, "复制成功", true);
                         break;
                     default:
                         break;

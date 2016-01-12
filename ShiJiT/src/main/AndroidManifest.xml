@@ -36,10 +36,10 @@
                   >
 
         </activity>
-        <!-- 首页Activity -->
+        <!-- 首页Activity  android:launchMode="singleTask" -->
         <activity
             android:name=".activity.MainActivity"
-            android:launchMode="singleTask"
+
             android:screenOrientation="portrait"
             android:theme="@style/SJT_ActivityTheme"
             >

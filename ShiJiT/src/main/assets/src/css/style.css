@@ -2,6 +2,24 @@
   background-size: 100% auto;
   background-attachment: fixed; }
 
+#wrapper {
+  position: absolute;
+  top: 275px;
+  bottom: 0;
+  width: 100%; }
+
+#information-detail {
+  position: absolute;
+  left: 0;
+  width: 100%; }
+
+#galleryIndex {
+  position: relative;
+  z-index: 8; }
+
+.wrap-body {
+  margin-top: -50px; }
+
 .detail-head {
   width: 0;
   height: 0;
@@ -13,13 +31,13 @@
 .detail-wrap {
   margin-top: 275px;
   width: 100%;
-  margin-bottom: 10px;
   background: #fff;
+  position: absolute;
+  width: 100%;
   z-index: 8;
-  padding-top: 1px; }
+  top: 0; }
 
 .wrap-rotate {
-  position: relative;
   margin-top: -31px;
   overflow: hidden; }
 
@@ -111,6 +129,10 @@
   background: url(../img/placehold.png) no-repeat center center;
   background-size: 58px auto; }
 
+.share_img_list_information {
+  background: url(../img/information_placeholder.png) no-repeat center center;
+  background-size: 58px auto; }
+
 .share_cont > div {
   position: absolute;
   line-height: 24px;
@@ -146,7 +168,7 @@
   white-space: nowrap; }
 
 .share_story {
-  margin-bottom: 20px; }
+  padding-bottom: 20px; }
 
 .share_cont .clip_area p {
   height: 30px;
@@ -452,7 +474,8 @@
   height: 275px;
   left: 0;
   top: 0;
-  background: rgba(255, 173, 66, 0.8); }
+  background: rgba(255, 173, 66, 0.8);
+  z-index: 7; }
   .info-header .header-text, .exhi-header .header-text, .gallery-header .header-text, .gallery-header-intro .header-text, .exhi-header-intro .header-text, .info-header-intro .header-text {
     padding: 75px 15px 0; }
   .info-header p, .exhi-header p, .gallery-header p, .gallery-header-intro p, .exhi-header-intro p, .info-header-intro p {
@@ -545,7 +568,7 @@
     .gallery-list .gallery-img img {
       width: 100%; }
   .gallery-list .gallery-story-cont {
-    background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.4) 0, transparent 0, transparent 70%, rgba(0, 0, 0, 0.7) 100%);
+    background: -webkit-linear-gradient(top, rgba(0, 0, 0, 0.4) 0, transparent 0, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
     width: 100%;
     height: 100%;
     position: absolute;
@@ -580,21 +603,26 @@
   .exhi-content .exhi-list {
     margin-top: 20px; }
     .exhi-content .exhi-list .exhi-list-head .exhi-list-head-left {
-      display: inline-block;
+      margin-left: -4px;
+      margin-right: 10px;
+      float: left;
       text-align: center;
       vertical-align: middle;
       font-size: 12px;
-      line-height: 18px;
-      max-width: 3em;
+      line-height: 16px;
+      max-width: 22px;
       overflow: hidden; }
     .exhi-content .exhi-list .exhi-list-head .exhi-list-head-right {
-      display: inline-block;
-      margin-left: 28px;
       font-size: 18px;
+      height: 32px;
       vertical-align: middle; }
+      .exhi-content .exhi-list .exhi-list-head .exhi-list-head-right h3 {
+        height: 32px;
+        display: table-cell;
+        vertical-align: middle; }
   .exhi-content .exhi-list-body-left {
     height: 285px;
-    width: 18px;
+    width: 23px;
     float: left;
     border-left: solid 1px #e2e2e2;
     position: relative;
@@ -754,3 +782,39 @@
     height: 30px;
     background: url(../img/download.png) no-repeat right center;
     background-size: 25px auto; }
+
+.btm-layer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 275px;
+  background: #eba850; }
+  .btm-layer .user-info {
+    text-align: center;
+    padding-top: 75px; }
+    .btm-layer .user-info .face {
+      display: inline-block;
+      border-radius: 50%;
+      width: 76px;
+      height: 76px;
+      border: solid 1px rgba(255, 255, 255, 0.3);
+      overflow: hidden; }
+    .btm-layer .user-info .info {
+      color: #fff; }
+      .btm-layer .user-info .info .name {
+        display: block;
+        margin-top: 14px;
+        font-size: 14px; }
+      .btm-layer .user-info .info .sign {
+        display: block;
+        margin-top: 14px;
+        font-size: 12px; }
+
+.collect-wrap {
+  position: absolute;
+  top: 275px;
+  left: 0;
+  width: 100%;
+  background: #f2f2f2;
+  height: 1200px; }

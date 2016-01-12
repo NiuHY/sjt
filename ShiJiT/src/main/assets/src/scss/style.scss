@@ -4,6 +4,25 @@
   background-size: 100% auto;
   background-attachment: fixed;
 }
+#wrapper{
+  position: absolute;
+  top: 275px;
+  bottom:0;
+  width: 100%;
+  // overflow: hidden;
+}
+#information-detail{
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+#galleryIndex{
+  position: relative;
+  z-index: 8;
+}
+.wrap-body{
+  margin-top: -50px;
+}
 .detail-head{
   width: 0;
   height: 0;
@@ -14,18 +33,22 @@
   }
 }
 .detail-wrap{
+  // position: relative;
   margin-top:275px;
   width: 100%; 
-  margin-bottom: 10px;
+  // padding-bottom: 275px;
   background:#fff;
-  // position: absolute;
+  position: absolute;
+  width: 100%;
   z-index: 8;
-  padding-top: 1px;
+  // bottom: 0;
+  top: 0;
 }
 .wrap-rotate{
-  position: relative;
+  // position: relative;
   margin-top: -31px;
   overflow: hidden;
+  // z-index: 8;
 }
 .wrap-rotate-gallery{
   position: relative;
@@ -132,13 +155,14 @@ $border:30px;
 
 .share_cont{overflow: hidden; position: relative;}
 .share_img_list{background: url(../img/placehold.png) no-repeat center center; background-size: 58px auto;}
+.share_img_list_information{background: url(../img/information_placeholder.png) no-repeat center center; background-size: 58px auto;}
 .share_cont>div {position: absolute; line-height: 24px; font-size: 16px; }
 .share_cont>div.cont_text p{line-height: 28px; }
 .share_cov .img_desc,.share_cont .img_desc{padding: 5px 5px 0; line-height: 16px; font-size: 12px; color: #999; text-align: center;}
 .story-title{margin: 15px 0; color: #000;font-size: 14px; font-weight: bold;}
 .share_cont figure {display: block; overflow: hidden;}
 .share_cont figure p{font-size: 16px; color: #999; line-height: 24px; text-align: left; ;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.share_story{margin-bottom: 20px;}
+.share_story{padding-bottom: 20px;}
 .share_cont .clip_area p{height: 30px;line-height: 30px; width: 100%;}
 .share_cont .clip_area,.share_cov .clip_area{position: absolute;}
 .share_cont img{max-width: none; cursor: pointer;display: block;}
@@ -356,11 +380,12 @@ $border:30px;
   background: rgba(255, 41, 66, 0.85);
 }
 .info-header-scroll{
-  background: rgba(255, 173, 66, 0.85);
+  background: rgba(255, 173, 66, 0.85); 
 }
 .info-header,.exhi-header,.gallery-header,.gallery-header-intro,.exhi-header-intro,.info-header-intro{
   @include header;
   background: rgba(255,173,66,0.80);
+  z-index: 7;
   .header-text{
     // position: relative;
     padding: 75px 15px 0;
@@ -475,7 +500,7 @@ $border:30px;
     }
   }
   .gallery-story-cont{
-    background: -webkit-linear-gradient(top,rgba(0,0,0,.4) 0,transparent 0,transparent 70%,rgba(0,0,0,.7) 100%);
+    background: -webkit-linear-gradient(top,rgba(0,0,0,.4) 0,transparent 0,transparent 50%,rgba(0,0,0,.6) 100%);
     width: 100%;
     height: 100%;
     position: absolute;
@@ -516,19 +541,28 @@ $border:30px;
     margin-top: 20px;
     .exhi-list-head{
       .exhi-list-head-left{
-        display: inline-block;
+        // display: inline-block;
+        margin-left: -4px;
+        margin-right: 10px;
+        float: left;
         text-align: center;
         vertical-align: middle;
         font-size: 12px;
-        line-height: 18px;
-        max-width: 3em;
+        line-height: 16px;
+        max-width: 22px;
         overflow: hidden;
       }
       .exhi-list-head-right{
-        display: inline-block;
-        margin-left: 28px;
+        // display: inline-block;
+        // margin-left: 8px;
         font-size: 18px;
+        height: 32px;
         vertical-align: middle;
+        h3{
+          height: 32px;
+          display: table-cell;
+          vertical-align: middle;
+        }
       }
     }
     .exhi-list-body{
@@ -537,7 +571,7 @@ $border:30px;
   }
   .exhi-list-body-left{
     height: 285px;
-    width: 18px;
+    width: 23px;
     float: left;
     border-left: solid 1px #e2e2e2;
     position: relative;
@@ -718,4 +752,45 @@ $border:30px;
     background: url(../img/download.png) no-repeat right center;
     background-size: 25px auto;
   }
+}
+.btm-layer{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 275px;
+  background: #eba850;
+  .user-info{
+    text-align: center;
+    padding-top: 75px;
+    .face{
+      display: inline-block;
+      border-radius: 50%;
+      width: 76px;
+      height: 76px;
+      border: solid 1px rgba(255,255,255,0.3);
+      overflow: hidden;
+    }
+    .info{
+      color: #fff;
+      .name{
+        display: block;
+        margin-top: 14px;
+        font-size: 14px;
+      }
+      .sign{
+        display: block;
+        margin-top: 14px;
+        font-size: 12px;
+      }
+    }
+  }
+}
+.collect-wrap{
+  position: absolute;
+  top: 275px;
+  left: 0;
+  width: 100%;
+  background: #f2f2f2;
+  height: 1200px;
 }

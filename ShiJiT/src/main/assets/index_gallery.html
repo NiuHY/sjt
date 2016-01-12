@@ -26,7 +26,7 @@
     </div>
 </div>
 <div id="galleryIndex">
-    <div class="detail-wrap" id="detail-wrap" style="background:transparent; padding-top:0px;" >
+    <div class="detail-wrap" id="detail-wrap" style="background:transparent;" >
         <!-- <div class="wrap-rotate-gallery"><div class="detail-rotate-gallery"></div></div> -->
         <div class="gallery-index">
             <div class="gallery-item">
@@ -37,8 +37,8 @@
                     </div>
                     <div class="gallery-content">
                       <div class="gallery-short-info">
-                          <div class="gallery-title">{{decodeURIComponent(item.gallery_name)}}</div>
-                          <div class="gallery-title-en">{{decodeURIComponent(item.gallery_en_name)}}</div>
+                          <div class="gallery-title" v-text="decodeURIComponent(item.gallery_name)"></div>
+                          <div class="gallery-title-en" v-text="decodeURIComponent(item.gallery_en_name)"></div>
                       </div>
                     </div>
                   </div>
@@ -71,11 +71,14 @@ $(function(){
         var coverSize = data.data.cover_size || '750,750';
         var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
         var topPos = (275-bgHeight)/2;
-        $('body').css({
-          'background':'#f2f2f2 url(' + data.data[0].gallery_cover + ') no-repeat 0 ' + topPos + 'px',
+        bgObj.bgUrl = data.data[0].gallery_cover;
+        bgObj.pos = (275-bgHeight)/2;
+        bgObj.bgCss = {
+          'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
           'background-size' : '100% auto',
           'background-attachment' : 'fixed'
-        });
+        };
+        $('body').css(bgObj.bgCss);
       }
     }
    });

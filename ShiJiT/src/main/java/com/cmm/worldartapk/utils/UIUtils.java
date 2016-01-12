@@ -1,5 +1,6 @@
 package com.cmm.worldartapk.utils;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -16,6 +17,8 @@ import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.base.BaseActivity;
 import com.cmm.worldartapk.base.BaseApplication;
 
+import java.util.List;
+
 
 public class UIUtils {
 
@@ -29,6 +32,14 @@ public class UIUtils {
 
 	public static long getMainThreadId() {
 		return BaseApplication.getMainThreadId();
+	}
+
+	/**
+	 * 获取Activity记录集合
+	 * @return
+	 */
+	public static List<Activity> getActivityList(){
+		return BaseApplication.getActivityList();
 	}
 
 	/**

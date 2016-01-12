@@ -7,14 +7,22 @@ package com.cmm.worldartapk.base;
 public class UserInfo {
 
     public static MyInfo getUserInfo() {
+        if (userInfo == null){
+            synchronized (UserInfo.class) {
+                if (userInfo == null) {
+                    userInfo = new MyInfo();
+                }
+            }
+
+        }
         return userInfo;
     }
 
     public static void setUserInfo() {
-        UserInfo.userInfo = null;
+        userInfo = null;
     }
 
-    private static MyInfo userInfo = new MyInfo();
+    private static MyInfo userInfo;
 
     private UserInfo(){}
 
@@ -35,6 +43,8 @@ public class UserInfo {
          * 用户登陆后的session_key
          */
         public String SESSION_KEY;
+
+        public String IS_PRO; // ???
 
 
         // ================== 第三方 ===============
