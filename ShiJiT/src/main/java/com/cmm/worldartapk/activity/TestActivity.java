@@ -71,7 +71,7 @@ public class TestActivity extends BaseActivity {
 //
 //
 //        // 请求JSON数据
-//        NetUtils.getDataByNet(this, Const.BASE_URL, RequestMapData.setSearchParams("0", "1", "xx"), new SearchTestParser(), new MyNetWorkObject.SuccessListener() {
+//        NetUtils.getDataByNet(this, Const.BASE_URL, RequestMapData.setSearchParams("0", "1", "more_icon_45"), new SearchTestParser(), new MyNetWorkObject.SuccessListener() {
 //            @Override
 //            public void onSuccess(Object data) {
 //                searchTest = ((SearchTest) data);

@@ -9,10 +9,12 @@ import android.os.Build;
 import android.webkit.WebView;
 
 import com.cmm.worldartapk.activity.DetailPageActivity;
+import com.cmm.worldartapk.activity.MainActivity;
 import com.cmm.worldartapk.base.BaseActivity;
 import com.cmm.worldartapk.base.UserInfo;
 import com.cmm.worldartapk.utils.SJT_UI_Utils;
 import com.cmm.worldartapk.utils.UIUtils;
+import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 
 /**
  * Created by Administrator on 2015/12/11.
@@ -172,7 +174,7 @@ public class JsScope {
         Context context = webView.getContext();
         if (context instanceof DetailPageActivity) {
 //            UIUtils.showToastSafe(imgsJson);
-            System.out.println("================== " + imgsJson);
+//            System.out.println("================== " + imgsJson);
               ((DetailPageActivity) context).showVPWindow(imgsJson, index);
         }
     }
@@ -184,6 +186,30 @@ public class JsScope {
     public static void contentLoad(WebView webView){
         UIUtils.showToastSafe("加载完毕");
     }
+
+
+    /**
+     * 显示TitleView
+     * @param webView
+     */
+    public static void showTitleView(WebView webView){
+        Context context = webView.getContext();
+        if (context instanceof MainActivity) {
+            ((MainActivity) context).showTitleView();
+        }
+    }
+
+    /**
+     * 隐藏TitleView
+     * @param webView
+     */
+    public static void hideTitleView(WebView webView){
+        Context context = webView.getContext();
+        if (context instanceof MainActivity) {
+            ((MainActivity) context).hideTitleView();
+        }
+    }
+
 
     /**
      * 得到用户信息
@@ -210,4 +236,17 @@ public class JsScope {
         return userInfo;
     }
 
+    /**
+     * 刷新完成
+     * @param webView
+     */
+    public static void onRefreshComplete(WebView webView){
+        Context context = webView.getContext();
+        if (context instanceof BaseActivity) {
+            PullToRefreshWebView currentPullToRefreshWebView = ((BaseActivity) context).getCurrentPullToRefreshWebView();
+            if (currentPullToRefreshWebView != null && currentPullToRefreshWebView.isRefreshing()){
+                currentPullToRefreshWebView.onRefreshComplete();
+            }
+        }
+    }
 }

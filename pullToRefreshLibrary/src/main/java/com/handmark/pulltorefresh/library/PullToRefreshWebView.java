@@ -143,23 +143,34 @@ public class PullToRefreshWebView extends PullToRefreshBase<WebView> {
 			super(context, attrs, defStyle);
 		}
 
-//		@Override
-//		protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//			invalidate();
-//			super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-//		}
 
-		//		@Override
-//		public boolean onTouchEvent(MotionEvent event) {
-//
-//			// 解决WebView在ViewPager非首页点击无响应
-//			if (event.getAction() == MotionEvent.ACTION_DOWN){
-//				int temp_ScrollY = getScrollY();
-//				scrollTo(getScrollX(), getScrollY() + 1);
-////				scrollTo(getScrollX(), temp_ScrollY);
-//			}
-//			return super.onTouchEvent(event);
-//		}
+
+		@Override
+		protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+			super.onScrollChanged(l, t, oldl, oldt);
+			if (mOnScrollChangedCallback != null){
+				mOnScrollChangedCallback.onScroll(l - oldl, t - oldt);
+			}
+		}
+	}
+
+
+	// WebView的滚动监听 回调
+	private OnScrollChangedCallback mOnScrollChangedCallback;
+	public interface OnScrollChangedCallback {
+		/**
+		 * WebView xy轴偏移量
+		 * @param dx
+		 * @param dy
+		 */
+		public void onScroll(int dx, int dy);
+	}
+
+	public OnScrollChangedCallback getOnScrollChangedCallback() {
+		return mOnScrollChangedCallback;
+	}
+	public void setOnScrollChangedCallback(OnScrollChangedCallback onScrollChangedCallback) {
+		mOnScrollChangedCallback = onScrollChangedCallback;
 	}
 
 	@TargetApi(9)
@@ -176,23 +187,6 @@ public class PullToRefreshWebView extends PullToRefreshBase<WebView> {
 		public InternalWebViewSDK9(Context context, AttributeSet attrs) {
 			super(context, attrs);
 		}
-
-//		@Override
-//		public boolean onTouchEvent(MotionEvent event) {
-//			if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//				int temp_ScrollY = getScrollY();
-////				scrollTo(getScrollX(), getScrollY() + 1);
-//				scrollTo(getScrollX(), temp_ScrollY);
-//			}
-//			return super.onTouchEvent(event);
-//		}
-
-
-//		@Override
-//		protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-//			invalidate();
-//			super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-//		}
 
 		@Override
 		protected boolean overScrollBy(int deltaX, int deltaY, int scrollX, int scrollY, int scrollRangeX,
@@ -212,6 +206,17 @@ public class PullToRefreshWebView extends PullToRefreshBase<WebView> {
 			return (int) Math.max(0, FloatMath.floor(mRefreshableView.getContentHeight() * mRefreshableView.getScale())
 					- (getHeight() - getPaddingBottom() - getPaddingTop()));
 		}
+
+
+
+		@Override
+		protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+			super.onScrollChanged(l, t, oldl, oldt);
+			if (mOnScrollChangedCallback != null){
+				mOnScrollChangedCallback.onScroll(l - oldl, t - oldt);
+			}
+		}
+
 
 
 	}

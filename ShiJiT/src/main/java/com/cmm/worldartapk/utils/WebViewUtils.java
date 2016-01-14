@@ -18,6 +18,8 @@ import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.SafeWebViewBridge.InjectedChromeClient;
 import com.cmm.worldartapk.SafeWebViewBridge.JsCallJava;
 import com.cmm.worldartapk.SafeWebViewBridge.js.JsScope;
+import com.cmm.worldartapk.base.BaseActivity;
+import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 
 
 /**
@@ -26,9 +28,6 @@ import com.cmm.worldartapk.SafeWebViewBridge.js.JsScope;
  */
 public class WebViewUtils {
 
-    private static Context context;
-
-    private static WebSettings settings;
 
     /**
      * WebView 基本设置
@@ -41,9 +40,9 @@ public class WebViewUtils {
 
 //        webView.reload();
 
-        context = webView.getContext();
+        final Context context = webView.getContext();
 
-        settings = webView.getSettings();
+        final WebSettings settings = webView.getSettings();
 
         //不使用缓存
 //        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -100,6 +99,14 @@ public class WebViewUtils {
                 // 隐藏加载中页面
                 if (loadingPager != null) {
                     loadingPager.setVisibility(View.GONE);
+                }
+
+                //得到WebView所在的Activity(BaseActivity)如果还在刷新就完成
+                if (context instanceof BaseActivity){
+                    PullToRefreshWebView currentPullToRefreshWebView = ((BaseActivity) context).getCurrentPullToRefreshWebView();
+                    if (currentPullToRefreshWebView != null && currentPullToRefreshWebView.isRefreshing()){
+                        currentPullToRefreshWebView.onRefreshComplete();
+                    }
                 }
             }
 

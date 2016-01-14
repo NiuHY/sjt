@@ -1,6 +1,5 @@
 package com.cmm.worldartapk.fragment;
 
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,9 +10,11 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
 import android.view.animation.TranslateAnimation;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.activity.SearchActivity;
@@ -27,6 +28,17 @@ import com.handmark.pulltorefresh.library.PullToRefreshWebView;
  * Created by Administrator on 2015/12/8.
  */
 public abstract class WebViewBaseFragment extends BaseFragment {
+
+    //加载完毕的监听
+    public interface OnFinishListener{
+        public void onFinish();
+    }
+
+    public void setOnFinishListener(OnFinishListener onFinishListener) {
+        this.onFinishListener = onFinishListener;
+    }
+
+    private OnFinishListener onFinishListener;
 
     //被缓存的View对象
     /**
@@ -42,6 +54,9 @@ public abstract class WebViewBaseFragment extends BaseFragment {
      * 是否是第一次加载
      */
     private boolean isFristLoad = true;
+    private View btn_group_view;
+    private TextView title_text;
+    private View title_group;
 
     /**
      * 给子类重写，需要返回这个Fragment的内容布局
@@ -67,11 +82,19 @@ public abstract class WebViewBaseFragment extends BaseFragment {
 //            isFristLoad = false;
         }
 
-        // 给WebView 之上添加按钮
-        View btn_group_view = View.inflate(UIUtils.getContext(), R.layout.home_btngroup_layout, null);
-        //初始化按钮
-        initHomeButton(btn_group_view, getPagerIndex());
+        // 给WebView之上添加的标题栏，默认隐藏，之后注册给MainActivity
+        title_group = View.inflate(UIUtils.getContext(), R.layout.title_layout, null);
+        //标题默认隐藏，注册给MainActivity
+        title_group.setVisibility(View.GONE);
 
+        // 给WebView 之上添加的按钮
+        btn_group_view = View.inflate(UIUtils.getContext(), R.layout.home_btngroup_layout, null);
+
+        //初始化标题和按钮
+        initTitle(getPagerIndex());
+
+        //添加标题(首先)和按钮
+        ((ViewGroup)webView.getParent()).addView(title_group);
         ((ViewGroup)webView.getParent()).addView(btn_group_view);
 
         webView.setOnTouchListener(new View.OnTouchListener() {
@@ -84,6 +107,11 @@ public abstract class WebViewBaseFragment extends BaseFragment {
                 return false;
             }
         });
+
+        //数据初始化完成
+        if (onFinishListener != null){
+            onFinishListener.onFinish();
+        }
 
         return contentView;
     }
@@ -98,19 +126,19 @@ public abstract class WebViewBaseFragment extends BaseFragment {
     private boolean isShow_btn = false;
 
     /**
-     * 初始化按钮
-     * @param btn_group_view
+     * 初始化标题
      * @param pagetIndex 页面索引
      */
-    private void initHomeButton(View btn_group_view, int pagetIndex) {
+    private void initTitle(int pagetIndex) {
+
+        //标题背景
+        View title_view = title_group.findViewById(R.id.title_view);
+        //标题文本
+        title_text = (TextView) title_group.findViewById(R.id.title_text);
+
         //查找三个按钮
         btn_more = (ImageView) btn_group_view.findViewById(R.id.home_btn_more);
         btn_more.setLayerType(View.LAYER_TYPE_SOFTWARE, null);//关闭这个按钮的硬件加速
-
-//        Canvas canvas = new Canvas();
-//        canvas.setDrawFilter(new PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG
-//                | Paint.FILTER_BITMAP_FLAG));
-//        btn_more.draw(canvas);
 
         btn_search = (ImageView) btn_group_view.findViewById(R.id.home_btn_search);
         btn_user = (ImageView) btn_group_view.findViewById(R.id.home_btn_user);
@@ -118,16 +146,25 @@ public abstract class WebViewBaseFragment extends BaseFragment {
         //更改背景颜色
         switch (pagetIndex){
             case 1:
+                title_view.setBackgroundColor(0xd9ffad42);
+                title_text.setText("中华世纪坛");
+
                 btn_more.setBackgroundResource(R.drawable.icon_back_bg_yellow);
                 btn_search.setBackgroundResource(R.drawable.icon_back_bg_yellow);
                 btn_user.setBackgroundResource(R.drawable.icon_back_bg_yellow);
                 break;
             case 2:
+                title_view.setBackgroundColor(0xd9ff2942);
+                title_text.setText("世界艺展");
+
                 btn_more.setBackgroundResource(R.drawable.icon_back_bg_red);
                 btn_search.setBackgroundResource(R.drawable.icon_back_bg_red);
                 btn_user.setBackgroundResource(R.drawable.icon_back_bg_red);
                 break;
             case 3:
+                title_view.setBackgroundColor(0xd93ebdff);
+                title_text.setText("全球艺馆");
+
                 btn_more.setBackgroundResource(R.drawable.icon_back_bg_blue);
                 btn_search.setBackgroundResource(R.drawable.icon_back_bg_blue);
                 btn_user.setBackgroundResource(R.drawable.icon_back_bg_blue);
@@ -189,6 +226,8 @@ public abstract class WebViewBaseFragment extends BaseFragment {
         btn_more.setRotation(0f);
         btn_search.setVisibility(View.GONE);
         btn_user.setVisibility(View.GONE);
+
+        //
     }
 
 
@@ -200,13 +239,33 @@ public abstract class WebViewBaseFragment extends BaseFragment {
         isShow_btn = true;
 
         //自己旋转
-        ObjectAnimator.ofFloat(btn_more, "rotation", 0f, 45f).setDuration(250L).start();
-        btn_more.invalidate();
+//        ObjectAnimator.ofFloat(btn_more, "rotation", 0f, 45f).setDuration(250L).start();
+//        btn_more.invalidate();
 
-//        RotateAnimation rotateAnimation = new RotateAnimation(0f, 45f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-//        rotateAnimation.setDuration(250L);
-//        rotateAnimation.setFillAfter(true);
-//        btn_more.startAnimation(rotateAnimation);
+        final RotateAnimation rotateAnimation = new RotateAnimation(0f, 45f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation.setDuration(250L);
+        rotateAnimation.setFillAfter(true);
+        btn_more.startAnimation(rotateAnimation);
+//        btn_more.setImageResource(R.drawable.icon_more_45);
+//        rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
+//            @Override
+//            public void onAnimationStart(Animation animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//                //结束动画后重新设置图片，避免锯齿
+//                rotateAnimation.setFillAfter(false);
+//                btn_more.setImageResource(R.drawable.icon_more_45);
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animation animation) {
+//
+//            }
+//        });
+
 
         //显示动画
         btn_search.setVisibility(View.VISIBLE);
@@ -223,13 +282,31 @@ public abstract class WebViewBaseFragment extends BaseFragment {
         isShow_btn = false;
 
         //自己旋转
-        ObjectAnimator.ofFloat(btn_more, "rotation", 45f, 0f).setDuration(250L).start();
-        btn_more.invalidate();
+//        ObjectAnimator.ofFloat(btn_more, "rotation", 45f, 0f).setDuration(250L).start();
+//        btn_more.invalidate();
 
-//        RotateAnimation rotateAnimation = new RotateAnimation(45f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-//        rotateAnimation.setDuration(250L);
-//        rotateAnimation.setFillAfter(true);
-//        btn_more.startAnimation(rotateAnimation);
+        RotateAnimation rotateAnimation = new RotateAnimation(45f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+        rotateAnimation.setDuration(250L);
+        rotateAnimation.setFillAfter(true);
+        btn_more.startAnimation(rotateAnimation);
+//        btn_more.setImageResource(R.drawable.icon_more);
+//        rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
+//            @Override
+//            public void onAnimationStart(Animation animation) {
+//
+//            }
+//
+//            @Override
+//            public void onAnimationEnd(Animation animation) {
+//                btn_more.setImageResource(R.drawable.icon_more);
+//            }
+//
+//            @Override
+//            public void onAnimationRepeat(Animation animation) {
+//
+//            }
+//        });
+
 
         //隐藏动画
         hintAnim(-1f, 220L, btn_search);
@@ -337,6 +414,20 @@ public abstract class WebViewBaseFragment extends BaseFragment {
      */
     public WebView getWebView() {
         return webView;
+    }
+
+    /**
+     * @return 给外界获取titleView
+     */
+    public View getTitleView(){
+        return title_group;
+    }
+
+    /**
+     * @return 当前Fragment对应的刷新控件
+     */
+    public PullToRefreshWebView getFragmentPullRefreshWebView(){
+        return mPullRefreshWebView;
     }
 
 }

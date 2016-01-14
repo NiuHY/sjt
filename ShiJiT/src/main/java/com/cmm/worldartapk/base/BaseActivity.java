@@ -20,6 +20,7 @@ import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.activity.MainActivity;
 import com.cmm.worldartapk.utils.SJT_UI_Utils;
 import com.cmm.worldartapk.utils.UIUtils;
+import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 
 import cn.sharesdk.framework.ShareSDK;
 
@@ -30,6 +31,8 @@ import cn.sharesdk.framework.ShareSDK;
 public abstract class BaseActivity extends AppCompatActivity {
 
     protected SharedPreferences sp;
+
+
 
     // 静态的 可以得到前台Activity
     private static Activity mForegroundActivity;
@@ -219,4 +222,17 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         }
     };
+
+
+    protected PullToRefreshWebView currentPullToRefreshWebView;
+    /**
+     * 给外界使用 用来完成刷新
+     * @return
+     */
+    public PullToRefreshWebView getCurrentPullToRefreshWebView() {
+        return currentPullToRefreshWebView;
+    }
+    public void setCurrentPullToRefreshWebView(PullToRefreshWebView currentPullToRefreshWebView) {
+        this.currentPullToRefreshWebView = currentPullToRefreshWebView;
+    }
 }

@@ -1,6 +1,5 @@
 package com.cmm.worldartapk.ui;
 
-import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,22 +55,13 @@ public class PullRefreshUtils {
             @Override
             public void onPullDownToRefresh(final PullToRefreshBase<WebView> refreshView) {
                 webView.reload();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        //获取当前 展示的WebView，刷新
-
-                        webView.reload();
-                        UIUtils.showToastSafe("下拉");
-                        refreshView.onRefreshComplete();
-                    }
-                }, 3000L);
+                UIUtils.showToastSafe("下拉");
             }
 
             @Override
             public void onPullUpToRefresh(final PullToRefreshBase<WebView> refreshView) {
                 UIUtils.showToastSafe("上拉 加载");
-                refreshView.onRefreshComplete();
+//                webView.loadUrl("javascript:");
             }
 
 

@@ -10,6 +10,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -41,6 +42,7 @@ import com.cmm.worldartapk.utils.share_package.OtherUtils;
 import com.cmm.worldartapk.utils.SJT_UI_Utils;
 import com.cmm.worldartapk.utils.UIUtils;
 import com.duowan.mobile.netroid.Listener;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 
 import org.json.JSONArray;
@@ -102,6 +104,7 @@ public class DetailPageActivity extends BaseActivity {
     private PullToRefreshWebView mPullRefreshWebView;
     private View imagevp_btngroup;
     private String detailPagerUrl;
+    private ImageButton goTopButton;
 
     @Override
     protected void init() {
@@ -129,6 +132,14 @@ public class DetailPageActivity extends BaseActivity {
     @Override
     protected void initView() {
 
+        //返回顶部按钮
+        goTopButton = (ImageButton) findViewById(R.id.bt_back_top);
+        //默认隐藏
+        goTopButton.setVisibility(View.GONE);
+
+
+
+
         //返回按钮
         ImageButton myBack = (ImageButton) findViewById(R.id.bt_back);
 
@@ -144,8 +155,44 @@ public class DetailPageActivity extends BaseActivity {
 
         // 下拉刷新
         mPullRefreshWebView = (PullToRefreshWebView) contentView.findViewById(R.id.pull_refresh_webview);
+        //给当前Activity注册下拉刷新View
+        setCurrentPullToRefreshWebView(mPullRefreshWebView);
+
+        mPullRefreshWebView.setMode(PullToRefreshBase.Mode.DISABLED);
+
         // 初始化 webView
         webView = PullRefreshUtils.setListener_PRWebView(mPullRefreshWebView);
+
+
+        //设置点击事件(蓝色详情页)
+        if (loadCategory == ConstInfo.YISHUGUAN){
+
+            //启用上拉加载
+            mPullRefreshWebView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+
+            //滚动监听
+            mPullRefreshWebView.setOnScrollChangedCallback(new PullToRefreshWebView.OnScrollChangedCallback() {
+                @Override
+                public void onScroll(int dx, int dy) {
+                    if (dy > 0){
+                        goTopButton.setVisibility(View.GONE);
+                    }else {
+                        goTopButton.setVisibility(View.VISIBLE);
+                    }
+                }
+            });
+
+            goTopButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //点击后调用JS代码 返回顶部
+                    if (webView != null) {
+                        UIUtils.showToastSafe("返回顶部");
+                        webView.loadUrl("javascript:goTop()");
+                    }
+                }
+            });
+        }
 
 
         //给webView 添加一个透明头 用了触发分享
@@ -781,5 +828,18 @@ public class DetailPageActivity extends BaseActivity {
                 UIUtils.showToastSafe("收藏失败 ：" + msg);
             }
         });
+    }
+
+
+    /**
+     * 滚动监听，如果是蓝色详情页才监听
+     * 向下滑动 显示返回顶部按钮，否则隐藏
+     */
+    private int downY;
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+
+        return super.onTouchEvent(event);
     }
 }

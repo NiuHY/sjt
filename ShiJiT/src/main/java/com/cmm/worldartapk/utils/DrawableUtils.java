@@ -7,6 +7,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.StateListDrawable;
 import android.media.ThumbnailUtils;
 import android.os.Build;
+import android.view.View;
 import android.webkit.WebView;
 
 public class DrawableUtils {
@@ -64,15 +65,17 @@ public class DrawableUtils {
      */
     public static Bitmap getScreenshot(WebView webView) {
 
-        webView.setDrawingCacheEnabled(true);
+        View view = ((View)webView.getParent());
+
+        view.setDrawingCacheEnabled(true);
 
         Bitmap bitmap = null;
 
         try {
 
-            if (null != webView.getDrawingCache()) {
+            if (null != view.getDrawingCache()) {
 
-                bitmap = Bitmap.createScaledBitmap(webView.getDrawingCache(), webView.getMeasuredWidth(), webView.getMeasuredHeight(), true);
+                bitmap = Bitmap.createScaledBitmap(view.getDrawingCache(), view.getMeasuredWidth(), view.getMeasuredHeight(), true);
                 Bitmap newBitmap = ThumbnailUtils.extractThumbnail(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
 
                 return newBitmap;
@@ -91,9 +94,9 @@ public class DrawableUtils {
             System.gc();
 
 
-            webView.setDrawingCacheEnabled(false);
+            view.setDrawingCacheEnabled(false);
 
-            webView.destroyDrawingCache();
+            view.destroyDrawingCache();
 
 
         }

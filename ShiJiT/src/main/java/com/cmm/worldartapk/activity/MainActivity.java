@@ -21,6 +21,7 @@ import android.widget.RelativeLayout;
 import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.base.BaseActivity;
 import com.cmm.worldartapk.fragment.FragmentFactory;
+import com.cmm.worldartapk.fragment.WebViewBaseFragment;
 import com.cmm.worldartapk.publicinfo.ConstInfo;
 import com.cmm.worldartapk.utils.DrawableUtils;
 import com.cmm.worldartapk.utils.LogUtils;
@@ -30,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+/**
+ *
+ */
 public class MainActivity extends BaseActivity {
 
     //三页
@@ -39,6 +43,7 @@ public class MainActivity extends BaseActivity {
     private View contentView;
     private ViewPager viewPager;
     private View loadingPagerView;
+    private MyFragmentAdapter myFragmentAdapter;
 
 
     /**
@@ -113,10 +118,18 @@ public class MainActivity extends BaseActivity {
         viewPager.setOffscreenPageLimit(2);
         //三个页面用 Fragment填充(容易控制)
         // 设置适配器
-        viewPager.setAdapter(new MyFragmentAdapter(getSupportFragmentManager()));
+        myFragmentAdapter = new MyFragmentAdapter(getSupportFragmentManager());
+        viewPager.setAdapter(myFragmentAdapter);
 
         //进入时是第二页
         viewPager.setCurrentItem(1);
+        ((WebViewBaseFragment)myFragmentAdapter.getItem(1)).setOnFinishListener(new WebViewBaseFragment.OnFinishListener() {
+            @Override
+            public void onFinish() {
+                initRegistWebView(1);
+            }
+        });
+
 
         //ViewPager 切换动画
         viewPager.setPageTransformer(true, new ViewPager.PageTransformer() {
@@ -174,19 +187,10 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onPageSelected(final int position) {
                 //给Activity的当前的Fragment 注册webView
-                //记录当前ViewPager的WebView ， 当前选择页索引
-                mVP_CurrentWebView = FragmentFactory.createFragment(position).getWebView();
-
-                currentPosition = position;
-
-//                LogUtils.e(" isShow " + FragmentFactory.createFragment(0).getUserVisibleHint() + "  ");
-
-                setWebView(mVP_CurrentWebView);
+                initRegistWebView(position);
 
                 //显示加载动画的条件之一 1/2
                 isSelected = true; //满足一个条件，但这里不显示动画
-
-
             }
 
             @Override
@@ -211,6 +215,9 @@ public class MainActivity extends BaseActivity {
 
 
     }
+
+
+
 
     //每一页的截图背景
     private List<Drawable> mLoadingPagerView_BG_List;
@@ -241,7 +248,7 @@ public class MainActivity extends BaseActivity {
                 public void run() {
                     loadingPagerView.setVisibility(View.GONE);
                 }
-            }, 200L);
+            }, 250L);
 
             //显示后重置
             isSelected = false;
@@ -271,6 +278,30 @@ public class MainActivity extends BaseActivity {
 
     }
 
+    /**
+     * 初始化WebView和Activity的关联
+     * @param position
+     */
+    private void initRegistWebView(int position) {
+
+        //初始化注册等
+        if (myFragmentAdapter != null){
+            final WebViewBaseFragment currentFragment = (WebViewBaseFragment) myFragmentAdapter.getItem(position);
+
+            //当前TitleView
+            titleView = currentFragment.getTitleView();
+            //当前WebView
+            mVP_CurrentWebView = currentFragment.getWebView();
+
+            //当前WebView对应的 刷新控件 注册给Activity
+            setCurrentPullToRefreshWebView(currentFragment.getFragmentPullRefreshWebView());
+            currentPosition = position;
+            setWebView(mVP_CurrentWebView);
+        }
+
+    }
+
+
     //ViewPager的 Fragment适配器
     private class MyFragmentAdapter extends FragmentStatePagerAdapter {
 
@@ -290,6 +321,23 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    /**
+     * 当前页面的titleView
+     */
+    private View titleView;
+
+    /**
+     * 显示TitleView
+     */
+    public void showTitleView(){
+        titleView.setVisibility(View.VISIBLE);
+    }
+    /**
+     * 隐藏TitleView
+     */
+    public void hideTitleView(){
+        titleView.setVisibility(View.GONE);
+    }
 
 //    // 下拉刷新操作
 //    @Override

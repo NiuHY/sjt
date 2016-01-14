@@ -15,9 +15,9 @@
     <script type="text/javascript" src="src/js/autoLayouter_v2.1.1.js"></script>
   </head>
 <body class="img-body">
-<div class="exhi-header-scroll">
+<!-- <div class="exhi-header-scroll">
   <h3>世界艺展</h3>
-</div>
+</div> -->
 <div class="exhi-header"></div>
 <div class="exhi-header-intro">
     <div class="header-text">
@@ -286,23 +286,34 @@ $(function(){
       x:0,
       y:0
    }
+   var isTitleShow = false;
    $(document).on('scroll',function(){
         var scrollTop = $(document).scrollTop();
         progress = Math.min(Math.max(scrollTop/distScorllTop,0),1);
         trans.x = progress*dist;
         //顶部开始变形
         if(progress < 1){
-           $headerTitle.stop().show().css({'-webkit-transform':'translate3d(' + trans.x + 'px,' + 0 + 'px,0)'});
+          $headerTitle.stop().show().css({'-webkit-transform':'translate3d(' + trans.x + 'px,' + 0 + 'px,0)'});
           $enTitle.css({'opacity':Math.max(0,(1-progress*1.2))});
           $dateText.css({'opacity':Math.max(0,(1-progress*1.2))});
-          $scrollHead.find('h3').stop().hide();
-          $scrollHead.stop().fadeIn(100);
+          if(isTitleShow){
+            try{
+              ADS.hideTitleView();
+            }catch(e){
+              console.log(e);
+            }
+            isTitleShow = false;
+          }
         }else if(progress == 1){
           $headerTitle.hide();
-          $scrollHead.find('h3').stop().show();
-        }
-        if(progress < 0.1){
-          $scrollHead.stop().fadeOut(100);
+          if(!isTitleShow){
+            try{
+              ADS.showTitleView();
+            }catch(e){
+              console.log(e);
+            }
+            isTitleShow = true;
+          }
         }
    })
 });

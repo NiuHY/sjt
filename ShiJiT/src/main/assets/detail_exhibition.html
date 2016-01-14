@@ -115,7 +115,7 @@ function waitADS(){
         success: function(data){
             var data = JSON.parse(data);
             if(!data.success){
-                   $('body').empty().css('height',screenHeight).addClass('fali-loading'); 
+                   $('body').empty().css('height',screenHeight).addClass('fail-loading'); 
             }else if(data.success){
                 data = data.data;
                 var storyId = data.exhibition_ref_story_id;
