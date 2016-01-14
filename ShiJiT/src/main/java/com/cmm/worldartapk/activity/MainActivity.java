@@ -12,9 +12,6 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.webkit.WebView;
 import android.widget.RelativeLayout;
 
@@ -56,25 +53,26 @@ public class MainActivity extends BaseActivity {
 
         //添加 正在加载的布局
         // 添加加载页面
-        loadingPagerView = View.inflate(UIUtils.getContext(), R.layout.loading_layout, null);
+        loadingPagerView = new View(UIUtils.getContext());
+        loadingPagerView.setVisibility(View.GONE);
         loadingPagerView.setLayoutParams(new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         loadingPagerView.setBackgroundColor(0xffcdcdcd);
         ((ViewGroup) contentView).addView(loadingPagerView);
 
-        /**
-         * 切换页面的旋转动画
-         */
-        View loadingAnim = loadingPagerView.findViewById(R.id.loading_anmi);
-        loadingAnim.setVisibility(View.GONE);
-        //旋转动画
-        RotateAnimation rotateAnimation = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotateAnimation.setDuration(1234L);
-        rotateAnimation.setRepeatCount(-1);
-        rotateAnimation.setRepeatMode(Animation.RESTART);
-        rotateAnimation.setInterpolator(new LinearInterpolator());
-
-        //开启动画 (默认隐藏状态)
-        loadingAnim.startAnimation(rotateAnimation);
+//        /**
+//         * 切换页面的旋转动画
+//         */
+//        View loadingAnim = loadingPagerView.findViewById(R.id.loading_anmi);
+//        loadingAnim.setVisibility(View.GONE);
+//        //旋转动画
+//        RotateAnimation rotateAnimation = new RotateAnimation(0f, 360f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+//        rotateAnimation.setDuration(1234L);
+//        rotateAnimation.setRepeatCount(-1);
+//        rotateAnimation.setRepeatMode(Animation.RESTART);
+//        rotateAnimation.setInterpolator(new LinearInterpolator());
+//
+//        //开启动画 (默认隐藏状态)
+//        loadingAnim.startAnimation(rotateAnimation);
 
 
         // 如果有XWalkView 要在这里初始化
@@ -89,7 +87,6 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void initView() {
 
-//        startActivity(new Intent(this, SplashActivity.class));
 
         // ViewPager
         viewPager = (ViewPager) findViewById(R.id.main_viewpager);

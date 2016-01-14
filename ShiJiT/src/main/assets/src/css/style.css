@@ -71,7 +71,8 @@
   -webkit-transform: translateX(-80px); }
 
 .gallery-index {
-  margin-top: -40px; }
+  margin-top: -40px;
+  background: #fff; }
 
 .detail-info {
   background: #f2f2f2;

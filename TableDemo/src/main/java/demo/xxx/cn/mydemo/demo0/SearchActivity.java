@@ -1,4 +1,4 @@
-package demo.xxx.cn.mydemo;
+package demo.xxx.cn.mydemo.demo0;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -18,6 +18,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import demo.xxx.cn.mydemo.R;
 
 /**
  * Created by Administrator on 2016/1/8.

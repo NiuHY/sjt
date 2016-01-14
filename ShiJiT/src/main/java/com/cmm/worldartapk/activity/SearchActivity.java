@@ -278,7 +278,7 @@ public class SearchActivity extends BaseActivity {
         showLoadingAnim();
 
         //艺术品
-        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + ARTWORK_URL + searchKey, RequestMapData.setSearchParams(limit_artwork + "", "12"), new SearchArtworkParser(), new MyNetWorkObject.SuccessListener() {
+        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + ARTWORK_URL + searchKey, RequestMapData.setSearchParams(limit_artwork + "", "10"), new SearchArtworkParser(), new MyNetWorkObject.SuccessListener() {
             @Override
             public void onSuccess(Object data) {
                 artworkData = (SearchBean_Artwork) data;

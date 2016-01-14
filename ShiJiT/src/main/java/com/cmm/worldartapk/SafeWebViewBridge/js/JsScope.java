@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.text.TextUtils;
 import android.webkit.WebView;
 
 import com.cmm.worldartapk.activity.DetailPageActivity;
@@ -245,6 +246,23 @@ public class JsScope {
         if (context instanceof BaseActivity) {
             PullToRefreshWebView currentPullToRefreshWebView = ((BaseActivity) context).getCurrentPullToRefreshWebView();
             if (currentPullToRefreshWebView != null && currentPullToRefreshWebView.isRefreshing()){
+                currentPullToRefreshWebView.onRefreshComplete();
+            }
+        }
+    }
+
+    /**
+     * 刷新没有更多
+     * @param webView
+     */
+    public static void onRefreshNotMore(WebView webView, String msg){
+        Context context = webView.getContext();
+        if (context instanceof BaseActivity) {
+            PullToRefreshWebView currentPullToRefreshWebView = ((BaseActivity) context).getCurrentPullToRefreshWebView();
+            if (currentPullToRefreshWebView != null && currentPullToRefreshWebView.isRefreshing()){
+                if (!TextUtils.isEmpty(msg)){
+                    UIUtils.showToastSafe(msg);
+                }
                 currentPullToRefreshWebView.onRefreshComplete();
             }
         }

@@ -40,10 +40,80 @@
     </div>
 </div>
 <script type="text/javascript">
-$(function(){
   var host = 'http://cmm.yuntoo.com/';
   var url = host + 'api/information';
   var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
+  var storyOffset = 0;
+  var storyLimit = 8;
+  var isLoading = false;
+  var noMoreList = false;
+  function listLoad(){
+    if(!isLoading && !noMoreList){
+      isLoading = true;
+      loadAjax() 
+    }else if(noMoreList){
+      try{
+        ADS.onRefreshNotMore('无更多内容');
+        }catch(e){
+          console.log(e);
+        } 
+    }
+  }
+  function loadAjax(){
+    $.ajax({
+      type:'get',
+      url:url,
+      data:{
+        client_type:4,
+        client_version:1.0,
+        uuid:'abcd',
+        offset:storyOffset,
+        limit:storyLimit
+      },
+      success:function(data){
+          var data = JSON.parse(data);
+          isLoading = false;
+          if(data.success){
+            var items = data.data;
+            var coverSize = data.cover_size || '750,750';
+            var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
+            var topPos = (275-bgHeight)/2;
+            bgObj.bgUrl = items[0].information_cover;
+            bgObj.pos = (275-bgHeight)/2;
+            bgObj.bgCss = {
+              'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
+              'background-size' : '100% auto',
+              'background-attachment' : 'fixed'
+            };
+            $('body').css(bgObj.bgCss);
+            myVue.items = myVue.items.concat(items);
+            storyOffset += storyLimit;
+          }else if(!data.success){
+            noMoreList = true;
+          }
+          try{
+            ADS.onRefreshComplete();
+          }catch(e){
+            console.log(e);
+          }
+      },
+      error: function(e){
+          isLoading = false;
+          try{
+            ADS.onRefreshComplete();
+          }catch(e){
+            console.log(e);
+          }
+      }
+    });
+  }
+  var myVue = new Vue({
+        el: '#infoIndex',
+        data: {
+          items:[]
+        }
+  });
+$(function(){
   function getDate(enbox,chbox){
     var date = new Date();
     var getMonth = date.getMonth();
@@ -59,34 +129,7 @@ $(function(){
     
   };
   getDate($('.get-en-date'),$('.get-ch-date'));
-  $.ajax({
-    type:'get',
-    url:url,
-    data:{
-      client_type:4,
-      client_version:1.0,
-      uuid:'abcd'
-    },
-    success:function(data){
-        var data = JSON.parse(data);
-        var items = data.data;
-        var coverSize = data.cover_size || '750,750';
-        var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
-        var topPos = (275-bgHeight)/2;
-        bgObj.bgUrl = items[0].information_cover;
-        bgObj.pos = (275-bgHeight)/2;
-        bgObj.bgCss = {
-          'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
-          'background-size' : '100% auto',
-          'background-attachment' : 'fixed'
-        };
-        $('body').css(bgObj.bgCss);
-        new Vue({
-          el: '#infoIndex',
-          data: {items:items}
-        });
-    }
-  });
+  listLoad();
   $('body').on('click','.info-item',function(){
     var id = $(this).data('getId') + '';
     // setDetailId (String id);

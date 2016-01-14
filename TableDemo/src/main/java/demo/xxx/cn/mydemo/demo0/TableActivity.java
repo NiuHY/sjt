@@ -1,4 +1,4 @@
-package demo.xxx.cn.mydemo;
+package demo.xxx.cn.mydemo.demo0;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +7,8 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import demo.xxx.cn.mydemo.R;
 
 public class TableActivity extends AppCompatActivity {
 

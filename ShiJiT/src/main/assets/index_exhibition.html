@@ -34,108 +34,154 @@
     </div>
 </div>
 </div>
+
 <script type="text/javascript">
-$(function(){
-   var host = 'http://cmm.yuntoo.com/';
-   // var host = '';
-   var url = host + 'api/exhibition';
-   var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
-   var listWidth = $('.exhi-items').innerWidth();
-   $.ajax({
-        type:'get',
-        url:url,
-        data:{
-          client_type:4,
-          client_version:1.0,
-          uuid:'abcd'
-        },
-        success:function(data){
-            var data = JSON.parse(data);
-            var items = data.data;
-            var imgArr = [];
-            var leftWidth,rightWidth;
-            var coverSize = items.cover_size || '750,750';
-            var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
-            var topPos = (275-bgHeight)/2;
-            bgObj.bgUrl = items[0].exhibition_cover;
-            bgObj.pos = (275-bgHeight)/2;
-            bgObj.bgCss = {
-              'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
-              'background-size' : '100% auto',
-              'background-attachment' : 'fixed'
-            };
-            $('body').css(bgObj.bgCss);
-            $.each(items,function(k,v){
-                if(k%2 === 0){
-                    var dateObj = new GetDate(v.exhibition_start_time.split(' ')[0]);
-                    var listHtml = ' <div class="exhi-list" data-get-id="'+ v.exhibition_id +'">\
-                       <div class="exhi-list-head clearfix">\
-                           <div class="exhi-list-head-left">\
-                               <p>'+ dateObj.getMonth() +'</p>\
-                               <p>'+ dateObj.getDate() +'</p>\
-                           </div>\
-                           <div class="exhi-list-head-right">\
-                               <h3>' + decodeURIComponent(v.exhibition_title) +'</h3>\
-                           </div>\
+// $(function(){
+ var host = 'http://cmm.yuntoo.com/';
+ // var host = '';
+ var url = host + 'api/exhibition';
+ var isLoading = false;
+ var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
+ var listWidth = $('.exhi-items').innerWidth();
+ var storyOffset = 0;
+ var storyLimit = 8;
+ var noMoreList = false;
+ listLoad();
+ function listLoad(){
+  if(!isLoading && !noMoreList){
+   isLoading = true;
+   loadAjax();
+  }else if(noMoreList){
+    try{
+      ADS.onRefreshNotMore('无更多内容');
+    }catch(e){
+      console.log(e);
+    }
+  }
+}
+
+function loadAjax(){
+  $.ajax({
+      type:'get',
+      url:url,
+      data:{
+        client_type:4,
+        client_version:1.0,
+        uuid:'abcd',
+        offset:storyOffset,
+        limit:storyLimit
+      },
+      success:function(data){
+        var data = JSON.parse(data);
+        isLoading = false;
+        if(data.success){
+          var items = data.data;
+          var imgArr = [];
+          var leftWidth,rightWidth;
+          var coverSize = items.cover_size || '750,750';
+          var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
+          var topPos = (275-bgHeight)/2;
+          storyOffset += storyLimit;
+          bgObj.bgUrl = items[0].exhibition_cover;
+          bgObj.pos = (275-bgHeight)/2;
+          bgObj.bgCss = {
+            'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
+            'background-size' : '100% auto',
+            'background-attachment' : 'fixed'
+          };
+          $('body').css(bgObj.bgCss);
+          $.each(items,function(k,v){
+            if(k%2 === 0){
+                var dateObj = new GetDate(v.exhibition_start_time.split(' ')[0]);
+                var listHtml = ' <div class="exhi-list" data-get-id="'+ v.exhibition_id +'">\
+                   <div class="exhi-list-head clearfix">\
+                       <div class="exhi-list-head-left">\
+                           <p>'+ dateObj.getMonth() +'</p>\
+                           <p>'+ dateObj.getDate() +'</p>\
                        </div>\
-                       <div class="exhi-list-body clearfix">\
-                           <div class="exhi-list-body-left">\
-                           </div>\
-                           <div class="exhi-list-body-right"/>\
-                           </div>\
-                           <div class="exhi-list-body-bottom"/>\
-                           </div>\
+                       <div class="exhi-list-head-right">\
+                           <h3>' + decodeURIComponent(v.exhibition_title) +'</h3>\
                        </div>\
-                    </div>';
-                    $('.exhi-items').append(listHtml);
-                    leftWidth = $('.exhi-list-body-left').outerWidth() + parseInt($('.exhi-list-body-left').css('margin-left'));
-                    rightWidth = listWidth - leftWidth;
-                    $('.exhi-list-body-right').css({width:rightWidth});
-                    imgArr.push([v.exhibition_image_array[0].image_url,v.exhibition_image_array[1].image_url,v.exhibition_image_array[2].image_url]);
-                }else if(k%2 === 1){
-                    var dateObj = new GetDate(v.exhibition_start_time.split(' ')[0]);
-                    var listHtml = ' <div class="exhi-list"  data-get-id="'+ v.exhibition_id +'">\
-                       <div class="exhi-list-head clearfix">\
-                           <div class="exhi-list-head-left">\
-                               <p>'+ dateObj.getMonth() +'</p>\
-                               <p>'+ dateObj.getDate() +'</p>\
-                           </div>\
-                           <div class="exhi-list-head-right">\
-                               <h3>' + decodeURIComponent(v.exhibition_title) +'</h3>\
-                           </div>\
+                   </div>\
+                   <div class="exhi-list-body clearfix">\
+                       <div class="exhi-list-body-left">\
                        </div>\
-                       <div class="exhi-list-body clearfix">\
-                           <div class="exhi-list-body-left">\
-                           </div>\
-                           <div class="exhi-list-body-right"/>\
-                           </div>\
-                           <div class="exhi-list-body-bottom"/>\
-                           </div>\
+                       <div class="exhi-list-body-right"/>\
                        </div>\
-                    </div>';
-                    $('.exhi-items').append(listHtml);
-                     leftWidth = $('.exhi-list-body-left').outerWidth() + parseInt($('.exhi-list-body-left').css('margin-left'));
-                    rightWidth = listWidth - leftWidth;
-                    $('.exhi-list-body-right').css({width:rightWidth});
-                    imgArr.push(v.exhibition_image_array[0].image_url);
-                }
+                       <div class="exhi-list-body-bottom"/>\
+                       </div>\
+                   </div>\
+                </div>';
+                $('.exhi-items').append(listHtml);
+                leftWidth = $('.exhi-list-body-left').outerWidth() + parseInt($('.exhi-list-body-left').css('margin-left'));
+                rightWidth = listWidth - leftWidth;
+                $('.exhi-list-body-right').css({width:rightWidth});
+                imgArr.push([v.exhibition_image_array[0].image_url,v.exhibition_image_array[1].image_url,v.exhibition_image_array[2].image_url]);
+            }else if(k%2 === 1){
+                var dateObj = new GetDate(v.exhibition_start_time.split(' ')[0]);
+                var listHtml = ' <div class="exhi-list"  data-get-id="'+ v.exhibition_id +'">\
+                   <div class="exhi-list-head clearfix">\
+                       <div class="exhi-list-head-left">\
+                           <p>'+ dateObj.getMonth() +'</p>\
+                           <p>'+ dateObj.getDate() +'</p>\
+                       </div>\
+                       <div class="exhi-list-head-right">\
+                           <h3>' + decodeURIComponent(v.exhibition_title) +'</h3>\
+                       </div>\
+                   </div>\
+                   <div class="exhi-list-body clearfix">\
+                       <div class="exhi-list-body-left">\
+                       </div>\
+                       <div class="exhi-list-body-right"/>\
+                       </div>\
+                       <div class="exhi-list-body-bottom"/>\
+                       </div>\
+                   </div>\
+                </div>';
+                $('.exhi-items').append(listHtml);
+                 leftWidth = $('.exhi-list-body-left').outerWidth() + parseInt($('.exhi-list-body-left').css('margin-left'));
+                rightWidth = listWidth - leftWidth;
+                $('.exhi-list-body-right').css({width:rightWidth});
+                imgArr.push(v.exhibition_image_array[0].image_url);
+              }
             });
-            var $list = $('.exhi-list');
-            $.each($list,function(k,v){
-                if(k%2 === 0){
-                    var $box = $(v).find('.exhi-list-body-right');
-                    var render = new RenderImg($box,imgArr[k]);
-                    render.typeOne($box);
-                    dateObj = null;
-                }else if(k%2 === 1){
-                    var $box = $(v).find('.exhi-list-body-right');
-                    var render = new RenderImg($box,imgArr[k]);
-                    render.typeTwo($box);
-                    dateObj = null;
-                }
-            });
+              if(storyOffset - storyLimit > 0){
+                var $list = $('.exhi-list:gt(' + (storyOffset - storyLimit - 1) + ')');
+              }else{
+                var $list = $('.exhi-list');
+              }
+              $.each($list,function(k,v){
+                  if(k%2 === 0){
+                      var $box = $(v).find('.exhi-list-body-right:empty()');
+                      var render = new RenderImg($box,imgArr[k]);
+                      render.typeOne($box);
+                      dateObj = null;
+                  }else if(k%2 === 1){
+                      var $box = $(v).find('.exhi-list-body-right:empty()');
+                      var render = new RenderImg($box,imgArr[k]);
+                      render.typeTwo($box);
+                      dateObj = null;
+                  }
+              });
+              try{
+                ADS.onRefreshComplete();
+              }catch(e){
+                console.log(e);
+              }
+            }else{
+              noMoreList = true;
+          }
+      },
+      error:function(e){
+        isLoading = false;
+        try{
+          ADS.onRefreshComplete();
+        }catch(e){
+          console.log(e);
         }
+      }
    });
+}
     function RenderImg($parent,arr){
         var boxWidth = $parent.outerWidth();
         var boxHeight = $parent.outerHeight();
@@ -145,19 +191,19 @@ $(function(){
             left : 0,
             width : boxWidth,
             height : boxHeight/2 - space/2,
-        };
+        }
         var rightStyle = {
             top : boxHeight/2 + space/2,
             left : boxWidth/2 + space/2,
             width : boxWidth/2 - space/2,
             height : boxHeight/2 - space/2,
-        };
+        }
         var leftStyle = {
             top : boxHeight/2 + space/2,
             left : 0,
             width : boxWidth/2 - space/2,
             height : boxHeight/2 - space/2,
-        };
+        }
         var fullStyle ={
             top:0,
             let :0,
@@ -169,7 +215,7 @@ $(function(){
                                 <div class="layout-left"></div>\
                                 <div class="layout-right"></div>\
                             </div>';
-        var inputHtmlTwo = '<div class="img-layout"><div class="layout-full"></div></div>'
+        var inputHtmlTwo = '<div class="img-layout"><div class="layout-full"></div></div>';
         this.typeOne = function($parent){
             // console.log($parent);
             $parent.append(inputHtmlOne);
@@ -266,7 +312,6 @@ $(function(){
     }
     $('body').on('click','.exhi-list',function(){
         var id = $(this).data('getId') + '';
-        console.log(id);
         if(typeof ADS != 'undefined'){
             ADS.startDetailActivity (id,2);
         }
@@ -316,7 +361,7 @@ $(function(){
           }
         }
    })
-});
+// });
 </script>
 </body>
 </html>

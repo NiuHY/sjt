@@ -21,7 +21,7 @@ public class PullRefreshUtils {
 
     public static WebView setListener_PRWebView(PullToRefreshWebView pullToRefreshWebView){
 
-        final WebView webView = pullToRefreshWebView.getRefreshableView();
+         final WebView webView = pullToRefreshWebView.getRefreshableView();
 
         // 添加错误页面
         final View errorPagerView = View.inflate(UIUtils.getContext(), R.layout.webview_errorpager, null);
@@ -55,13 +55,12 @@ public class PullRefreshUtils {
             @Override
             public void onPullDownToRefresh(final PullToRefreshBase<WebView> refreshView) {
                 webView.reload();
-                UIUtils.showToastSafe("下拉");
             }
 
             @Override
             public void onPullUpToRefresh(final PullToRefreshBase<WebView> refreshView) {
-                UIUtils.showToastSafe("上拉 加载");
-//                webView.loadUrl("javascript:");
+
+                webView.loadUrl("javascript:listLoad()");
             }
 
 

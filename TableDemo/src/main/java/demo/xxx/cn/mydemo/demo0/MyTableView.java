@@ -1,4 +1,4 @@
-package demo.xxx.cn.mydemo;
+package demo.xxx.cn.mydemo.demo0;
 
 import android.content.Context;
 import android.text.Editable;
@@ -14,6 +14,8 @@ import android.widget.TableRow;
 import android.widget.TextView;
 
 import java.util.List;
+
+import demo.xxx.cn.mydemo.R;
 
 /**
  * Created by Administrator on 2016/1/8.

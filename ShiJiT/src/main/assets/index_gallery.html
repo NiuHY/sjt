@@ -47,9 +47,8 @@
         </div>
     </div>
 </div>
-
 <script type="text/javascript">
-$(function(){
+// $(function(){
    var host = 'http://cmm.yuntoo.com/';
    // var host = '';
    var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
@@ -61,13 +60,26 @@ $(function(){
       uuid:'abcd'
    };
    var tilt;
+   var storyOffset = 0;
+   var isLoading = false;
+   var storyLimit = 8;
+   var noMoreList = false;
+   var myVue = new Vue({
+                el: '#galleryIndex',
+                data: {
+                  items:[],
+                  listHeight:{
+                    height : screenWidth + 'px'
+                  }
+                }
+              });
    tilt = screenWidth/Math.abs(parseInt($('.gallery-index').css('margin-top')));
    $.ajax({
     type:'get',
     url:recommedUrl,
     data:param,
     success : function(data){
-      var data = JSON.parse(data);
+      data = JSON.parse(data);
       if(data.success){
         var coverSize = data.data.cover_size || '750,750';
         var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
@@ -83,106 +95,120 @@ $(function(){
       }
     }
    });
-   $.ajax({
-        type:'get',
-        url:url,
-        data:param,
-        success:function(data){
-            var data = JSON.parse(data);
-            var items = data.data;
-            new Vue({
-              el: '#galleryIndex',
-              data: {
-                items:items,
-                listHeight:{
-                  height : screenWidth + 'px'
-                }
-              }  
-            });
-            var img = $('.gallery-cover').first().find('img')[0];
-            img.style.display = 'none';
-            var src = $('.gallery-cover').first().find('img').attr('src');
-            var isloaded = false;
-            var canvas = document.createElement('canvas');
-            var cxt = canvas.getContext('2d');
-            canvas.width = screenWidth;
-            canvas.height = screenWidth;
-            var map = [];
-            var j = 0;
-            var clip = 0;
-            var heightLength = screenWidth/tilt;
-            var eachLine
-            for(var i = 0;i < heightLength;i++){
-              eachLine = i*tilt;
-              for(var j = 0;j<screenWidth; j++){
-                if(eachLine < (j-3)){
-                  clip = 0;
-                  map.push(clip);
-                }else if(eachLine < (j - 2)){
-                  clip = 36;
-                  map.push(clip);
-                }else if(eachLine < (j - 1)){
-                  clip = 72;
-                  map.push(clip);
-                }else if(eachLine < j){
-                  clip = 108;
-                  map.push(clip);
-                }else if(eachLine < j + 1){
-                  clip = 144;
-                  map.push(clip);
-                }else if(eachLine < j + 2){
-                  clip = 180;
-                  map.push(clip);
-                }else if(eachLine < j + 3){
-                  clip = 216;
-                  map.push(clip);
-                }else{
-                  clip = 255;
-                  map.push(clip);
-                }
-              }
-            }
-            // console.log(JSON.stringify(map));
-            img.crossOrigin = 'anonymous';
-            var data2 = new Date();
-            img.onload = function(){
-              if(!isloaded){
-                // var data3 = new Date();
-                // console.log('load img use time: ' + (data3 - data2));
-                cxt.drawImage(img,0,0,screenWidth,screenWidth);
-                var imgData = cxt.getImageData(0,0,screenWidth,screenWidth);
-                var x = 0, y = 0;
-                var dataLength = imgData.data.length/tilt;
-                // for(var i = 0; i < imgData.data.length;i+=4){
-                //     x = (i%(4*screenWidth))/4;
-                //     y = Math.floor(i/(4*screenWidth));
-                //     if(x > y*tilt || x == y*tilt){
-                //       // imgData.data[i + 0] = 0;
-                //       // imgData.data[i + 1] = 0;
-                //       // imgData.data[i + 2] = 0;
-                //       imgData.data[i + 3] = 0;
-                //     }
-                //   }
-                // console.log(heightLength,map.length,dataLength);
-                for(var i=0;i<dataLength;i+=4){
-                  imgData.data[i + 3] = map[i/4];
-                }
-                cxt.putImageData(imgData,0,0);
-                img.src = canvas.toDataURL('image/png');
-                img.style.display = 'block';
-                // var data4 = new Date();
-                // console.log('canvas use time: ' + (data4 - data3));
-                isloaded = true;
-              }
-            }
-
+   listLoad();
+function listLoad(){
+  if(!isLoading && !noMoreList){
+    isLoading = true;
+    loadAjax();
+  }else if(noMoreList){
+    try{
+      ADS.onRefreshNotMore('无更多内容');
+    }catch(e){
+      console.log(e);
+    }
+  }
+}
+function loadAjax(){
+  $.ajax({
+    type:'get',
+    url:url,
+    data: {
+      client_type:4,
+      client_version:1.0,
+      uuid:'abcd',
+      offset:storyOffset,
+      limit: storyLimit,
+    },
+    success:function(data){
+      data = JSON.parse(data);
+      isLoading = false;
+      if(data.success){
+        var items = data.data;
+        myVue.items = myVue.items.concat(items);
+        if(!storyOffset){
+          setCanvas(myVue.items);
         }
-   });
-   $('body').on('click','.gallery-index-list',function(){
-        var id = $(this).data('getId') + '';
-        if(typeof ADS != 'undefined'){
-            ADS.startDetailActivity (id,3);
+        storyOffset += storyLimit;
+        try{
+          ADS.onRefreshComplete();
+        }catch(e){
+          console.log(e);
         }
+      }else{
+        noMoreList = true;
+      }
+    },
+    error: function(e){
+      isLoading = false;
+      try{
+        ADS.onRefreshComplete();
+      }catch(e){
+        console.log(e);
+      }
+    }
+  });
+}
+  function setCanvas(items){
+    var img = new Image();
+    img.src = items[0].gallery_cover;
+    var canvas = document.createElement('canvas');
+    var cxt = canvas.getContext('2d');
+    canvas.width = screenWidth;
+    canvas.height = screenWidth;
+    var map = [];
+    var j = 0;
+    var clip = 0;
+    var heightLength = screenWidth/tilt;
+    var eachLine;
+    for(var i = 0;i < heightLength;i++){
+      eachLine = i*tilt;
+      for(var j = 0;j<screenWidth; j++){
+        if(eachLine < (j-3)){
+          clip = 0;
+          map.push(clip);
+        }else if(eachLine < (j - 2)){
+          clip = 36;
+          map.push(clip);
+        }else if(eachLine < (j - 1)){
+          clip = 72;
+          map.push(clip);
+        }else if(eachLine < j){
+          clip = 108;
+          map.push(clip);
+        }else if(eachLine < j + 1){
+          clip = 144;
+          map.push(clip);
+        }else if(eachLine < j + 2){
+          clip = 180;
+          map.push(clip);
+        }else if(eachLine < j + 3){
+          clip = 216;
+          map.push(clip);
+        }else{
+          clip = 255;
+          map.push(clip);
+        }
+      }
+    }
+    img.crossOrigin = 'anonymous';
+    img.onload = function(){
+        cxt.drawImage(img,0,0,screenWidth,screenWidth);
+        var imgData = cxt.getImageData(0,0,screenWidth,screenWidth);
+        var x = 0, y = 0;
+        var dataLength = imgData.data.length/tilt;
+        for(var i=0;i<dataLength;i+=4){
+          imgData.data[i + 3] = map[i/4];
+        }
+        cxt.putImageData(imgData,0,0);
+        img.src = canvas.toDataURL('image/png');
+        items[0].gallery_cover = img.src;
+      }
+    }
+  $('body').on('click','.gallery-index-list',function(){
+      var id = $(this).data('getId') + '';
+      if(typeof ADS != 'undefined'){
+          ADS.startDetailActivity (id,3);
+      }
    });
    var progress,dist,distScorllTop;
    var ischange = true;
@@ -229,7 +255,7 @@ $(function(){
       }
     }
    })
-});
+// });
 </script>
 </body>
 </html>

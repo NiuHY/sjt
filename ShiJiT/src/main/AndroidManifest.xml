@@ -54,6 +54,7 @@
 
         <!-- 详情页 -->
         <activity
+            android:launchMode="singleTop"
             android:name=".activity.DetailPageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar"
