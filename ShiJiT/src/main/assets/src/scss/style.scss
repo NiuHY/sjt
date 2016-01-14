@@ -85,7 +85,6 @@ $border:30px;
 }
 .gallery-index{
   margin-top: -40px;
-  background: #fff;
 }
 @mixin detail-info{
   background: #f2f2f2;
@@ -638,7 +637,11 @@ $border:30px;
   -webkit-transition:opacity 0.8s ease;
   overflow: hidden;
   width: 100%;
-  min-height: 100px; 
+  min-height: 100px;
+  background: #fff;
+  &:first-of-type{
+    background: transparent;
+  }
   .gallery-cover{
     width: 100%; 
     img{
