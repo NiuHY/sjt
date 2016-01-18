@@ -20,9 +20,11 @@ import com.cmm.worldartapk.base.BaseActivity;
 import com.cmm.worldartapk.fragment.FragmentFactory;
 import com.cmm.worldartapk.fragment.WebViewBaseFragment;
 import com.cmm.worldartapk.publicinfo.ConstInfo;
+import com.cmm.worldartapk.ui.MyViewPager;
 import com.cmm.worldartapk.utils.DrawableUtils;
 import com.cmm.worldartapk.utils.LogUtils;
 import com.cmm.worldartapk.utils.UIUtils;
+import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,7 +40,7 @@ public class MainActivity extends BaseActivity {
 
 
     private View contentView;
-    private ViewPager viewPager;
+    private MyViewPager viewPager;
     private View loadingPagerView;
     private MyFragmentAdapter myFragmentAdapter;
 
@@ -89,7 +91,9 @@ public class MainActivity extends BaseActivity {
 
 
         // ViewPager
-        viewPager = (ViewPager) findViewById(R.id.main_viewpager);
+        viewPager = (MyViewPager) findViewById(R.id.main_viewpager);
+        mainActivityViewPager = viewPager;
+
 
         //初始化首页截图load集合
         mLoadingPagerView_BG_List = new ArrayList<Drawable>();
@@ -179,6 +183,11 @@ public class MainActivity extends BaseActivity {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                PullToRefreshWebView currentPullToRefreshWebView = getCurrentPullToRefreshWebView();
+                if (currentPullToRefreshWebView != null && currentPullToRefreshWebView.isRefreshing()){
+                    //currentPullToRefreshWebView.onRefreshComplete();
+
+                }
             }
 
             @Override
@@ -203,8 +212,8 @@ public class MainActivity extends BaseActivity {
                     if (bitmap != null) {
                         mLoadingPagerView_BG_List.set(currentPosition, new BitmapDrawable(bitmap));
                     }
-                    //加载动画
-                    showLoadingAnim();
+                    //加载动画 魅族待
+//                    showLoadingAnim();
 
                 }
             }
@@ -358,4 +367,10 @@ public class MainActivity extends BaseActivity {
 //        viewPager.setLayoutParams(params);// 设置margin属性
 //        return super.onTouchEvent(event);
 //    }
+
+
+    private static MyViewPager mainActivityViewPager;
+    public static MyViewPager getViewPager(){
+        return mainActivityViewPager;
+    }
 }

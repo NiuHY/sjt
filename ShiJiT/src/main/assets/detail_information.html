@@ -12,7 +12,6 @@
     <script type="text/javascript" src="src/js/vue.js"></script>
     <script type="text/javascript" src="src/js/hammer.min.js"></script>
     <script type="text/javascript" src="src/js/index.js"></script>
-    <script type="text/javascript" src="src/js/iscroll-probe.js"></script>
     <script type="text/javascript" src="src/js/autoLayouter_v2.1.1.js"></script>
   </head>
 <body id="14">
@@ -21,7 +20,7 @@
     <!-- <div class="detail-head" style="display:none;">
         <img v:src="{{information_cover}}"/>
     </div>  -->
-    <div class="detail-wrap-scroll" id="detail-wrap" style="background:#f2f2f2;">
+    <div class="detail-wrap-scroll" id="detail-wrap" style="background:#fff;">
         <div class="wrap-rotate"><div class="detail-rotate"></div></div>
         <div class="information-detail">
             <div class="ditail-type">
@@ -54,10 +53,10 @@ var host = 'http://cmm.yuntoo.com/';
 var imgsArr = [];
 var imgIndex = 0;
 var shareObj ={};
-// var ADS = {};
-// ADS.getDetailId = function(){
-//     return 8;
-// }
+var ADS = {};
+ADS.getDetailId = function(){
+    return 8;
+}
 waitADS();
 function waitADS(){
     if(initTime < totalTime && typeof ADS == 'undefined'){
@@ -72,8 +71,6 @@ function waitADS(){
         var screenHeight = document.documentElement.clientHeight || document.body.clientHeight;
         var space = Math.ceil(0.046*screenWidth);
         $('.detail-rotate').css('border-left-width',screenWidth + 'px');
-        var myScroll = new IScroll('#wrapper',{probeType:3,bounce:false});
-        myScroll.options.click = true;
         Vue.filter('getDay', function (value) {
             return value.split(' ')[0].split('-').join('.');
         });
@@ -82,9 +79,7 @@ function waitADS(){
             var end = new Date(value2.split(' ')[0].replace(/-/g,'/'));
             return Math.floor((end - start)/(1000*60*60*24));
         });
-        $('body').on('tap','.share_cont img,.share_cov img',function(){
-            // myScroll.on('click',function(){
-            console.log('abc');
+        $('body').on('click','.share_cont img,.share_cov img',function(){
             var imgJson = JSON.stringify(imgsArr);
             var imgIndex = $(this).data('imgindex');
             console.log(imgIndex);
@@ -250,17 +245,16 @@ function waitADS(){
                         var $that = $(this);
                         $that.isLoaded = false;
                         lazyLoad(k,v,$that)
-                        // $(window).on('scroll',function(){
-                            myScroll.on('scroll',function(){
+                        $(window).on('scroll',function(){
+                            // myScroll.on('scroll',function(){
                             lazyLoad(k,v,$that)
                         })
                     });
-                    myScroll.refresh();
                     function lazyLoad(k,v,$that){
                         var offsetTop,scrollTop,getDistance;
                         offsetTop = $that.offset().top;
-                        // scrollTop = $(window).scrollTop();
-                        scrollTop = Math.abs(myScroll.y);
+                        scrollTop = $(window).scrollTop();
+                        // scrollTop = Math.abs(myScroll.y);
                         getDistance = offsetTop - scrollTop;
                         if(getDistance < screenHeight*2 && !$that.isLoaded){
                             if(imgsArr[0].ImageCropRectRate){

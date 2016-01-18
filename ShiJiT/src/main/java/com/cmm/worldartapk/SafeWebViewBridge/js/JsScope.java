@@ -7,15 +7,22 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.text.TextUtils;
+import android.util.Log;
 import android.webkit.WebView;
 
 import com.cmm.worldartapk.activity.DetailPageActivity;
 import com.cmm.worldartapk.activity.MainActivity;
 import com.cmm.worldartapk.base.BaseActivity;
 import com.cmm.worldartapk.base.UserInfo;
+import com.cmm.worldartapk.bean.IsReadBean;
+import com.cmm.worldartapk.ui.MyViewPager;
 import com.cmm.worldartapk.utils.SJT_UI_Utils;
 import com.cmm.worldartapk.utils.UIUtils;
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
+
+import java.util.ArrayList;
 
 /**
  * Created by Administrator on 2015/12/11.
@@ -36,6 +43,15 @@ public class JsScope {
         alertDialog.setMessage(message);
 
         alertDialog.show();
+    }
+
+    /**
+     * log
+     * @param webView
+     * @param message
+     */
+    public static void log(WebView webView, String message){
+        Log.i("JavaScript --> ", message);
     }
 
     /**
@@ -137,10 +153,65 @@ public class JsScope {
      * @param str     boolean int 不同类型的参数重载 保存到sp中的内容  值
      */
     public static void setSP(WebView webView, String key, String str) {
+        int id = -1;
+        try {
+            id = Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            return;
+        }
+
+        if (id == -1){
+            return;
+        }
+
         if (sp == null){
             sp = SJT_UI_Utils.getSharedPreferences();
         }
-        sp.edit().putString(key, str).apply();
+
+        /**
+         * 先从sp中获取已经存在的字符串(JSON) 如果没有或者解析错误，就移除这个key，创建IsReadBean
+         * 得到IsReadBean对象后，把接受到的值存到集合，然后把这个对象转换为JSON串存起来
+         */
+        IsReadBean isReadBean = null;
+
+        try {
+            isReadBean = new Gson().fromJson(sp.getString(key, ""), IsReadBean.class);
+        } catch (JsonSyntaxException e) {
+            e.printStackTrace();
+        }
+
+        if (isReadBean == null){
+            sp.edit().remove(key);
+            isReadBean = new IsReadBean();
+        }
+        if (isReadBean.allId == null){
+            isReadBean.allId = new ArrayList<>();
+        }
+
+        //如果有重复的就跳出去，没有才去继续添加
+        for(IsReadBean.DataId dataId : isReadBean.allId){
+            if (dataId.id == id){
+                return;
+            }
+        }
+
+        isReadBean.allId.add(new IsReadBean.DataId(id));
+
+
+        sp.edit().putString(key, new Gson().toJson(isReadBean)).apply();
+    }
+
+    /**
+     * 移除SP中存好的 KEY
+     * @param webView
+     * @param key
+     */
+    public static void removeSP_Key(WebView webView, String key){
+        if (sp == null){
+            sp = SJT_UI_Utils.getSharedPreferences();
+        }
+
+        sp.edit().remove(key);
     }
 
     /**
@@ -152,6 +223,9 @@ public class JsScope {
      * @return 通过key(键)获取sp中保存的值
      */
     public static String getSp(WebView webView, String key, String str) {
+        if (sp == null){
+            sp = SJT_UI_Utils.getSharedPreferences();
+        }
         return sp.getString(key, str);
     }
 
@@ -163,7 +237,11 @@ public class JsScope {
      * @return
      */
     public static String getStringBySp(WebView webView, String key) {
-        return sp.getString(key, "");
+        if (sp == null){
+            sp = SJT_UI_Utils.getSharedPreferences();
+        }
+        return sp.getString(key, "{\"allId\":[]}");
+//        return "{\"allId\":[{\"id\":44},{\"id\":46},{\"id\":47}]}";
     }
 
     /**
@@ -247,6 +325,14 @@ public class JsScope {
             PullToRefreshWebView currentPullToRefreshWebView = ((BaseActivity) context).getCurrentPullToRefreshWebView();
             if (currentPullToRefreshWebView != null && currentPullToRefreshWebView.isRefreshing()){
                 currentPullToRefreshWebView.onRefreshComplete();
+
+                if (BaseActivity.getForegroundActivity() instanceof MainActivity){
+                    MyViewPager viewPager = ((MainActivity) BaseActivity.getForegroundActivity()).getViewPager();
+
+                    if (viewPager != null){
+                        viewPager.setIsCanScroll(true);
+                    }
+                }
             }
         }
     }
@@ -264,6 +350,14 @@ public class JsScope {
                     UIUtils.showToastSafe(msg);
                 }
                 currentPullToRefreshWebView.onRefreshComplete();
+
+                if (BaseActivity.getForegroundActivity() instanceof MainActivity){
+                    MyViewPager viewPager = ((MainActivity) BaseActivity.getForegroundActivity()).getViewPager();
+
+                    if (viewPager != null){
+                        viewPager.setIsCanScroll(true);
+                    }
+                }
             }
         }
     }

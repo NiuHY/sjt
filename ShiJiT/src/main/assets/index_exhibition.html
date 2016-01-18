@@ -36,18 +36,26 @@
 </div>
 
 <script type="text/javascript">
-// $(function(){
- var host = 'http://cmm.yuntoo.com/';
- // var host = '';
- var url = host + 'api/exhibition';
- var isLoading = false;
- var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
- var listWidth = $('.exhi-items').innerWidth();
- var storyOffset = 0;
- var storyLimit = 8;
- var noMoreList = false;
- listLoad();
- function listLoad(){
+var readed,readedArr = [];
+var totalTime = 1500;
+var initTime =50;
+var host = 'http://cmm.yuntoo.com/';
+// var host = '';
+var url = host + 'api/exhibition';
+var isLoading = false;
+var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
+var listWidth = $('.exhi-items').innerWidth();
+var storyOffset = 0;
+var storyLimit = 8;
+var noMoreList = false;
+ // var ADS = {};
+//  ADS.getSP = {
+//   "allId":[
+//     {"id":1},{"id":44},{"id":66},{"id":3}
+//   ]
+// };
+waitADS();
+function listLoad(){
   if(!isLoading && !noMoreList){
    isLoading = true;
    loadAjax();
@@ -59,11 +67,11 @@
     }
   }
 }
-
 function loadAjax(){
   $.ajax({
       type:'get',
       url:url,
+      timeout:4000,
       data:{
         client_type:4,
         client_version:1.0,
@@ -91,9 +99,13 @@ function loadAjax(){
           };
           $('body').css(bgObj.bgCss);
           $.each(items,function(k,v){
+            var isReaded = 0;
+            if(readedArr && readedArr.length>0){
+              isReaded = readedArr.indexOf(v['exhibition_id']) > -1 ? 1 : 0;
+            }
             if(k%2 === 0){
                 var dateObj = new GetDate(v.exhibition_start_time.split(' ')[0]);
-                var listHtml = ' <div class="exhi-list" data-get-id="'+ v.exhibition_id +'">\
+                var listHtml = ' <div class="exhi-list'+ (isReaded ? ' readed' : '') +'" data-get-id="'+ v.exhibition_id +'">\
                    <div class="exhi-list-head clearfix">\
                        <div class="exhi-list-head-left">\
                            <p>'+ dateObj.getMonth() +'</p>\
@@ -119,7 +131,7 @@ function loadAjax(){
                 imgArr.push([v.exhibition_image_array[0].image_url,v.exhibition_image_array[1].image_url,v.exhibition_image_array[2].image_url]);
             }else if(k%2 === 1){
                 var dateObj = new GetDate(v.exhibition_start_time.split(' ')[0]);
-                var listHtml = ' <div class="exhi-list"  data-get-id="'+ v.exhibition_id +'">\
+                var listHtml = ' <div class="exhi-list'+ (isReaded ? ' readed' : '') +'"  data-get-id="'+ v.exhibition_id +'">\
                    <div class="exhi-list-head clearfix">\
                        <div class="exhi-list-head-left">\
                            <p>'+ dateObj.getMonth() +'</p>\
@@ -182,91 +194,66 @@ function loadAjax(){
       }
    });
 }
-    function RenderImg($parent,arr){
-        var boxWidth = $parent.outerWidth();
-        var boxHeight = $parent.outerHeight();
-        var space = 6;
-        var topStyle = {
-            top : 0,
-            left : 0,
-            width : boxWidth,
-            height : boxHeight/2 - space/2,
-        }
-        var rightStyle = {
-            top : boxHeight/2 + space/2,
-            left : boxWidth/2 + space/2,
-            width : boxWidth/2 - space/2,
-            height : boxHeight/2 - space/2,
-        }
-        var leftStyle = {
-            top : boxHeight/2 + space/2,
-            left : 0,
-            width : boxWidth/2 - space/2,
-            height : boxHeight/2 - space/2,
-        }
-        var fullStyle ={
-            top:0,
-            let :0,
-            width: boxWidth,
-            height:boxHeight
-        }
-        var inputHtmlOne = '<div class="img-layout">\
-                                <div class="layout-top"></div>\
-                                <div class="layout-left"></div>\
-                                <div class="layout-right"></div>\
-                            </div>';
-        var inputHtmlTwo = '<div class="img-layout"><div class="layout-full"></div></div>';
-        this.typeOne = function($parent){
-            // console.log($parent);
-            $parent.append(inputHtmlOne);
-            $parent.find('.layout-top').css(topStyle);
-            $parent.find('.layout-left').css(leftStyle);
-            $parent.find('.layout-right').css(rightStyle);
-            $.each(arr,function(k,v){
-                if(k === 0){
-                    var $layoutTop = $parent.find('.layout-top');
-                    getImgStyle(v,topStyle.width,topStyle.height,$layoutTop);  
-                }else if(k === 1){
-                    var $layoutTop = $parent.find('.layout-left');
-                    getImgStyle(v,leftStyle.width,leftStyle.height,$layoutTop);  
-                }else if(k === 2){
-                    var $layoutTop = $parent.find('.layout-right');
-                    getImgStyle(v,rightStyle.width,rightStyle.height,$layoutTop);  
-                }  
-            })
-        }
-        this.typeTwo = function($parent){
-            $parent.append(inputHtmlTwo);
-            $parent.find('.layout-full').css(fullStyle);
-            var $layoutTop = $parent.find('.layout-full');
-            getImgStyle(arr,fullStyle.width,fullStyle.height,$layoutTop);  
-        }
-    }
-    function GetDate(time){
-        this.time = new Date(time);
-        this.getMonth = function(){
-            try{
-               var month = this.time.getMonth();
-               return getShortName(month);  
-            }catch(e){
-                console.log(e);
-            }  
-        };
-        this.getDate = function(){
-            try{
-               var day = this.time.getDate();
-               return day;  
-            }catch(e){
-                console.log(e);
-            }  
-        }
-        return this;
-    }
-    function getShortName(string){
-        var shortName;
-        var array = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-        return shortName = array[string];
-    }
+  function RenderImg($parent,arr){
+      var boxWidth = $parent.outerWidth();
+      var boxHeight = $parent.outerHeight();
+      var space = 6;
+      var topStyle = {
+          top : 0,
+          left : 0,
+          width : boxWidth,
+          height : boxHeight/2 - space/2,
+      }
+      var rightStyle = {
+          top : boxHeight/2 + space/2,
+          left : boxWidth/2 + space/2,
+          width : boxWidth/2 - space/2,
+          height : boxHeight/2 - space/2,
+      }
+      var leftStyle = {
+          top : boxHeight/2 + space/2,
+          left : 0,
+          width : boxWidth/2 - space/2,
+          height : boxHeight/2 - space/2,
+      }
+      var fullStyle ={
+          top:0,
+          let :0,
+          width: boxWidth,
+          height:boxHeight
+      }
+      var inputHtmlOne = '<div class="img-layout">\
+                              <div class="layout-top"></div>\
+                              <div class="layout-left"></div>\
+                              <div class="layout-right"></div>\
+                          </div>';
+      var inputHtmlTwo = '<div class="img-layout"><div class="layout-full"></div></div>';
+      this.typeOne = function($parent){
+          // console.log($parent);
+          $parent.append(inputHtmlOne);
+          $parent.find('.layout-top').css(topStyle);
+          $parent.find('.layout-left').css(leftStyle);
+          $parent.find('.layout-right').css(rightStyle);
+          $.each(arr,function(k,v){
+              if(k === 0){
+                  var $layoutTop = $parent.find('.layout-top');
+                  getImgStyle(v,topStyle.width,topStyle.height,$layoutTop);  
+              }else if(k === 1){
+                  var $layoutTop = $parent.find('.layout-left');
+                  getImgStyle(v,leftStyle.width,leftStyle.height,$layoutTop);  
+              }else if(k === 2){
+                  var $layoutTop = $parent.find('.layout-right');
+                  getImgStyle(v,rightStyle.width,rightStyle.height,$layoutTop);  
+              }  
+          })
+      }
+      this.typeTwo = function($parent){
+          $parent.append(inputHtmlTwo);
+          $parent.find('.layout-full').css(fullStyle);
+          var $layoutTop = $parent.find('.layout-full');
+          getImgStyle(arr,fullStyle.width,fullStyle.height,$layoutTop);  
+      }
+}
     function getImgStyle(imgUrl,boxW,boxH,boxClass){
         //imgW,imgH为图片实际的宽高
         var img = new Image();
@@ -309,11 +296,53 @@ function loadAjax(){
             boxClass.find('img').css(imgStyle).animate({opacity:1},400);
             boxClass = null;
         }
+}
+function GetDate(time){
+        this.time = new Date(time);
+        this.getMonth = function(){
+            try{
+               var month = this.time.getMonth();
+               return getShortName(month);  
+            }catch(e){
+                console.log(e);
+            }  
+        };
+        this.getDate = function(){
+            try{
+               var day = this.time.getDate();
+               return day;  
+            }catch(e){
+                console.log(e);
+            }  
+        }
+        return this;
     }
+function getShortName(string){
+  var shortName;
+  var array = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return shortName = array[string];
+}
+function waitADS(){
+if(initTime < totalTime && typeof ADS == 'undefined'){
+    var getADS = setTimeout(waitADS,50);
+    initTime += 50;
+}else{
+ // readed = ADS.getStringBySp('exhibition');
+ // readed = JSON.parse(readed)['allId'];
+ // if(readed.length > 0){
+ //  readed.forEach(function(v,k){
+ //    readedArr.push(v.id);
+ //  });
+ // }
+ listLoad();
     $('body').on('click','.exhi-list',function(){
         var id = $(this).data('getId') + '';
+        var obj = {id:id};
+        $(this).addClass('readed');
+        obj = JSON.stringify(obj);
         if(typeof ADS != 'undefined'){
             ADS.startDetailActivity (id,2);
+            ADS.setSP('exhibition',id);
         }
    });
    var progress,dist,distScorllTop;
@@ -332,7 +361,7 @@ function loadAjax(){
       y:0
    }
    var isTitleShow = false;
-   $(document).on('scroll',function(){
+    $(document).on('scroll',function(){
         var scrollTop = $(document).scrollTop();
         progress = Math.min(Math.max(scrollTop/distScorllTop,0),1);
         trans.x = progress*dist;
@@ -362,6 +391,8 @@ function loadAjax(){
         }
    })
 // });
+}
+}
 </script>
 </body>
 </html>

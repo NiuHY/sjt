@@ -5,9 +5,11 @@ import android.view.View;
 import android.widget.ImageButton;
 
 import com.cmm.worldartapk.R;
+import com.cmm.worldartapk.SafeWebViewBridge.js.JsScope;
 import com.cmm.worldartapk.base.BaseActivity;
 import com.cmm.worldartapk.publicinfo.ConstInfo;
 import com.cmm.worldartapk.ui.PullRefreshUtils;
+import com.cmm.worldartapk.utils.LogUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 
 /**
@@ -91,10 +93,14 @@ public class UserActivity extends BaseActivity {
 
 
     public void goLoad(View view){
-        // 打开登陆注册页面
-        Intent intent = new Intent(this, LoadActivity.class);
-        intent.putExtra("loadCategory", loadCategory);
-        startActivity(intent);
+
+        String json = JsScope.getStringBySp(null, "information");
+        LogUtils.e(json);
+
+//        // 打开登陆注册页面
+//        Intent intent = new Intent(this, LoadActivity.class);
+//        intent.putExtra("loadCategory", loadCategory);
+//        startActivity(intent);
 
     }
 }

@@ -26,13 +26,13 @@
     </div>
 </div>
 <div id="infoIndex">
-    <div class="detail-wrap" id="detail-wrap" style="background:#f2f2f2;">
+    <div class="detail-wrap" id="detail-wrap" style="background:#fff;">
         <div class="wrap-rotate"><div class="detail-rotate"></div></div>
         <div class="info-index">
             <div class="info-item" v-for="item in items" track-by="$index" data-get-id="{{item.information_id}}">
-                <h3 class="info-type type1"  v-if="item.information_type == 1"><span>展览</span></h3>
-                <h3 class="info-type type2" v-if="item.information_type == 2"><span>演出</span></h3>
-                <h3 class="info-type type3" v-if="item.information_type == 3"><span>活动</span></h3>
+                <h3 class="info-type type1"  v-bind:class="{'gray': !item.isReaded}" v-if="item.information_type == 1"><span>展览</span></h3>
+                <h3 class="info-type type2" v-bind:class="{'gray': !item.isReaded}" v-if="item.information_type == 2"><span>演出</span></h3>
+                <h3 class="info-type type3" v-bind:class="{'gray': !item.isReaded}" v-if="item.information_type == 3"><span>活动</span></h3>
                 <p class="info-title" v-text="decodeURIComponent(item.information_title).trim()"></p>
                 <p class="info-intro" v-text="decodeURIComponent(item.information_description).trim()"></p>
             </div>
@@ -40,13 +40,44 @@
     </div>
 </div>
 <script type="text/javascript">
-  var host = 'http://cmm.yuntoo.com/';
-  var url = host + 'api/information';
-  var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
-  var storyOffset = 0;
-  var storyLimit = 8;
-  var isLoading = false;
-  var noMoreList = false;
+var totalTime = 1500;
+var initTime =50;
+var host = 'http://cmm.yuntoo.com/';
+var url = host + 'api/information';
+var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
+var storyOffset = 0;
+var storyLimit = 8;
+var isLoading = false;
+var noMoreList = false;
+waitADS();
+function waitADS(){
+if(initTime < totalTime && typeof ADS == 'undefined'){
+    var getADS = setTimeout(waitADS,50);
+    initTime += 50;
+}else{
+  var readed,readedArr = [];
+  // var ADS = {};
+  // ADS.getStringBySp = {
+  //   "allId":[
+  //     {"id":7},{"id":5}
+  //   ]
+  // };
+ readed = ADS.getStringBySp('information');
+ readed = JSON.parse(readed)['allId'];
+ // readed = ADS.getStringBySp;
+ // readed = readed['allId'];
+ 
+ if(readed.length > 0){
+  readed.forEach(function(v,k){
+    readedArr.push(v.id);
+  })
+ }
+  var myVue = new Vue({
+        el: '#infoIndex',
+        data: {
+          items:[],
+        }
+  });
   function listLoad(){
     if(!isLoading && !noMoreList){
       isLoading = true;
@@ -63,6 +94,7 @@
     $.ajax({
       type:'get',
       url:url,
+      timeout:4000,
       data:{
         client_type:4,
         client_version:1.0,
@@ -86,6 +118,16 @@
               'background-attachment' : 'fixed'
             };
             $('body').css(bgObj.bgCss);
+            if(readedArr.length>0){
+              items.forEach(function(v,k){
+                if(readedArr.indexOf(v['information_id']) > -1){
+                  v.isReaded = true;
+                }else{
+                  v.isReaded = false;
+                }
+              });
+            }
+            console.log(items);
             myVue.items = myVue.items.concat(items);
             storyOffset += storyLimit;
           }else if(!data.success){
@@ -107,13 +149,6 @@
       }
     });
   }
-  var myVue = new Vue({
-        el: '#infoIndex',
-        data: {
-          items:[]
-        }
-  });
-$(function(){
   function getDate(enbox,chbox){
     var date = new Date();
     var getMonth = date.getMonth();
@@ -126,7 +161,6 @@ $(function(){
     }catch(e){
       console.log(e);
     }
-    
   };
   getDate($('.get-en-date'),$('.get-ch-date'));
   listLoad();
@@ -134,8 +168,10 @@ $(function(){
     var id = $(this).data('getId') + '';
     // setDetailId (String id);
     // getDetailId ( );
+    $(this).find('.info-type').removeClass('gray');
     if(typeof ADS != 'undefined'){
         ADS.startDetailActivity (id,1);
+        ADS.setSP('information',id);
     }
   });
   var progress,dist,distScorllTop;
@@ -185,7 +221,8 @@ $(function(){
       }
     }
   });
-});
+}
+}
 </script>
 </body>
 </html>

@@ -112,6 +112,7 @@ function loadAjax(){
   $.ajax({
     type:'get',
     url:url,
+    timeout:4000,
     data: {
       client_type:4,
       client_version:1.0,

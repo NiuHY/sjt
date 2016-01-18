@@ -16,3 +16,6 @@ var bgObj = {};
 //     }
 //     $('body').css(bgObj.bgCss);
 // });
+function goTop(){
+    document.getElementsByTagName('body')[0].scrollTop = 0;
+}

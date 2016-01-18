@@ -69,16 +69,16 @@ var screenWidth = document.documentElement.clientWidth || document.body.clientWi
 var screenHeight = document.documentElement.clientHeight || document.body.clientHeight;
 var shareObj = {};
 var noMoreList = false;
-// var ADS = {};
-// ADS.getDetailId = function(){
-//     return 125;
-// }
+var ADS = {};
+ADS.getDetailId = function(){
+    return 125;
+}
 if(initTime < totalTime && typeof ADS == 'undefined'){
-    var getADS = setTimeout(waitADS,50)
+    // var getADS = setTimeout(waitADS,50)
     initTime += 50;
 }else{
     clearTimeout('getADS');
-    getADS = null;
+    // getADS = null;
     var ADSid = ADS.getDetailId() + '';
     var url = host + 'api/gallery/' + ADSid;
     var storyUrl = host + 'api/gallery/' + ADSid + '/item_list';
@@ -283,9 +283,6 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
                 // loadEach(data);
             }
         })
-    }
-    function goTop(){
-        document.getElementsByTagName('body')[0].scrollTop = 0;
     }
     }
 

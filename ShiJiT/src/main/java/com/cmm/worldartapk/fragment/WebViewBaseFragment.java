@@ -87,6 +87,7 @@ public abstract class WebViewBaseFragment extends BaseFragment {
         //标题默认隐藏，注册给MainActivity
         title_group.setVisibility(View.GONE);
 
+
         // 给WebView 之上添加的按钮
         btn_group_view = View.inflate(UIUtils.getContext(), R.layout.home_btngroup_layout, null);
 
@@ -132,9 +133,28 @@ public abstract class WebViewBaseFragment extends BaseFragment {
     private void initTitle(int pagetIndex) {
 
         //标题背景
-        View title_view = title_group.findViewById(R.id.title_view);
+        final View title_view = title_group.findViewById(R.id.title_view);
+        title_view.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
+
         //标题文本
         title_text = (TextView) title_group.findViewById(R.id.title_text);
+        title_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                UIUtils.showToastSafe("返回顶部");
+                //点击后调用JS代码 返回顶部
+                if (webView != null) {
+                    UIUtils.showToastSafe("返回顶部");
+                    webView.loadUrl("javascript:goTop()");
+                }
+            }
+        });
 
         //查找三个按钮
         btn_more = (ImageView) btn_group_view.findViewById(R.id.home_btn_more);
@@ -222,7 +242,7 @@ public abstract class WebViewBaseFragment extends BaseFragment {
      */
     private void quickHint() {
         isShow_btn = false;
-//        btn_more.clearAnimation();
+        btn_more.clearAnimation();
         btn_more.setRotation(0f);
         btn_search.setVisibility(View.GONE);
         btn_user.setVisibility(View.GONE);

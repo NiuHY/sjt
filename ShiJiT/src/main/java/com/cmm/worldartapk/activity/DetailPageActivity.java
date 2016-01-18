@@ -819,7 +819,6 @@ public class DetailPageActivity extends BaseActivity {
             @Override
             public void onSuccess(Object data) {
                 SJT_UI_Utils.showDialog(DetailPageActivity.this, "收藏成功", true);
-                LogUtils.e("收藏成功" + data);
             }
 
             @Override

@@ -30,4 +30,17 @@
         <item name="android:windowExitAnimation">@anim/popup_exit</item>
     </style>
 
+
+    <!-- ViewPager弹性边缘 -->
+    <declare-styleable name="BounceBackViewPager">
+        <!--
+        determines the maximum amount of translation along the z-axis during the overscroll.
+        Default is 150.
+        -->
+        <attr name="overscroll_translation" format="dimension" />
+
+        <!-- Duration of animation when user releases the over scroll. Default is 400 ms. -->
+        <attr name="overscroll_animation_duration" format="integer" />
+    </declare-styleable>
+
 </resources>

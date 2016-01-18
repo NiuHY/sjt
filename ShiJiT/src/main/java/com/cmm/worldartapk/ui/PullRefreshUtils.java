@@ -1,11 +1,14 @@
 package com.cmm.worldartapk.ui;
 
+import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import com.cmm.worldartapk.R;
+import com.cmm.worldartapk.activity.MainActivity;
+import com.cmm.worldartapk.base.BaseActivity;
 import com.cmm.worldartapk.utils.UIUtils;
 import com.cmm.worldartapk.utils.WebViewUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -16,10 +19,11 @@ import com.handmark.pulltorefresh.library.PullToRefreshWebView;
  * Created by Administrator on 2015/12/22.
  */
 public class PullRefreshUtils {
+    private static MyViewPager viewPager;
 
 //    private static WebView webView;
 
-    public static WebView setListener_PRWebView(PullToRefreshWebView pullToRefreshWebView){
+    public static WebView setListener_PRWebView(final PullToRefreshWebView pullToRefreshWebView){
 
          final WebView webView = pullToRefreshWebView.getRefreshableView();
 
@@ -61,6 +65,27 @@ public class PullRefreshUtils {
             public void onPullUpToRefresh(final PullToRefreshBase<WebView> refreshView) {
 
                 webView.loadUrl("javascript:listLoad()");
+
+                if (BaseActivity.getForegroundActivity() instanceof MainActivity){
+                    viewPager = ((MainActivity) BaseActivity.getForegroundActivity()).getViewPager();
+
+                    if (viewPager != null){
+                        viewPager.setIsCanScroll(false);
+                    }
+                }
+
+//                超时
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (pullToRefreshWebView.isRefreshing()){
+                            pullToRefreshWebView.onRefreshComplete();
+                            if (viewPager != null){
+                                viewPager.setIsCanScroll(true);
+                            }
+                        }
+                    }
+                }, 9999L);
             }
 
 

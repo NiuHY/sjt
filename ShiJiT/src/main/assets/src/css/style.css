@@ -57,7 +57,7 @@
   width: 0;
   height: 0;
   border: solid 30px transparent;
-  border-left: 375px solid #f2f2f2;
+  border-left: 375px solid #fff;
   overflow: hidden;
   background: transparent; }
 
@@ -96,6 +96,7 @@
     min-height: 15px;
     font-size: 14px;
     line-height: 20px;
+    min-height: 20px;
     word-wrap: break-word;
     word-break: break-all; }
     .detail-info > p.gallery-title {
@@ -136,8 +137,7 @@
   background-size: 58px auto; }
 
 .share_img_list_information {
-  background: url(../img/information_placeholder.png) no-repeat center center;
-  background-size: 58px auto; }
+  background: #eee; }
 
 .share_cont > div {
   position: absolute;
@@ -397,7 +397,7 @@
   padding-bottom: 20px;
   position: relative;
   z-index: 1;
-  background: #f2f2f2;
+  background: #fff;
   border-bottom: solid 1px #000; }
   .information-detail p {
     padding: 0 17px;
@@ -533,14 +533,20 @@
     color: #ff2942; }
     .info-index .type1:before {
       background: #ff2942; }
+    .info-index .type1.gray:before {
+      background: #ccc; }
   .info-index .type2 {
     color: #3ebdff; }
     .info-index .type2:before {
       background: #3ebdff; }
+    .info-index .type2.gray:before {
+      background: #ccc; }
   .info-index .type3 {
     color: #1ea782; }
     .info-index .type3:before {
       background: #1ea782; }
+    .info-index .type3.gray:before {
+      background: #ccc; }
   .info-index .info-item {
     margin-bottom: 38px;
     padding-bottom: 9px;
@@ -569,7 +575,8 @@
     width: 50%;
     left: 0;
     overflow: hidden;
-    z-index: 2; }
+    z-index: 2;
+    background: #eee; }
   .gallery-list .gallery-img {
     text-align: center;
     position: relative; }
@@ -604,12 +611,20 @@
 .exhi-content {
   margin-top: -20px;
   padding-left: 12px;
-  background: #f2f2f2;
+  background: #fff;
   padding-bottom: 15px; }
   .exhi-content .exhi-items {
     margin-right: 17px; }
   .exhi-content .exhi-list {
     margin-top: 20px; }
+    .exhi-content .exhi-list.readed .exhi-list-body-left {
+      border-left: solid 1px #ff2942; }
+    .exhi-content .exhi-list.readed .exhi-list-body-left:before {
+      background: #ff2942; }
+    .exhi-content .exhi-list.readed .exhi-list-body-bottom:before {
+      border-left: solid 10px #ff2942; }
+    .exhi-content .exhi-list.readed .exhi-list-body-bottom {
+      border-bottom: solid 1px #ff2942; }
     .exhi-content .exhi-list .exhi-list-head .exhi-list-head-left {
       margin-left: -4px;
       margin-right: 10px;
@@ -672,7 +687,7 @@
     .exhi-content .img-layout > div {
       position: absolute;
       overflow: hidden;
-      background: url(../img/placehold.png) no-repeat center center;
+      background: #eee;
       background-size: 58px auto; }
 
 .gallery-index-list {
@@ -682,7 +697,7 @@
   overflow: hidden;
   width: 100%;
   min-height: 100px;
-  background: #fff; }
+  background: #eee; }
   .gallery-index-list:first-of-type {
     background: transparent; }
   .gallery-index-list .gallery-cover {

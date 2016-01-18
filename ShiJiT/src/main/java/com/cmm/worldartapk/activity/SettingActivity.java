@@ -91,6 +91,10 @@ public class SettingActivity extends BaseActivity {
                 //清空应用缓存
                 DataCleanManager.clearAllCache(UIUtils.getContext());
 
+                //清理 SP
+                SJT_UI_Utils.getSharedPreferences().edit().putString("information", "{\"allId\":[]}").apply();
+                SJT_UI_Utils.getSharedPreferences().edit().putString("exhibition", "{\"allId\":[]}").apply();
+
                 SJT_UI_Utils.showDialog(SettingActivity.this, "清理成功", true);
 
             }
