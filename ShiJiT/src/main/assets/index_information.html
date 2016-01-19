@@ -4,7 +4,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;">
-    <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
     <title>金坛首页</title>
     <link href="src/css/reset.css" rel="stylesheet">
     <link href="src/css/style.css" rel="stylesheet">
@@ -47,15 +46,92 @@ var url = host + 'api/information';
 var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
 var storyOffset = 0;
 var storyLimit = 8;
+var readed,readedArr = [];
 var isLoading = false;
 var noMoreList = false;
+function listLoad(){
+  if(!isLoading && !noMoreList){
+    isLoading = true;
+    loadAjax() 
+  }else if(noMoreList){
+    try{
+      ADS.onRefreshNotMore('无更多内容');
+      }catch(e){
+        console.log(e);
+      } 
+  }
+}
+function loadAjax(){
+  $.ajax({
+    type:'get',
+    url:url,
+    timeout:4000,
+    data:{
+      client_type:4,
+      client_version:1.0,
+      uuid:'abcd',
+      offset:storyOffset,
+      limit:storyLimit
+    },
+    success:function(data){
+        var data = JSON.parse(data);
+        isLoading = false;
+        if(data.success){
+          var items = data.data;
+          var coverSize = data.cover_size || '750,750';
+          var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
+          var topPos = (275-bgHeight)/2;
+          bgObj.bgUrl = items[0].information_cover;
+          bgObj.pos = (275-bgHeight)/2;
+          bgObj.bgCss = {
+            'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
+            'background-size' : '100% auto',
+            'background-attachment' : 'fixed'
+          };
+          $('body').css(bgObj.bgCss);
+          if(readedArr && readedArr.length>0){
+            items.forEach(function(v,k){
+              if(readedArr.indexOf(v['information_id']) > -1){
+                v.isReaded = true;
+              }else{
+                v.isReaded = false;
+              }
+            });
+          }
+          console.log(items);
+          myVue.items = myVue.items.concat(items);
+          storyOffset += storyLimit;
+        }else if(!data.success){
+          noMoreList = true;
+        }
+        try{
+          ADS.onRefreshComplete();
+        }catch(e){
+          console.log(e);
+        }
+    },
+    error: function(e){
+        isLoading = false;
+        try{
+          ADS.onRefreshComplete();
+        }catch(e){
+          console.log(e);
+        }
+    }
+  });
+}
+var myVue = new Vue({
+  el: '#infoIndex',
+  data: {
+    items:[]
+  }
+});
 waitADS();
 function waitADS(){
 if(initTime < totalTime && typeof ADS == 'undefined'){
     var getADS = setTimeout(waitADS,50);
     initTime += 50;
 }else{
-  var readed,readedArr = [];
   // var ADS = {};
   // ADS.getStringBySp = {
   //   "allId":[
@@ -72,83 +148,6 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
     readedArr.push(v.id);
   })
  }
-  var myVue = new Vue({
-        el: '#infoIndex',
-        data: {
-          items:[],
-        }
-  });
-  function listLoad(){
-    if(!isLoading && !noMoreList){
-      isLoading = true;
-      loadAjax() 
-    }else if(noMoreList){
-      try{
-        ADS.onRefreshNotMore('无更多内容');
-        }catch(e){
-          console.log(e);
-        } 
-    }
-  }
-  function loadAjax(){
-    $.ajax({
-      type:'get',
-      url:url,
-      timeout:4000,
-      data:{
-        client_type:4,
-        client_version:1.0,
-        uuid:'abcd',
-        offset:storyOffset,
-        limit:storyLimit
-      },
-      success:function(data){
-          var data = JSON.parse(data);
-          isLoading = false;
-          if(data.success){
-            var items = data.data;
-            var coverSize = data.cover_size || '750,750';
-            var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
-            var topPos = (275-bgHeight)/2;
-            bgObj.bgUrl = items[0].information_cover;
-            bgObj.pos = (275-bgHeight)/2;
-            bgObj.bgCss = {
-              'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
-              'background-size' : '100% auto',
-              'background-attachment' : 'fixed'
-            };
-            $('body').css(bgObj.bgCss);
-            if(readedArr.length>0){
-              items.forEach(function(v,k){
-                if(readedArr.indexOf(v['information_id']) > -1){
-                  v.isReaded = true;
-                }else{
-                  v.isReaded = false;
-                }
-              });
-            }
-            console.log(items);
-            myVue.items = myVue.items.concat(items);
-            storyOffset += storyLimit;
-          }else if(!data.success){
-            noMoreList = true;
-          }
-          try{
-            ADS.onRefreshComplete();
-          }catch(e){
-            console.log(e);
-          }
-      },
-      error: function(e){
-          isLoading = false;
-          try{
-            ADS.onRefreshComplete();
-          }catch(e){
-            console.log(e);
-          }
-      }
-    });
-  }
   function getDate(enbox,chbox){
     var date = new Date();
     var getMonth = date.getMonth();

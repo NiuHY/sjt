@@ -16,9 +16,9 @@ public class Const {
     public static final String BASE_URL = "http://cmm.yuntoo.com/";
 
     //三个主色
-    public static final int PAGER1_COLOR = 0xffFFAC42;
-    public static final int PAGER2_COLOR = 0xffFF7D7D;
-    public static final int PAGER3_COLOR = 0xff3EBEFF;
+    public static final int PAGER1_COLOR = 0xffffad42;
+    public static final int PAGER2_COLOR = 0xffff2942;
+    public static final int PAGER3_COLOR = 0xff3ebdff;
 
     //是否在非WIFI下 加载数据
     public static boolean isWifi = false;

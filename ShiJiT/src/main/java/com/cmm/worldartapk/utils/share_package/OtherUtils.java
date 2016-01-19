@@ -25,6 +25,7 @@ public class OtherUtils {
     private static Bitmap image;
     private static String info;
     private static String imageUrl;
+    private static int loadCategory;//从哪里打开
 
     private static Activity activity;
 
@@ -35,7 +36,7 @@ public class OtherUtils {
      * @param info 内容
      * @param image 图片
      */
-    public static void setShareData(Activity activity, String title, String url, String info, Bitmap image){
+    public static void setShareData(Activity activity, String title, String url, String info, Bitmap image, int loadCategory){
 
         OtherUtils.activity = activity;
 
@@ -43,6 +44,7 @@ public class OtherUtils {
         OtherUtils.url = url;
         OtherUtils.info = info;
         OtherUtils.image = image;
+        OtherUtils.loadCategory = loadCategory;
     }
     /**
      * 设置分享数据
@@ -51,7 +53,7 @@ public class OtherUtils {
      * @param info 内容
      * @param imageUrl 图片
      */
-    public static void setShareData(Activity activity, String title, String url, String info, String imageUrl){
+    public static void setShareData(Activity activity, String title, String url, String info, String imageUrl, int loadCategory){
 
         OtherUtils.activity = activity;
 
@@ -59,6 +61,7 @@ public class OtherUtils {
         OtherUtils.url = url;
         OtherUtils.info = info;
         OtherUtils.imageUrl = imageUrl;
+        OtherUtils.loadCategory = loadCategory;
     }
 
     /**
@@ -93,11 +96,14 @@ public class OtherUtils {
 
         //根据目标设置回调
         Platform platform = ShareSDK.getPlatform(target);
-        if (true){
-            if (!platform.isClientValid()){
-                UIUtils.showToastSafe("没有找到客户端，请检查");
-                return;
-            }
+
+        if (!platform.isClientValid()){
+            SJT_UI_Utils.showDialog(activity, "分享失败", false, loadCategory);
+
+            UIUtils.showToastSafe("没有找到客户端，请检查");
+//            Toast.makeText(activity, "没有找到客户端，请检查", Toast.LENGTH_SHORT).show();
+//            UIUtils.hintToast();
+            return;
         }
 
 
@@ -106,14 +112,14 @@ public class OtherUtils {
             @Override
             public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
                 platform.removeAccount(true);
-                SJT_UI_Utils.showDialog(activity, "分享成功", true);
+                SJT_UI_Utils.showDialog(activity, "分享成功", true, loadCategory);
 //                LogUtils.e("分享成功");
             }
 
             @Override
             public void onError(Platform platform, int i, Throwable throwable) {
                 platform.removeAccount(true);
-                SJT_UI_Utils.showDialog(activity, "分享失败", false);
+                SJT_UI_Utils.showDialog(activity, "分享失败", false, loadCategory);
                 LogUtils.e(platform.toString(), throwable);
                 LogUtils.e("分享失败");
             }
@@ -122,7 +128,7 @@ public class OtherUtils {
             public void onCancel(Platform platform, int i) {
                 platform.removeAccount(true);
 //                LogUtils.e(platform.toString());
-                SJT_UI_Utils.showDialog(activity, "取消分享", false);
+                SJT_UI_Utils.showDialog(activity, "取消分享", false, loadCategory);
 //                LogUtils.e("取消分享");
             }
         });

@@ -15,7 +15,7 @@
         android:id="@+id/dialog_img"
         android:layout_width="70dp"
         android:layout_height="70dp"
-        android:src="@drawable/dialog_info_selector"/>
+        android:src="@drawable/dialog_info_selector_blue"/>
 
     <TextView
         android:id="@+id/dialog_info"

@@ -69,12 +69,27 @@ var screenWidth = document.documentElement.clientWidth || document.body.clientWi
 var screenHeight = document.documentElement.clientHeight || document.body.clientHeight;
 var shareObj = {};
 var noMoreList = false;
-var ADS = {};
-ADS.getDetailId = function(){
-    return 125;
-}
+var space = Math.ceil(0.046*screenWidth);
+var $textIntro = $('.text_intro');
+var arr = [0,0];
+var wrapWidth = $('.gallery-list').width();
+var space = {
+    xSpace:6,
+    ySpace:3
+}; 
+var listWidth = (wrapWidth - space.xSpace)/2;
+var $textIntro = $('.text_intro');
+var isLoading = false;
+var storyOffset = 0;
+var storyLimit = 10;
+// var ADS = {};
+// ADS.getDetailId = function(){
+//     return 125;
+// }
+waitADS();
+function waitADS(){
 if(initTime < totalTime && typeof ADS == 'undefined'){
-    // var getADS = setTimeout(waitADS,50)
+    var getADS = setTimeout(waitADS,50)
     initTime += 50;
 }else{
     clearTimeout('getADS');
@@ -82,20 +97,8 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
     var ADSid = ADS.getDetailId() + '';
     var url = host + 'api/gallery/' + ADSid;
     var storyUrl = host + 'api/gallery/' + ADSid + '/item_list';
-    var space = Math.ceil(0.046*screenWidth);
-    var $textIntro = $('.text_intro');
-    var arr = [0,0];
-    var wrapWidth = $('.gallery-list').width();
-    var space = {
-        xSpace:6,
-        ySpace:3
-    }; 
-    var listWidth = (wrapWidth - space.xSpace)/2;
-    var $textIntro = $('.text_intro');
-    var isLoading = false;
-    var storyOffset = 0;
-    var storyLimit = 10;
     $('.detail-rotate').css('border-left-width',screenWidth + 'px');
+    listLoad();
     $('body').on('click','.gallery-story',function(){
         var imgJson = JSON.stringify(imgsArr);
         var imgIndex = $(this).index();
@@ -158,134 +161,133 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
             
         } 
     });
-    listLoad();
-    function listLoad(){
-        if(!isLoading && !noMoreList){
-            isLoading = true;
-            loadAjax();
-        }else if(noMoreList){
-            try{
-                ADS.onRefreshNotMore('无更多内容');
-            }catch(e){
-                console.log(e);
-            }
+}
+function listLoad(){
+    if(!isLoading && !noMoreList){
+        isLoading = true;
+        loadAjax();
+    }else if(noMoreList){
+        try{
+            ADS.onRefreshNotMore('无更多内容');
+        }catch(e){
+            console.log(e);
         }
     }
-    function loadAjax(){
-        $.ajax({
-            url:storyUrl,
-            data:{
-                client_type:4,
-                client_version:1.0,
-                uuid:'abcd',
-                offset:storyOffset,
-                limit:storyLimit
-            },
-            success: function(data){
-                var data = JSON.parse(data);
-                var $parent = $('.water-full');
-                isLoading = false;
-                if(data.success){
-                    data = data.data;
-                    waterFull($parent,data);
-                    storyOffset += storyLimit;
-                    try{
-                      ADS.onRefreshComplete();
-                    }catch(e){
-                      console.log(e);
-                    }       
-                }else{
-                    noMoreList = true;
-                }
-            },
-            error:function(){
-                isLoading = false;
+}
+function loadAjax(){
+    $.ajax({
+        url:storyUrl,
+        data:{
+            client_type:4,
+            client_version:1.0,
+            uuid:'abcd',
+            offset:storyOffset,
+            limit:storyLimit
+        },
+        success: function(data){
+            var data = JSON.parse(data);
+            var $parent = $('.water-full');
+            isLoading = false;
+            if(data.success){
+                data = data.data;
+                waterFull($parent,data);
+                storyOffset += storyLimit;
                 try{
                   ADS.onRefreshComplete();
                 }catch(e){
                   console.log(e);
-                }
-            }
-        });
-    }
-    function waterFull(parent,data){
-        loadEach(parent,data);
-        if(storyOffset - storyLimit - 1 > 0){
-            var $galleryImg = $('.gallery-img:gt(' + (storyOffset - storyLimit - 1) + ')');
-        }else{
-           var $galleryImg = $('.gallery-img'); 
-        }
-        
-        $.each($galleryImg,function(k,v){
-           var img = new Image();
-            img.src = $(v).data('imgUrl');
-            img.onload = function(){
-                $(v).append('<img src="'+img.src +'"/>');
-            } 
-        });           
-    };
-    function loadEach(parent,data){
-        var divHeight,$lastDiv,divStyle,max;
-        var data = data;
-        var children = '';
-        $.each(data,function(k,v){
-            if(data.length < 1){
-                // $('.loading').fadeOut();
-                return;
+                }       
             }else{
-                var img = new Image();
-                var eachData = v;
-                var coverData = eachData.image_url;
-                var id = eachData.id;
-                // var type = coverData.resource_description.type; listWidth
-                var url = eachData.image_url;
-                var coverW = eachData.image_width;
-                var coverH = eachData.image_height;
-                var artworkName = eachData.artwork_name ? decodeURIComponent(eachData.artwork_name) : '';
-                var artworkArtistName = eachData.artwork_artist_name ? decodeURIComponent(eachData.artwork_artist_name) : '';
-                imgsArr.push({
-                    url:url,
-                    resourceId:eachData.artwork_id,
-                    galleryId:eachData.gallery_id,
-                    ImageDescription:artworkName,
-                    artworkArtistName:artworkArtistName
-                });
-                img.src = url;
-                imgIndex ++;
-                divHeight = coverH*listWidth/coverW;
-                children = '<div class="gallery-story" style="height:'+ divHeight +'px;" data-intro-text="'+ artworkName +'"><div class="gallery-img" data-img-url="'+ url +'"></div><div class="gallery-story-cont"><div class="bottom-layer"><span class="story-text">'+ artworkName +'</span></div></div></div>'; 
-                parent.append(children);
-                $lastDiv = parent.find('.gallery-story:last');
-                if(arr[0] > arr[1]){  //第一个高度大于第二个,将div放到第二个里面
-                    divStyle = {
-                        top: arr[1] + space.ySpace + 'px',
-                        left: listWidth + space.xSpace + 'px',
-                        width:listWidth,
-                        // opacity:0
-                        // height:divHeight
-                    } 
-                    arr[1] = arr[1] + divHeight + space.ySpace; 
-                }else{              //第一个高度等于第二个高度或者第一个高度小于第二个高度,div放入第一个里面
-                    divStyle = { 
-                        top: arr[0] + space.ySpace + 'px',
-                        left:0,
-                        width:listWidth,
-                        // opacity:0
-                        // height:divHeight
-                    }
-                    arr[0] = arr[0] + divHeight + space.ySpace; 
-                }
-                max = Math.max.apply(null,arr);
-                parent.css('height',max);
-                $lastDiv.css(divStyle);
-                // data.shift();
-                img = null;
-                // loadEach(data);
+                noMoreList = true;
             }
-        })
+        },
+        error:function(){
+            isLoading = false;
+            try{
+              ADS.onRefreshComplete();
+            }catch(e){
+              console.log(e);
+            }
+        }
+    });
+}
+}
+function waterFull(parent,data){
+    loadEach(parent,data);
+    if(storyOffset - storyLimit - 1 > 0){
+        var $galleryImg = $('.gallery-img:gt(' + (storyOffset - storyLimit - 1) + ')');
+    }else{
+       var $galleryImg = $('.gallery-img'); 
     }
-    }
-
+    
+    $.each($galleryImg,function(k,v){
+       var img = new Image();
+        img.src = $(v).data('imgUrl');
+        img.onload = function(){
+            $(v).append('<img src="'+img.src +'"/>');
+        } 
+    });           
+};
+function loadEach(parent,data){
+    var divHeight,$lastDiv,divStyle,max;
+    var data = data;
+    var children = '';
+    $.each(data,function(k,v){
+        if(data.length < 1){
+            // $('.loading').fadeOut();
+            return;
+        }else{
+            var img = new Image();
+            var eachData = v;
+            var coverData = eachData.image_url;
+            var id = eachData.id;
+            // var type = coverData.resource_description.type; listWidth
+            var url = eachData.image_url;
+            var coverW = eachData.image_width;
+            var coverH = eachData.image_height;
+            var artworkName = eachData.artwork_name ? decodeURIComponent(eachData.artwork_name) : '';
+            var artworkArtistName = eachData.artwork_artist_name ? decodeURIComponent(eachData.artwork_artist_name) : '';
+            imgsArr.push({
+                url:url,
+                resourceId:eachData.artwork_id,
+                galleryId:eachData.gallery_id,
+                ImageDescription:artworkName,
+                artworkArtistName:artworkArtistName
+            });
+            img.src = url;
+            imgIndex ++;
+            divHeight = coverH*listWidth/coverW;
+            children = '<div class="gallery-story" style="height:'+ divHeight +'px;" data-intro-text="'+ artworkName +'"><div class="gallery-img" data-img-url="'+ url +'"></div><div class="gallery-story-cont"><div class="bottom-layer"><span class="story-text">'+ artworkName +'</span></div></div></div>'; 
+            parent.append(children);
+            $lastDiv = parent.find('.gallery-story:last');
+            if(arr[0] > arr[1]){  //第一个高度大于第二个,将div放到第二个里面
+                divStyle = {
+                    top: arr[1] + space.ySpace + 'px',
+                    left: listWidth + space.xSpace + 'px',
+                    width:listWidth,
+                    // opacity:0
+                    // height:divHeight
+                } 
+                arr[1] = arr[1] + divHeight + space.ySpace; 
+            }else{              //第一个高度等于第二个高度或者第一个高度小于第二个高度,div放入第一个里面
+                divStyle = { 
+                    top: arr[0] + space.ySpace + 'px',
+                    left:0,
+                    width:listWidth,
+                    // opacity:0
+                    // height:divHeight
+                }
+                arr[0] = arr[0] + divHeight + space.ySpace; 
+            }
+            max = Math.max.apply(null,arr);
+            parent.css('height',max);
+            $lastDiv.css(divStyle);
+            // data.shift();
+            img = null;
+            // loadEach(data);
+        }
+    })
+}
 </script>
 </body>
 </html>

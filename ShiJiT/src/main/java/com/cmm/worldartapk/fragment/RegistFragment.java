@@ -16,7 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.cmm.worldartapk.R;
-import com.cmm.worldartapk.activity.LoadActivity;
+import com.cmm.worldartapk.activity.LoginActivity;
 import com.cmm.worldartapk.base.BaseFragment;
 import com.cmm.worldartapk.bean.UserBean;
 import com.cmm.worldartapk.bean.parser.UserInfoParser;
@@ -156,7 +156,7 @@ public class RegistFragment extends BaseFragment {
     private void changeButtonBG(){
         //如果两个标记都正确才设置
         if (et_email && et_pwd && et_nickname){
-            mLoadBtnRegist.setBackground(DrawableUtils.createSelector(new ColorDrawable(((LoadActivity) getActivity()).getCurrentColor()), new ColorDrawable(0x55787878)));
+            mLoadBtnRegist.setBackground(DrawableUtils.createSelector(new ColorDrawable(((LoginActivity) getActivity()).getCurrentColor()), new ColorDrawable(0x55787878)));
         }else {
             mLoadBtnRegist.setBackgroundColor(0xffbbbbbb);
         }
@@ -253,9 +253,9 @@ public class RegistFragment extends BaseFragment {
                 if (isSuccess){
                     UIUtils.showToastSafe("注册成功");
                     //保存用户数据到Activity中
-                    ((LoadActivity)getActivity()).setUserTemp(new LoadActivity.UserTemp(email, pwd, ""));
+                    ((LoginActivity)getActivity()).setUserTemp(new LoginActivity.UserTemp(email, pwd, ""));
                     // 返回登陆页
-                    ((LoadActivity)getActivity()).backLoadPager();
+                    ((LoginActivity)getActivity()).backLoadPager();
                 }else{
                     UIUtils.showToastSafe("注册失败：" + userTemp.error_message);
                 }

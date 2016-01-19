@@ -4,6 +4,15 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <!-- 三个主色 -->
+    <color name="information_color">#ffffad42</color>
+    <color name="exhibition_color">#ffff2942</color>
+    <color name="gallery_color">#ff3ebdff</color>
+
+    <!-- 颜色 -->
+    <color name="press_color">#55787878</color>
+
+
     <!-- 选择器 -->
     <color name="btn_bg_n">#ff0099FF</color>
     <color name="btn_bg_p">#66722c2a</color>

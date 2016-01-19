@@ -9,7 +9,7 @@
         android:id="@+id/title_view"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="#d93ebdff"
+        android:background="#bd3ebdff"
         >
 
         <TextView

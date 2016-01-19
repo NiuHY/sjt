@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.cmm.worldartapk.R;
-import com.cmm.worldartapk.base.BaseActivity;
+import com.cmm.worldartapk.SafeWebViewBridge.js.ConstJS_F;
+import com.cmm.worldartapk.base.BaseGestureActivity;
 import com.cmm.worldartapk.base.UserInfo;
 import com.cmm.worldartapk.utils.DataCleanManager;
 import com.cmm.worldartapk.utils.SJT_UI_Utils;
@@ -32,7 +34,7 @@ import cn.sharesdk.wechat.moments.WechatMoments;
 /**
  * Created by Administrator on 2015/12/18.
  */
-public class SettingActivity extends BaseActivity {
+public class SettingActivity extends BaseGestureActivity {
 
     private View contentView;
 
@@ -41,10 +43,18 @@ public class SettingActivity extends BaseActivity {
     private View dfWindowView;
     private boolean isWindowViewShow;
     private String downloadUrl;
+    private int loadCategory;
 
     @Override
     protected void init() {
+        //初始化手势检测器
+        super.init();
 
+        //跟随个人页
+        loadCategory = 3;
+        if (!TextUtils.equals(ConstJS_F.loadCategory, "-1")){
+            loadCategory = Integer.parseInt(ConstJS_F.loadCategory);
+        }
     }
 
     @Override
@@ -79,7 +89,7 @@ public class SettingActivity extends BaseActivity {
         shareView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                OtherUtils.setShareData(SettingActivity.this, "邀请你参观「艺术世纪」的世界艺术馆", downloadUrl, "掌控未来美学", "https://mmbiz.qlogo.cn/mmbiz/KFj6wBflVBuZVeySJnBuPo9PPfPu2XkBgBw0ChZUVbZ5l9Y3VicKmdiaIqn6kwS35ojg3vibfNmFSkP5PMBNSYicUQ/0?wx_fmt=png");
+                OtherUtils.setShareData(SettingActivity.this, "邀请你参观「艺术世纪」的世界艺术馆", downloadUrl, "掌控未来美学", "https://mmbiz.qlogo.cn/mmbiz/KFj6wBflVBuZVeySJnBuPo9PPfPu2XkBgBw0ChZUVbZ5l9Y3VicKmdiaIqn6kwS35ojg3vibfNmFSkP5PMBNSYicUQ/0?wx_fmt=png", loadCategory);
                 showShareWindow();
             }
         });
@@ -94,8 +104,10 @@ public class SettingActivity extends BaseActivity {
                 //清理 SP
                 SJT_UI_Utils.getSharedPreferences().edit().putString("information", "{\"allId\":[]}").apply();
                 SJT_UI_Utils.getSharedPreferences().edit().putString("exhibition", "{\"allId\":[]}").apply();
+                SJT_UI_Utils.getSharedPreferences().edit().putString("share", "").apply();
 
-                SJT_UI_Utils.showDialog(SettingActivity.this, "清理成功", true);
+
+                SJT_UI_Utils.showDialog(SettingActivity.this, "清理成功", true, loadCategory);
 
             }
         });
@@ -160,7 +172,7 @@ public class SettingActivity extends BaseActivity {
                     dialog.show();
                 }else {
                     //还没登陆
-                    SJT_UI_Utils.showDialog(SettingActivity.this, "还没登陆", false);
+                    SJT_UI_Utils.showDialog(SettingActivity.this, "还没登陆", false, loadCategory);
                 }
 
 
@@ -289,7 +301,8 @@ public class SettingActivity extends BaseActivity {
                         ClipboardManager jtb = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                         //TODO
                         jtb.setText(downloadUrl);
-                        SJT_UI_Utils.showDialog(SettingActivity.this, "复制成功", true);
+
+                        SJT_UI_Utils.showDialog(SettingActivity.this, "复制成功", true, loadCategory);
                         break;
                     default:
                         break;

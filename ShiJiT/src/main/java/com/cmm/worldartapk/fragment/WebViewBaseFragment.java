@@ -17,10 +17,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cmm.worldartapk.R;
+import com.cmm.worldartapk.SafeWebViewBridge.js.ConstJS_F;
+import com.cmm.worldartapk.activity.LoginActivity;
 import com.cmm.worldartapk.activity.SearchActivity;
 import com.cmm.worldartapk.activity.UserActivity;
 import com.cmm.worldartapk.base.BaseFragment;
 import com.cmm.worldartapk.ui.PullRefreshUtils;
+import com.cmm.worldartapk.utils.SJT_UI_Utils;
 import com.cmm.worldartapk.utils.UIUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 
@@ -166,7 +169,7 @@ public abstract class WebViewBaseFragment extends BaseFragment {
         //更改背景颜色
         switch (pagetIndex){
             case 1:
-                title_view.setBackgroundColor(0xd9ffad42);
+                title_view.setBackgroundColor(0xbdffad42);
                 title_text.setText("中华世纪坛");
 
                 btn_more.setBackgroundResource(R.drawable.icon_back_bg_yellow);
@@ -174,7 +177,7 @@ public abstract class WebViewBaseFragment extends BaseFragment {
                 btn_user.setBackgroundResource(R.drawable.icon_back_bg_yellow);
                 break;
             case 2:
-                title_view.setBackgroundColor(0xd9ff2942);
+                title_view.setBackgroundColor(0xbdff2942);
                 title_text.setText("世界艺展");
 
                 btn_more.setBackgroundResource(R.drawable.icon_back_bg_red);
@@ -182,7 +185,7 @@ public abstract class WebViewBaseFragment extends BaseFragment {
                 btn_user.setBackgroundResource(R.drawable.icon_back_bg_red);
                 break;
             case 3:
-                title_view.setBackgroundColor(0xd93ebdff);
+                title_view.setBackgroundColor(0xbd3ebdff);
                 title_text.setText("全球艺馆");
 
                 btn_more.setBackgroundResource(R.drawable.icon_back_bg_blue);
@@ -226,10 +229,25 @@ public abstract class WebViewBaseFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
 
-                //打开个人中心页，记录从哪个页面打开
-                Intent intent = new Intent(getActivity(), UserActivity.class);
-                intent.putExtra("loadCategory", getPagerIndex());
-                startActivity(intent);
+                //没有登陆就去登陆页，登陆就去个人中心，去登陆页时带标记
+                if (SJT_UI_Utils.userState()) {
+
+                    //打开个人中心页，记录从哪个页面打开
+                    Intent intent = new Intent(getActivity(), UserActivity.class);
+                    intent.putExtra("loadCategory", getPagerIndex());
+                    //给JS保存
+                    ConstJS_F.loadCategory = getPagerIndex() + "";
+                    startActivity(intent);
+
+                } else {
+                    UIUtils.showToastSafe("请登陆...");
+                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    intent.putExtra("userActivity", true);
+                    intent.putExtra("loadCategory", getPagerIndex());
+                    startActivity(intent);
+                }
+
+
                 //隐藏按钮
                 quickHint();
             }

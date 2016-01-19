@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <meta HTTP-EQUIV="Content-Type" CONTENT="text/html;">
+    <title>用户中心</title>
+    <link href="src/css/reset.css" rel="stylesheet">
+    <link href="src/css/style.css" rel="stylesheet">
+    <script type="text/javascript" src="src/js/jquery-2.1.4.js"></script>
+    <script type="text/javascript" src="src/js/vue.js"></script>
+    <script type="text/javascript" src="src/js/hammer.min.js"></script>
+    <script type="text/javascript" src="src/js/index.js"></script>
+    <script type="text/javascript" src="src/js/autoLayouter_v2.1.1.js"></script>
+  </head>
+<body class="no-collect">
+<div id="user-center">
+  <div class="btm-layer">
+    <div class="user-info" id="user-info">
+      <div class="face"><img v-bind:src="userInfo.user_avatar" src="src/img/avatar_default.jpg" /></div>
+      <div class="info">
+        <p class="name">{{decodeURIComponent(userInfo.user_nickname)}}</p>
+        <p class="sign">{{decodeURIComponent(userInfo.user_intro)}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="collect-wrap">
+    <div class="wrap-rotate"><div class="detail-rotate"></div></div>
+    <div class="collect-content">
+      <div class="collect-item">
+      </div>
+    </div>
+  </div>
+</div>
+<div class="loadmore" style="position:fixed; bottom:10px; left:10px; z-index:99"><button>加载更多</button></div>
+<script type="text/javascript">
+var host = 'http://cmm.yuntoo.com/';
+// var host = '';
+var limit = 15;
+var bgArr = ['#eba850','#ff2942','#3ebdff'];
+var totalTime = 1500;
+var initTime =50;
+var postImgArr = [];
+var ADS = {};
+ADS.getLoadCategory = function(){
+  return 2;
+}
+ADS.getUserInfo = function(session_key){
+  return 'c5862d0d1cdbaeb3339c8e7592cc532f72e167f285064eca8642e3ca4625e05b';
+} 
+var hammer = new Hammer(document.getElementsByTagName('body')[0]);
+// $('.loadmore button').on('click',function(){
+//   listLoad();
+// });
+var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
+var screenHeight = document.documentElement.clientHeight || document.body.clientHeight;
+var imgHight = (screenWidth/2 - 25) + 'px';
+var imgStyle = {'height':imgHight};
+var isLoading = false;
+var noMoreList = false;
+var imgloadIndex = 0;
+hammer.on('press',function(e){
+  $('.del').toggle();
+});
+function getDate(value){
+  var date = value.split('-').join('.');
+  var formatDate = new Date(date);
+  var month = formatDate.getMonth() + 1;
+  var day = formatDate.getDate();
+  if(month < 10){
+    month = '0' + month;
+  }
+  return month + '月' + day + '日';
+}
+// 登陆接口
+// $.ajax({
+//   url: '/api/signin/',
+//   type:'post',
+//   data:{
+//     client_type:5,
+//     client_version:'1.0',
+//     uuid:'abcd',
+//     email:'123456qwq@qq.com',
+//     password:'123456',
+//     nickname:'123456'
+//   },
+//   success:function(data){
+//     console.log(data);
+//   }
+// });
+
+//注册接口
+// $.ajax({
+//   url: 'http://cmm.yuntoo.com/api/signup/',
+//   type:'post',
+//   data:{
+//     client_type:4,
+//     client_version:'1.0',
+//     uuid:'abcd',
+//     email:'123456qwq@qq.com',
+//     password:'123456',
+//     nickname:'123456'
+//   },
+//   success:function(data){
+//     console.log(data);
+//   }
+// });
+
+
+// var sessionKey = 'c5862d0d1cdbaeb3339c8e7592cc532f72e167f285064eca8642e3ca4625e05b';
+// var cateory = 2;
+waitADS();
+function waitADS(){
+  if(initTime < totalTime && typeof ADS == 'undefined'){
+        var getADS = setTimeout(waitADS,50)
+        initTime += 50;
+  }else{
+    var Foo = {};
+    var sessionKey = ADS.getUserInfo('session_key');
+    var cateory = ADS.getLoadCategory();
+    var userCollectParam = {
+      session_key:sessionKey,
+      client_type:5,
+      client_version:1.0,
+      uuid:'abcd',
+      offset:0,
+      limit:limit
+    };
+    var userInfoParam = {
+      session_key:sessionKey,
+      client_type:5,
+      client_version:1.0,
+      uuid:'abcd'
+    };
+    var myVue = new Vue({
+      el: '#user-center',
+      data: {
+        userInfo : {},
+        collectInfos : []
+      }
+    });
+    var $parent = $('.collect-item');
+    myVue.imgStyle = imgStyle;
+    try{
+        $('.btm-layer').css('background',bgArr[cateory-1]);
+    }catch(e){
+      console.log(e);
+    };
+    getUserInfo();
+    // this.listLoad();
+    function getUserInfo(){
+      $.ajax({
+        url: host + 'api/profile/',
+        type: 'get',
+        data: userInfoParam,
+        success: function (data) {
+          var data = JSON.parse(data).data;
+          myVue.userInfo = data;
+        }
+      });
+    }
+    Foo.listLoad = function(){
+      if(!isLoading && !noMoreList){
+        isLoading = true;
+        loadAjax();
+      }else if(noMoreList){
+        try{
+          ADS.onRefreshNotMore('无更多内容');
+          }catch(e){
+            console.log(e);
+          } 
+      }
+    }
+    Foo.listLoad();
+    function loadAjax(){
+      $.ajax({
+        url: host + 'api/member/collection_list/',
+        type:'get',
+        data:userCollectParam,
+        success: function(data){
+          isLoading = false;
+          var exhibition = null,information = null,artwork = null,offset;
+          data = JSON.parse(data);
+          if(data.success){
+            data = data.data;
+            offset = data.length;
+            render($parent,fixData(data));
+            var imgs = $('.collect-content').find($('img:gt('+ (imgloadIndex-1) +')'));
+            if(!imgs.length){
+              imgs = $('.collect-content').find('img');
+            }
+            $.each(imgs,function(k,v){
+              var $this = $(v)
+              v.onload = function(){
+                $(this).css({opacity:1});
+              }
+            });
+            imgloadIndex = $('img').length;
+            userCollectParam.offset += offset;
+          }else{
+            $('body').remove('.collect-wrap');
+            $('body').css('height',screenHeight).addClass('fail-loading');
+            noMoreList = true;
+          }
+          try{
+            ADS.onRefreshComplete();
+          }catch(e){
+            console.log(e);
+          } 
+        },
+        error: function(e){
+          isLoading = false;
+          try{
+            ADS.onRefreshComplete();
+          }catch(e){
+            console.log(e);
+          }
+        }
+      });
+    }
+    function fixData(data){
+      var temp = {};
+      var tempArr = [];
+      var type =['exhibition','information','gallery','artwork'];
+      for(var i = 0; i < data.length;i++){
+        var upDate = data[i]['update_time'].split(' ')[0];
+        var prevUpDate = data[i-1] ? data[i-1]['update_time'].split(' ')[0] : data[0]['update_time'].split(' ')[0];
+        //如果时间一样，将相同时间的放入一个对象里面。
+        if(upDate == prevUpDate){
+          temp.time = upDate;
+          preArr(data[i],temp,type);
+          // tempArr.push(temp);
+        }else{
+          tempArr.push(temp);
+          temp = {};
+          temp.time = upDate;
+          preArr(data[i],temp,type);
+        }
+        if(i == data.length-1){
+          tempArr.push(temp);
+        }
+      }
+      return tempArr;
+    };
+    function preArr(data,obj,type){
+      for(var j = 0;j<type.length;j++){
+          if(data[type[j] + '_id']){
+            preObj = {
+              id:data[type[j] + '_id'],
+              title:data[type[j] + '_name'] || decodeURIComponent(data[type[j] + '_title']) || '',
+              cover:data[type[j] + '_cover'] || data['image_url'] || '',
+            }
+          if(type[j] == 'gallery' || type[j] == 'artwork'){
+            preObj.title = decodeURIComponent(data[type[j] + '_name']);
+          }
+          if(type[j] == 'artwork'){
+            postImgArr.push({
+              url:preObj.cover,
+              resourceId:preObj.id,
+              ImageDescription:preObj.title
+            });
+          }
+          if($.isArray(obj[type[j]])){
+            obj[type[j]].push(preObj);
+          }else{
+            obj[type[j]] = [];
+            obj[type[j]].push(preObj);
+          }
+        }
+      }
+    }
+    function render(parent,array){
+      $.each(array,function(k,v){
+        var html = '<div class="col-text">'+ textDom(v) +'</div>';
+        if(v.artwork && v.artwork.length>0){
+          var imgHtml = imageDom(v);
+          html += imgHtml;
+        }
+        parent.append(html);
+      });
+    }
+    //每个list的dom结构
+    function inputDom(obj,type){
+      var html = '';
+      html += '<div class="col-text-list">\
+              <div>\
+                <div class="col-text-list-img"><img src="'+ obj.cover +'"/></div>\
+                <div class="col-text-list-text" data-cateory="'+ type +'">\
+                  <div class="del" data-cateory="'+ type +'" data-id="'+ obj.id +'"><div></div></div>\
+                  <div>'+ obj.title +'</div>\
+                </div>\
+              </div>\
+            </div>';
+      return html;
+    }
+    function textDom(obj){
+      var dom = '';
+      var exhibition = obj.exhibition;
+      var information = obj.information;
+      var gallery = obj.gallery;
+      if(exhibition && exhibition.length > 0){
+        dom += '<div class="col-date">'+ getDate(obj.time) +'</div>';
+        for(var i = 0; i < exhibition.length;i++){
+          dom += inputDom(exhibition[i],2);
+        }
+      }
+      if(information && information.length>0){
+        dom += '<div class="col-date">'+ getDate(obj.time) +'</div>';
+        for(var j = 0; j < information.length;j++){
+          dom += inputDom(information[j],1);
+        }
+      }
+      if(gallery && gallery.length > 0){
+        dom += '<div class="col-date">'+ getDate(obj.time) +'</div>';
+        for(var k = 0; k < gallery.length;k++){
+          dom += inputDom(gallery[k],3);
+        }
+      }
+      return dom;
+    }
+    function imageDom(obj){
+      var halfWidth = (screenWidth-30)/2 + 'px';
+      var fullWidth = (screenWidth - 20) + 'px';
+      var artwork = obj.artwork;
+      var dom = '<div class="col-gallery clearfix"><div class="col-date lm10">'+ getDate(obj.time) +'</div>';
+      var repeat = '';
+      var index = 0;
+      if(artwork.length > 0){
+        if(artwork.length%2 === 1){     //奇数张图片的时候
+          repeat = '<div class="col-gallery-list" style="height:'+ fullWidth +';width:'+ fullWidth +'">\
+                   <div class="col-gallery-list-cont" data-id="'+ artwork[0].id +'" data-index="'+ index +'" data-des="'+ artwork[0].title +'">\
+                  <div class="del" data-id="'+ artwork[0].id +'" data-cateory="4"><div></div></div>\
+                  <div class="col-gallery-list-img"><img src="'+ artwork[0].cover +'" style="height:'+ fullWidth +';width:'+ fullWidth +'"/></div>\
+                  <div class="col-gallery-list-text">\
+                    <div>'+ artwork[0].title +'</div>\
+                  </div>\
+                </div>\
+              </div>';
+          index ++;
+          artwork.shift();
+        }
+        for(var i = 0;i < artwork.length;i++){    //偶数张图片
+          repeat += '<div class="col-gallery-list" style="height:'+ halfWidth +';width:'+ halfWidth +'">\
+                   <div class="col-gallery-list-cont" data-id="'+ artwork[i].id +'" data-index="'+ index +'" data-des="'+ artwork[i].title +'">\
+                  <div class="del" data-id="'+ artwork[i].id +'" data-cateory="4"><div></div></div>\
+                  <div class="col-gallery-list-img"><img src="'+ artwork[i].cover +'" style="height:'+ halfWidth +';width:'+ halfWidth +'"/></div>\
+                  <div class="col-gallery-list-text">\
+                    <div>'+ artwork[i].title +'</div>\
+                  </div>\
+                </div>\
+              </div>'
+          index++;
+        }
+      }
+      dom += repeat;
+      dom += '</div>'
+      return dom;
+    }
+    $('body').on('click','.del',function(){
+      var typeName = ['information','exhibition','gallery','artwork'];
+      var id = $(this).data('id');
+      var type = typeName[$(this).data('cateory') - 1];
+      var del_loading = false;
+      var $this = $(this);
+      console.log(sessionKey)
+      if(!del_loading){
+        del_loading = true;
+        $.ajax({
+          type:'post',
+          url: host + 'api/' + type + '/' + id + '/de_collect',
+          data:{
+            client_type:5,
+            client_version:1.0,
+            uuid:'abcd',
+            session_key:sessionKey
+          },
+          success:function(data){
+            data = JSON.parse(data);
+            del_loading = false;
+            console.log(data);
+            if(data.success){
+              if(type == 'artwork'){
+                $this.closest('.col-gallery-list').remove();
+              }else{
+                $this.closest('.col-text-list').remove();
+              } 
+            }
+          },
+          error:function(e){
+            del_loading = false;
+          }
+        })
+      } 
+    })
+  }
+  return Foo;
+}
+$('body').on('click','.col-text-list',function(){
+  var $target = $(this).find('.col-text-list-text');
+  var type = $target.data('cateory');
+  var id = $target.data('id');
+  try{
+    ADS.startDetailActivity(id,type);
+  }catch(e){
+  } 
+});
+$('body').on('click','.col-gallery-list-cont',function(){
+  var imgJson = [];
+  var id = $(this).data('id');
+  var imgs = $('.col-gallery').find('img');
+  var imgIndex = $(this).data('index');
+  var des = $(this).data('des');
+  for(var i = 0;i<imgs.length;i++){
+    imgJson.push({
+      url:imgs[i].src,
+      resourceId:id,
+      ImageDescription:des
+    });
+  }
+  imgJson = postImgArr;
+  imgJson = JSON.stringify(imgJson);
+  try{
+    ADS.startImgPreview(imgJson, imgIndex);
+  }catch(e){}
+});
+</script>
+</body>
+</html>

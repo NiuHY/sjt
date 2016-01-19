@@ -12,6 +12,7 @@ import android.webkit.WebView;
 
 import com.cmm.worldartapk.activity.DetailPageActivity;
 import com.cmm.worldartapk.activity.MainActivity;
+import com.cmm.worldartapk.activity.UserActivity;
 import com.cmm.worldartapk.base.BaseActivity;
 import com.cmm.worldartapk.base.UserInfo;
 import com.cmm.worldartapk.bean.IsReadBean;
@@ -103,6 +104,11 @@ public class JsScope {
     public static void setDetailId(WebView webView, String detailId) {
         ConstJS_F.detailId = detailId;
     }
+    //个人中心，获取从哪个页面打开
+    public static String getLoadCategory(WebView webView) {
+        return ConstJS_F.loadCategory;
+    }
+
 
     /**
      * 用Activity的名字开启它
@@ -153,52 +159,60 @@ public class JsScope {
      * @param str     boolean int 不同类型的参数重载 保存到sp中的内容  值
      */
     public static void setSP(WebView webView, String key, String str) {
-        int id = -1;
-        try {
-            id = Integer.parseInt(str);
-        } catch (NumberFormatException e) {
-            return;
-        }
 
-        if (id == -1){
-            return;
-        }
-
-        if (sp == null){
-            sp = SJT_UI_Utils.getSharedPreferences();
-        }
-
-        /**
-         * 先从sp中获取已经存在的字符串(JSON) 如果没有或者解析错误，就移除这个key，创建IsReadBean
-         * 得到IsReadBean对象后，把接受到的值存到集合，然后把这个对象转换为JSON串存起来
-         */
-        IsReadBean isReadBean = null;
-
-        try {
-            isReadBean = new Gson().fromJson(sp.getString(key, ""), IsReadBean.class);
-        } catch (JsonSyntaxException e) {
-            e.printStackTrace();
-        }
-
-        if (isReadBean == null){
-            sp.edit().remove(key);
-            isReadBean = new IsReadBean();
-        }
-        if (isReadBean.allId == null){
-            isReadBean.allId = new ArrayList<>();
-        }
-
-        //如果有重复的就跳出去，没有才去继续添加
-        for(IsReadBean.DataId dataId : isReadBean.allId){
-            if (dataId.id == id){
+        if (TextUtils.equals(key, "share")){
+            //如果是分享数据
+            sp.edit().putString(key, str).apply();
+        }else {
+            //如果是记录已读
+            int id = -1;
+            try {
+                id = Integer.parseInt(str);
+            } catch (NumberFormatException e) {
                 return;
             }
+
+            if (id == -1){
+                return;
+            }
+
+            if (sp == null){
+                sp = SJT_UI_Utils.getSharedPreferences();
+            }
+
+            /**
+             * 先从sp中获取已经存在的字符串(JSON) 如果没有或者解析错误，就移除这个key，创建IsReadBean
+             * 得到IsReadBean对象后，把接受到的值存到集合，然后把这个对象转换为JSON串存起来
+             */
+            IsReadBean isReadBean = null;
+
+            try {
+                isReadBean = new Gson().fromJson(sp.getString(key, ""), IsReadBean.class);
+            } catch (JsonSyntaxException e) {
+                e.printStackTrace();
+            }
+
+            if (isReadBean == null){
+                sp.edit().remove(key);
+                isReadBean = new IsReadBean();
+            }
+            if (isReadBean.allId == null){
+                isReadBean.allId = new ArrayList<>();
+            }
+
+            //如果有重复的就跳出去，没有才去继续添加
+            for(IsReadBean.DataId dataId : isReadBean.allId){
+                if (dataId.id == id){
+                    return;
+                }
+            }
+
+            isReadBean.allId.add(new IsReadBean.DataId(id));
+
+
+            sp.edit().putString(key, new Gson().toJson(isReadBean)).apply();
         }
 
-        isReadBean.allId.add(new IsReadBean.DataId(id));
-
-
-        sp.edit().putString(key, new Gson().toJson(isReadBean)).apply();
     }
 
     /**
@@ -250,12 +264,18 @@ public class JsScope {
      * @param index 图片index
      */
     public static void startImgPreview(WebView webView, String imgsJson, int index) {
+
+//        LogUtils.e(imgsJson);
+
         Context context = webView.getContext();
         if (context instanceof DetailPageActivity) {
 //            UIUtils.showToastSafe(imgsJson);
 //            System.out.println("================== " + imgsJson);
               ((DetailPageActivity) context).showVPWindow(imgsJson, index);
+        }else if (context instanceof UserActivity){
+            ((UserActivity) context).showVPWindow(imgsJson, index);
         }
+
     }
 
     /**
@@ -308,6 +328,9 @@ public class JsScope {
                 break;
             case "user_intro": //云图用户信息
                 userInfo = UserInfo.getUserInfo().USER_INTRO;
+                break;
+            case "avatar": //用户头像
+                userInfo = UserInfo.getUserInfo().AVATAR;
                 break;
             default:
                 break;

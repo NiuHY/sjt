@@ -38,7 +38,7 @@ public class TweenAnimLoadingLayout extends LoadingLayout {
                                   Orientation scrollDirection, TypedArray attrs) {
         super(context, mode, scrollDirection, attrs);
         // 初始化
-        mHeaderImage.setImageResource(R.drawable.load_anim);
+//        mHeaderImage.setImageResource(R.drawable.load_anim);
 //        animationDrawable = (AnimationDrawable) mHeaderImage.getDrawable();
 
 //        rotation = ObjectAnimator.ofFloat(mHeaderImage, "rotation", 0f, 360f);

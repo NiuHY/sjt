@@ -39,7 +39,7 @@
         <!-- 首页Activity  android:launchMode="singleTask" -->
         <activity
             android:name=".activity.MainActivity"
-
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/SJT_ActivityTheme"
             >
@@ -90,6 +90,7 @@
         <meta-data android:name="AuthorizeAdapter" android:value="com.cmm.worldartapk.utils.share_package.MyAdapter" />
         <!-- 搜索Activity -->
         <activity
+            android:launchMode="singleTop"
             android:name=".activity.SearchActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateVisible|adjustResize"
@@ -100,6 +101,7 @@
 
         <!-- 个人中心Activity -->
         <activity
+            android:launchMode="singleTop"
             android:name=".activity.UserActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar"
@@ -109,6 +111,7 @@
 
         <!-- 设置Activity -->
         <activity
+            android:launchMode="singleTop"
             android:name=".activity.SettingActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar"
@@ -118,7 +121,8 @@
 
         <!-- 登陆注册Activity -->
         <activity
-            android:name=".activity.LoadActivity"
+            android:launchMode="singleTop"
+            android:name=".activity.LoginActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar"
             >

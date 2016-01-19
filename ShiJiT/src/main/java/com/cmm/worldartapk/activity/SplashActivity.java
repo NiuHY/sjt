@@ -31,6 +31,6 @@ public class SplashActivity extends BaseActivity {
             public void run() {
                 setExitSwichLayout();
             }
-        }, 2500L);
+        }, 3500L);
     }
 }

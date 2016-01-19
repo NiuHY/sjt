@@ -1,5 +1,6 @@
 package com.cmm.worldartapk.fragment;
 
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
@@ -16,7 +17,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cmm.worldartapk.R;
-import com.cmm.worldartapk.activity.LoadActivity;
+import com.cmm.worldartapk.SafeWebViewBridge.js.ConstJS_F;
+import com.cmm.worldartapk.activity.LoginActivity;
+import com.cmm.worldartapk.activity.UserActivity;
 import com.cmm.worldartapk.base.BaseFragment;
 import com.cmm.worldartapk.base.UserInfo;
 import com.cmm.worldartapk.bean.UserBean;
@@ -86,7 +89,7 @@ public class Load_Fragment extends BaseFragment {
 
         //根据进来的页面变更 mLoadBtnUseYt  mLoadBtnRegist 两个按钮的颜色
         //把文本颜色设置成当前颜色
-        currentColor = ((LoadActivity)getActivity()).getCurrentColor();
+        currentColor = ((LoginActivity)getActivity()).getCurrentColor();
         mLoadBtnUseYt.setTextColor(currentColor);
         mLoadBtnRegist.setTextColor(currentColor);
 
@@ -435,7 +438,7 @@ public class Load_Fragment extends BaseFragment {
      * 第三方登陆请求，需要信息参数
      * @param params  请求参数
      */
-    private void load_3_Request(HashMap<String, String> params) {
+    private void load_3_Request(final HashMap<String, String> params) {
 
         String requestUrl = Const.BASE_URL + URL_OTHERLOGIN;
 
@@ -454,6 +457,8 @@ public class Load_Fragment extends BaseFragment {
                     UserInfo.getUserInfo().USER_ID = user.data.user_id;
                     UserInfo.getUserInfo().SESSION_KEY = user.data.session_key;
                     UserInfo.getUserInfo().IS_BAND = user.data.is_band;
+                    UserInfo.getUserInfo().AVATAR = params.get("avatar");
+
 
                     //判断是否是云图登陆，如果是就保存其用户简介
                     if (mLoadBtnUseYt.isChecked() && !TextUtils.isEmpty(yuntoo_user_intro)){
@@ -461,8 +466,22 @@ public class Load_Fragment extends BaseFragment {
                     }
 
                     UIUtils.showToastSafe("登陆成功");
+
+                    //判断是否是要进入个人中心，如果进入就在这里打开个人中心
+                    Intent intent = getActivity().getIntent();
                     // 登陆成功就关闭登陆页
                     getActivity().finish();
+                    //同时打开个人中心
+                    if (intent != null && intent.getBooleanExtra("userActivity", false)){
+                        int loadCategory = intent.getIntExtra("loadCategory", -1);
+                        Intent userIntent = new Intent(getActivity(), UserActivity.class);
+                        userIntent.putExtra("loadCategory", loadCategory);
+                        //给JS保存
+                        ConstJS_F.loadCategory = loadCategory + "";
+                        startActivity(userIntent);
+                    }
+
+
                 }else {
                     UIUtils.showToastSafe("登陆失败" + user.error_message);
                 }
@@ -510,7 +529,7 @@ public class Load_Fragment extends BaseFragment {
      */
     public void setEnable(){
         //在从注册页过来时判断是否有用户信息，如果有就回显
-        LoadActivity.UserTemp userTemp = ((LoadActivity)getActivity()).getUserTemp();
+        LoginActivity.UserTemp userTemp = ((LoginActivity)getActivity()).getUserTemp();
         if (null != userTemp){
             //有数据，回显邮箱和密码
             mLoadEtEmail.setText(userTemp.email);

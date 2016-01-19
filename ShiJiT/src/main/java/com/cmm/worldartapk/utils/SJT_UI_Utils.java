@@ -13,8 +13,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cmm.worldartapk.R;
-import com.cmm.worldartapk.activity.LoadActivity;
+import com.cmm.worldartapk.activity.LoginActivity;
 import com.cmm.worldartapk.base.UserInfo;
+import com.cmm.worldartapk.publicinfo.ConstInfo;
 
 /**
  * Created by Administrator on 2016/1/4.
@@ -27,16 +28,34 @@ public class SJT_UI_Utils {
      * @param activity 当前提示框所在的Activity
      * @param info 提示信息
      */
-    public static void showDialog(Activity activity, String info, boolean isSuccess){
+    public static void showDialog(Activity activity, String info, boolean isSuccess, int loadCategory){
         View view = View.inflate(UIUtils.getContext(), R.layout.setting_clear_dialog, null);
 
-        //图片
+        //图片 和 文本，先根据页面变更颜色，然后设置不同内容
         ImageView imageView = (ImageView) view.findViewById(R.id.dialog_img);
-        imageView.setSelected(isSuccess);
-
-        //设置文字信息
         TextView textView = (TextView) view.findViewById(R.id.dialog_info);
-        textView.setText(info);
+
+        //颜色
+        switch (loadCategory){
+            case ConstInfo.JINTAN:
+                imageView.setImageResource(R.drawable.dialog_info_selector_yellow);
+                textView.setTextColor(UIUtils.getColor(R.color.information_color));
+                break;
+            case ConstInfo.ZHANLAN:
+                imageView.setImageResource(R.drawable.dialog_info_selector_red);
+                textView.setTextColor(UIUtils.getColor(R.color.exhibition_color));
+                break;
+            case ConstInfo.YISHUGUAN:
+                imageView.setImageResource(R.drawable.dialog_info_selector_blue);
+                textView.setTextColor(UIUtils.getColor(R.color.gallery_color));
+                break;
+            default:
+                break;
+        }
+
+
+        imageView.setSelected(isSuccess); // true 是成功
+        textView.setText(info); //文本简述
 
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         final AlertDialog clearDialog = builder.create();
@@ -71,7 +90,7 @@ public class SJT_UI_Utils {
      */
     public static void isOpenLoadPage(Activity activity){
         if (!userState()){
-            activity.startActivity(new Intent(activity, LoadActivity.class));
+            activity.startActivity(new Intent(activity, LoginActivity.class));
         }
     }
 

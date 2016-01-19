@@ -32,7 +32,7 @@ import android.widget.TextView;
 
 import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.SafeWebViewBridge.js.ConstJS_F;
-import com.cmm.worldartapk.base.BaseActivity;
+import com.cmm.worldartapk.base.BaseGestureActivity;
 import com.cmm.worldartapk.bean.SearchBean_Artwork;
 import com.cmm.worldartapk.bean.SearchBean_Exhibition;
 import com.cmm.worldartapk.bean.SearchBean_Gallery;
@@ -44,6 +44,7 @@ import com.cmm.worldartapk.net_volley_netroid.Netroid;
 import com.cmm.worldartapk.net_volley_netroid.net_2.MyNetWorkObject;
 import com.cmm.worldartapk.net_volley_netroid.net_2.NetUtils;
 import com.cmm.worldartapk.net_volley_netroid.net_2.RequestMapData;
+import com.cmm.worldartapk.publicinfo.ConstInfo;
 import com.cmm.worldartapk.ui.ExtendedViewPager;
 import com.cmm.worldartapk.ui.SearchTabView;
 import com.cmm.worldartapk.ui.TouchImageView;
@@ -69,7 +70,7 @@ import pl.droidsonroids.gif.GifImageView;
 /**
  * Created by Administrator on 2015/12/16.
  */
-public class SearchActivity extends BaseActivity {
+public class SearchActivity extends BaseGestureActivity {
 
     /**
      * 展览搜索
@@ -109,7 +110,8 @@ public class SearchActivity extends BaseActivity {
 
     @Override
     protected void init() {
-
+        //初始化手势检查器
+        super.init();
     }
 
     @Override
@@ -922,12 +924,12 @@ public class SearchActivity extends BaseActivity {
                             if (!TextUtils.isEmpty(ConstJS_F.detailId)){
                                 collect(imageId);
                             }else {
-                                SJT_UI_Utils.showDialog(SearchActivity.this, "收藏失败", false);
+                                SJT_UI_Utils.showDialog(SearchActivity.this, "收藏失败", false, ConstInfo.YISHUGUAN);
                             }
 
                         } else {
                             UIUtils.showToastSafe("请登陆...");
-                            startActivity(new Intent(SearchActivity.this, LoadActivity.class));
+                            startActivity(new Intent(SearchActivity.this, LoginActivity.class));
                         }
                     }
                 });
@@ -943,7 +945,7 @@ public class SearchActivity extends BaseActivity {
                         FileUtils.saveBitmap(bitmapDrawable.getBitmap());
                         UIUtils.showToastSafe("已保存");
                         // TODO 保存图片
-                        SJT_UI_Utils.showDialog(SearchActivity.this, "已保存", true);
+                        SJT_UI_Utils.showDialog(SearchActivity.this, "已保存", true, ConstInfo.YISHUGUAN);
                     }
                 });
 
@@ -970,7 +972,7 @@ public class SearchActivity extends BaseActivity {
         NetUtils.pushStringByNet_POST(url, RequestMapData.params_artworkCollect(), new MyNetWorkObject.SuccessListener() {
             @Override
             public void onSuccess(Object data) {
-                SJT_UI_Utils.showDialog(SearchActivity.this, "收藏成功", true);
+                SJT_UI_Utils.showDialog(SearchActivity.this, "收藏成功", true, ConstInfo.YISHUGUAN);
                 LogUtils.e("收藏成功" + data);
             }
 
@@ -982,8 +984,16 @@ public class SearchActivity extends BaseActivity {
         });
     }
 
-    //重写 OnKeyDown
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (isWindowViewShow) {
+            windowManager.removeView(dfWindowView);
+            isWindowViewShow = false;
+        }
+    }
 
+    //重写 OnKeyDown
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         //在按返回键时判断是否打开了窗口，如果打开了就先关闭它

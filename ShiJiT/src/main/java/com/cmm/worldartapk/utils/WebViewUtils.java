@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.Handler;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
@@ -67,6 +68,7 @@ public class WebViewUtils {
         } else {
             settings.setLoadsImagesAutomatically(false);
         }
+
         //JS可用
         settings.setJavaScriptEnabled(true);
         //给webView 关联 需要JS调用的类
@@ -78,6 +80,8 @@ public class WebViewUtils {
         settings.setLoadWithOverviewMode(true);
 //        //背景透明
         webView.setBackgroundColor(Color.alpha(0x00111111));
+
+
 
         //在WebView中加载后续页面
         webView.setWebViewClient(new WebViewClient() {
@@ -99,6 +103,7 @@ public class WebViewUtils {
                 // 隐藏加载中页面
                 if (loadingPager != null) {
                     loadingPager.setVisibility(View.GONE);
+                    loadingPager.clearAnimation();
                 }
 
                 //得到WebView所在的Activity(BaseActivity)如果还在刷新就完成
@@ -132,8 +137,18 @@ public class WebViewUtils {
                     //开启动画
                     loadingAnim.startAnimation(rotateAnimation);
                     loadingPager.setVisibility(View.VISIBLE);
-                }
 
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (loadingPager.getVisibility() == View.VISIBLE){
+                                loadingPager.setVisibility(View.GONE);
+                                loadingPager.clearAnimation();
+                                UIUtils.showToastSafe("资源初始化中...");
+                            }
+                        }
+                    }, 6000L);
+                }
             }
 
             //自定义出错界面

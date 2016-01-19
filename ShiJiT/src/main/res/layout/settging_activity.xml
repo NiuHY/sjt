@@ -43,6 +43,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <TextView
+                    android:textIsSelectable="true"
                     android:textColor="#aa010000"
                     android:text="    艺术世纪APP是针对诸众美育提升的人类文明优秀成果共享平台。平台由“世界艺展”、“世界艺馆”、“中华世纪坛”三个模块组成。\n
     “世界艺馆”整合了世界顶级博物馆、艺术馆及收藏和展示人类优秀文明成果的机构的高清数字珍藏，通过便捷、人性化的交互体验方式供诸众研究、学习、交流和飨用。\n

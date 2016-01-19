@@ -181,7 +181,7 @@ public class DragLayout extends FrameLayout {
         }
 
         if (!(mTitleView instanceof ViewGroup) || !(mMainContent instanceof ViewGroup)) {
-            throw new IllegalStateException("子View必须是ViewGroup的子类！");
+            throw new IllegalStateException("子View必须是ViewGroup的子类");
         }
     }
 

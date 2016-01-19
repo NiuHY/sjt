@@ -76,6 +76,7 @@ public class YearUtils {
         });
 
 
+
         //在这里得到 显示的第一个条目和最后一个条目位置
         listView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override

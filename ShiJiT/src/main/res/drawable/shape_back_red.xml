@@ -3,7 +3,7 @@
    android:shape="oval" >
 
    <!-- 填充色 -->
-   <solid android:color="#ffFF7D7D" ></solid>
+   <solid android:color="@color/exhibition_color" ></solid>
    <size
       android:height="46dp"
       android:width="46dp"/>

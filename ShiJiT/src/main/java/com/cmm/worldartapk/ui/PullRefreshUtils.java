@@ -85,7 +85,7 @@ public class PullRefreshUtils {
                             }
                         }
                     }
-                }, 9999L);
+                }, 4999L);
             }
 
 

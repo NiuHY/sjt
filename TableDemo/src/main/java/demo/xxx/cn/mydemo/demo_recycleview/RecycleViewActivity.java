@@ -13,6 +13,6 @@ public class RecycleViewActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-
+        setContentView(RecyclerViewTest.createRecyclerView(this));
     }
 }

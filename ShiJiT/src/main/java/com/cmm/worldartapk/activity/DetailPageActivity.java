@@ -26,7 +26,7 @@ import android.widget.TextView;
 
 import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.SafeWebViewBridge.js.ConstJS_F;
-import com.cmm.worldartapk.base.BaseActivity;
+import com.cmm.worldartapk.base.BaseGestureActivity;
 import com.cmm.worldartapk.net_volley_netroid.Const;
 import com.cmm.worldartapk.net_volley_netroid.Netroid;
 import com.cmm.worldartapk.net_volley_netroid.net_2.MyNetWorkObject;
@@ -37,10 +37,9 @@ import com.cmm.worldartapk.ui.ExtendedViewPager;
 import com.cmm.worldartapk.ui.PullRefreshUtils;
 import com.cmm.worldartapk.ui.TouchImageView;
 import com.cmm.worldartapk.utils.FileUtils;
-import com.cmm.worldartapk.utils.LogUtils;
-import com.cmm.worldartapk.utils.share_package.OtherUtils;
 import com.cmm.worldartapk.utils.SJT_UI_Utils;
 import com.cmm.worldartapk.utils.UIUtils;
+import com.cmm.worldartapk.utils.share_package.OtherUtils;
 import com.duowan.mobile.netroid.Listener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
@@ -64,7 +63,7 @@ import pl.droidsonroids.gif.GifImageView;
 /**
  * Created by Administrator on 2015/12/11.
  */
-public class DetailPageActivity extends BaseActivity {
+public class DetailPageActivity extends BaseGestureActivity {
 
     /**
      * 今坛
@@ -108,20 +107,17 @@ public class DetailPageActivity extends BaseActivity {
 
     @Override
     protected void init() {
-
-        UIUtils.showToastSafe("开始加载详情");
+        super.init();
 
         //得到 打开这个详情页的 Intent
         intent = getIntent();
 
         //这是哪一个板块的详情页
-        loadCategory = intent.getIntExtra("loadCategory", ConstInfo.JINTAN);
+        loadCategory = intent.getIntExtra("loadCategory", ConstInfo.ZHANLAN);
+
+        ConstJS_F.loadCategory = loadCategory + "";
     }
 
-    @Override
-    public void supportFinishAfterTransition() {
-        super.supportFinishAfterTransition();
-    }
 
     @Override
     protected View getContentView() {
@@ -136,8 +132,6 @@ public class DetailPageActivity extends BaseActivity {
         goTopButton = (ImageButton) findViewById(R.id.bt_back_top);
         //默认隐藏
         goTopButton.setVisibility(View.GONE);
-
-
 
 
         //返回按钮
@@ -163,9 +157,20 @@ public class DetailPageActivity extends BaseActivity {
         // 初始化 webView
         webView = PullRefreshUtils.setListener_PRWebView(mPullRefreshWebView);
 
+        //往右划关闭当前页
+        webView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                gDetector.onTouchEvent(event);
+
+                return false;
+            }
+        });
+
 
         //设置点击事件(蓝色详情页)
-        if (loadCategory == ConstInfo.YISHUGUAN){
+        if (loadCategory == ConstInfo.YISHUGUAN) {
 
             //启用上拉加载
             mPullRefreshWebView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
@@ -174,11 +179,13 @@ public class DetailPageActivity extends BaseActivity {
             mPullRefreshWebView.setOnScrollChangedCallback(new PullToRefreshWebView.OnScrollChangedCallback() {
                 @Override
                 public void onScroll(int dx, int dy) {
-                    if (dy > 0){
+                    if (dy > 0) {
                         goTopButton.setVisibility(View.GONE);
-                    }else {
+                    } else {
                         goTopButton.setVisibility(View.VISIBLE);
                     }
+
+//                    LogUtils.e(dy+"---");
                 }
             });
 
@@ -190,6 +197,8 @@ public class DetailPageActivity extends BaseActivity {
                         UIUtils.showToastSafe("返回顶部");
                         webView.loadUrl("javascript:goTop()");
                     }
+                    //点击后隐藏
+                    goTopButton.setVisibility(View.GONE);
                 }
             });
         }
@@ -202,16 +211,16 @@ public class DetailPageActivity extends BaseActivity {
             @Override
             public boolean onLongClick(View v) {
 
-
+                //UIUtils.showToastSafe(ConstJS_F.detailId);
 
                 //判断sp中 share 对应的 id值是否和当前详情页一致
                 //获取JSON串
 //                JsScope.setSP(null, "share", "test");
                 String shareJson = sp.getString("share", "");
 
-                LogUtils.e(shareJson);
+//                LogUtils.e(shareJson);
 
-                if (!TextUtils.isEmpty(shareJson)){
+                if (!TextUtils.isEmpty(shareJson)) {
                     //获取当前页id
                     String currentId = ConstJS_F.detailId;
                     //解析json 比较id是否一致
@@ -219,7 +228,7 @@ public class DetailPageActivity extends BaseActivity {
                         JSONObject jsonObject = new JSONObject(shareJson);
 
                         String jsonId = jsonObject.getString("id");
-                        if (jsonId != null && TextUtils.equals(currentId, jsonId)){
+                        if (jsonId != null && TextUtils.equals(currentId, jsonId)) {
 
                             //打开分享页
                             showShareWindow();
@@ -252,16 +261,16 @@ public class DetailPageActivity extends BaseActivity {
 //                                    }
 //                                });
 
-                            OtherUtils.setShareData(DetailPageActivity.this, title, url, info, imageUrl);
+                            OtherUtils.setShareData(DetailPageActivity.this, title, url, info, imageUrl, loadCategory);
 
-                        }else{
+                        } else {
                             UIUtils.showToastSafe("分享数据准备中...");
                         }
 
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }else{
+                } else {
                     UIUtils.showToastSafe("分享数据准备中...");
                 }
 
@@ -298,13 +307,13 @@ public class DetailPageActivity extends BaseActivity {
     //添加一个窗体来  分享
     private void showShareWindow() {
         //初始化窗体
-        if(windowManager == null){
+        if (windowManager == null) {
             windowManager = getWindowManager();
         }
 
         dfWindowView = View.inflate(this, R.layout.sharepage_window, null);
         //设置布局，初始化6个分享按钮
-            initShareButton();
+        initShareButton();
 
 
         // 设置布局参数
@@ -401,11 +410,11 @@ public class DetailPageActivity extends BaseActivity {
                         //TODO
 //                        ClipData clipData = new ClipData();
 //                        jtb.setPrimaryClip(clipData);
-                        if (TextUtils.isEmpty(detailPagerUrl)){
-                            SJT_UI_Utils.showDialog(DetailPageActivity.this, "复制失败", false);
-                        }else{
+                        if (TextUtils.isEmpty(detailPagerUrl)) {
+                            SJT_UI_Utils.showDialog(DetailPageActivity.this, "复制失败", false, loadCategory);
+                        } else {
                             jtb.setText(detailPagerUrl);
-                            SJT_UI_Utils.showDialog(DetailPageActivity.this, "复制成功", true);
+                            SJT_UI_Utils.showDialog(DetailPageActivity.this, "复制成功", true, loadCategory);
                         }
                         break;
                     case R.id.share_btn_collect:
@@ -413,15 +422,30 @@ public class DetailPageActivity extends BaseActivity {
                         //点击后判断是否登陆，如果登陆就收藏成功，没有登陆就跳到登陆页面
                         //TODO 收藏 连
                         if (SJT_UI_Utils.userState()) {
-                            if (!TextUtils.isEmpty(ConstJS_F.detailId)){
-                                collect(ConstJS_F.detailId, COLLECT_TYPE_GALLERY);
-                            }else {
-                                SJT_UI_Utils.showDialog(DetailPageActivity.this, "收藏失败", false);
+                            if (!TextUtils.isEmpty(ConstJS_F.detailId)) {
+                                //收藏类型
+                                String collectType = COLLECT_TYPE_EXHIBITION;
+                                switch (loadCategory){
+                                    case 1:
+                                        collectType = COLLECT_TYPE_INFORMATION;
+                                        break;
+                                    case 2:
+                                        collectType = COLLECT_TYPE_EXHIBITION;
+                                        break;
+                                    case 3:
+                                        collectType = COLLECT_TYPE_GALLERY;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                collect(ConstJS_F.detailId, collectType);
+                            } else {
+                                SJT_UI_Utils.showDialog(DetailPageActivity.this, "收藏失败", false, loadCategory);
                             }
 
                         } else {
                             UIUtils.showToastSafe("请登陆...");
-                            startActivity(new Intent(DetailPageActivity.this, LoadActivity.class));
+                            startActivity(new Intent(DetailPageActivity.this, LoginActivity.class));
                         }
 
                         break;
@@ -429,18 +453,18 @@ public class DetailPageActivity extends BaseActivity {
                         break;
                 }
 
-                if (!TextUtils.isEmpty(shareName)){
+                //提示点击成功
+                if (!TextUtils.isEmpty(shareName)) {
+                    UIUtils.showToastSafe("正在启动分享...");
                     OtherUtils.shareMethod(shareName);
                 }
+
 
                 //点击后关闭分享
                 if (isWindowViewShow) {
                     windowManager.removeView(dfWindowView);
                     isWindowViewShow = false;
                 }
-
-                //提示点击成功
-                UIUtils.showToastSafe("正在启动分享...");
             }
         });
     }
@@ -467,7 +491,7 @@ public class DetailPageActivity extends BaseActivity {
 
 
     //图片类
-    private class ImagePreInfo{
+    private class ImagePreInfo {
         /**
          * 图片url
          */
@@ -488,11 +512,16 @@ public class DetailPageActivity extends BaseActivity {
 
     /**
      * 添加一个窗体来  图片预览
+     *
      * @param imgsJson
      * @param index
      */
     private long evpClickTime;//ViewPager 点击延时
+
     public void showVPWindow(String imgsJson, int index) {
+
+        ConstJS_F.json = imgsJson;
+
         //把Json解析成url集合  imagePathList
         imagePathList = new ArrayList<ImagePreInfo>();
         try {
@@ -512,7 +541,7 @@ public class DetailPageActivity extends BaseActivity {
         }
 
         //初始化窗体
-        if(windowManager == null){
+        if (windowManager == null) {
             windowManager = getWindowManager();
         }
 
@@ -576,16 +605,16 @@ public class DetailPageActivity extends BaseActivity {
         blankView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (vp_ll_btViewnGroup != null){
+                if (vp_ll_btViewnGroup != null) {
                     vp_ll_btViewnGroup.setVisibility(View.GONE);
                 }
             }
         });
 
         //如果是第三页才显示 收藏按钮
-        if (loadCategory == 3){
+        if (loadCategory == 3) {
             addBT.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             addBT.setVisibility(View.GONE);
         }
 
@@ -593,8 +622,8 @@ public class DetailPageActivity extends BaseActivity {
         dfWindowView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (evpClickTime > 0){
-                    if ((SystemClock.currentThreadTimeMillis() - evpClickTime) < 500L){
+                if (evpClickTime > 0) {
+                    if ((SystemClock.currentThreadTimeMillis() - evpClickTime) < 500L) {
                         // 关闭预览
                         if (isWindowViewShow) {
                             windowManager.removeView(dfWindowView);
@@ -606,7 +635,6 @@ public class DetailPageActivity extends BaseActivity {
                 evpClickTime = SystemClock.currentThreadTimeMillis();
             }
         });
-
 
 
         //给ViewPager设置适配器
@@ -651,7 +679,7 @@ public class DetailPageActivity extends BaseActivity {
                     gifImageView.setImageResource(R.drawable.ic_launcher);
 
                     //通过imagePath判断本地是否有缓存，有就从本地加载，没有才从网络加载
-                    if (FileUtils.findGifFile(imagePath)){
+                    if (FileUtils.findGifFile(imagePath)) {
                         //存在，直接从本地缓存加载
                         try {
                             GifDrawable gifDrawable = new GifDrawable(FileUtils.getGifpath(imagePath));
@@ -659,7 +687,7 @@ public class DetailPageActivity extends BaseActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    }else {
+                    } else {
                         // 不存在，从网络获取，然后保存
                         NetUtils.getByteByNet("http://pic.joke01.com/uppic/13-05/30/30215236.gif", new Listener<byte[]>() {
                             @Override
@@ -732,7 +760,7 @@ public class DetailPageActivity extends BaseActivity {
     }
 
     // 长按图片 保存和收藏
-    private void showSaveImageWindow(final ImageView imageView, final String imageId){
+    private void showSaveImageWindow(final ImageView imageView, final String imageId) {
         imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -766,15 +794,15 @@ public class DetailPageActivity extends BaseActivity {
                         //去 收藏，传 id 和收藏类型
                         // TODO 图片的 id
                         if (SJT_UI_Utils.userState()) {
-                            if (!TextUtils.isEmpty(ConstJS_F.detailId)){
+                            if (!TextUtils.isEmpty(ConstJS_F.detailId)) {
                                 collect(imageId, COLLECT_TYPE_ARTWORK);
-                            }else {
-                                SJT_UI_Utils.showDialog(DetailPageActivity.this, "收藏失败", false);
+                            } else {
+                                SJT_UI_Utils.showDialog(DetailPageActivity.this, "收藏失败", false, loadCategory);
                             }
 
                         } else {
                             UIUtils.showToastSafe("请登陆...");
-                            startActivity(new Intent(DetailPageActivity.this, LoadActivity.class));
+                            startActivity(new Intent(DetailPageActivity.this, LoginActivity.class));
                         }
                     }
                 });
@@ -790,7 +818,7 @@ public class DetailPageActivity extends BaseActivity {
                         FileUtils.saveBitmap(bitmapDrawable.getBitmap());
                         UIUtils.showToastSafe("已保存");
                         // TODO 保存图片
-                        SJT_UI_Utils.showDialog(DetailPageActivity.this, "已保存", true);
+                        SJT_UI_Utils.showDialog(DetailPageActivity.this, "已保存", true, loadCategory);
                     }
                 });
 
@@ -802,7 +830,8 @@ public class DetailPageActivity extends BaseActivity {
 
     /**
      * 收藏的方法
-     * @param artworkID 收藏目标的 id
+     *
+     * @param artworkID   收藏目标的 id
      * @param collectType 收藏目标的类型
      */
     private void collect(String artworkID, String collectType) {
@@ -818,7 +847,7 @@ public class DetailPageActivity extends BaseActivity {
         NetUtils.pushStringByNet_POST(url, RequestMapData.params_artworkCollect(), new MyNetWorkObject.SuccessListener() {
             @Override
             public void onSuccess(Object data) {
-                SJT_UI_Utils.showDialog(DetailPageActivity.this, "收藏成功", true);
+                SJT_UI_Utils.showDialog(DetailPageActivity.this, "收藏成功", true, loadCategory);
             }
 
             @Override
@@ -830,15 +859,4 @@ public class DetailPageActivity extends BaseActivity {
     }
 
 
-    /**
-     * 滚动监听，如果是蓝色详情页才监听
-     * 向下滑动 显示返回顶部按钮，否则隐藏
-     */
-    private int downY;
-    @Override
-    public boolean onTouchEvent(MotionEvent event) {
-
-
-        return super.onTouchEvent(event);
-    }
 }

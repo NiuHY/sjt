@@ -20,6 +20,7 @@ import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.activity.MainActivity;
 import com.cmm.worldartapk.utils.SJT_UI_Utils;
 import com.cmm.worldartapk.utils.UIUtils;
+import com.cmm.worldartapk.utils.ViewUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 
 import cn.sharesdk.framework.ShareSDK;
@@ -31,7 +32,6 @@ import cn.sharesdk.framework.ShareSDK;
 public abstract class BaseActivity extends AppCompatActivity {
 
     protected SharedPreferences sp;
-
 
 
     // 静态的 可以得到前台Activity
@@ -108,8 +108,17 @@ public abstract class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         //取消注册
-        if(myNetReceiver!=null){
+        if (myNetReceiver != null) {
             unregisterReceiver(myNetReceiver);
+        }
+
+        if (webView != null) {
+            try {
+                ViewUtils.removeSelfFromParent(webView);
+                webView.destroy();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         //从Activity集合中移除
@@ -157,7 +166,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 System.exit(0);
             }
             return true;
-        }else if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+        } else if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
             setExitSwichLayout();
             return true;
         }
@@ -169,6 +178,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     public void setEnterSwichLayout() {
         overridePendingTransition(R.anim.setg_next_in, R.anim.setg_next_out);
     }
+
     //退出动画
     public void setExitSwichLayout() {
         finish();
@@ -190,10 +200,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
                 ++inCount;
 
-                if (inCount > 1){
-                    mConnectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+                if (inCount > 1) {
+                    mConnectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
                     netInfo = mConnectivityManager.getActiveNetworkInfo();
-                    if(netInfo != null && netInfo.isAvailable()) {
+                    if (netInfo != null && netInfo.isAvailable()) {
 
                         /////////////网络连接
                         String name = netInfo.getTypeName();
@@ -201,13 +211,13 @@ public abstract class BaseActivity extends AppCompatActivity {
                         UIUtils.showToastSafe("网络已经连接");
                         //重新加载
 
-                        if(netInfo.getType()==ConnectivityManager.TYPE_WIFI){
+                        if (netInfo.getType() == ConnectivityManager.TYPE_WIFI) {
                             /////WiFi网络
 
-                        }else if(netInfo.getType()==ConnectivityManager.TYPE_ETHERNET){
+                        } else if (netInfo.getType() == ConnectivityManager.TYPE_ETHERNET) {
                             /////有线网络
 
-                        }else if(netInfo.getType()==ConnectivityManager.TYPE_MOBILE){
+                        } else if (netInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
                             /////////3g网络
 
                         }
@@ -225,13 +235,16 @@ public abstract class BaseActivity extends AppCompatActivity {
 
 
     protected PullToRefreshWebView currentPullToRefreshWebView;
+
     /**
      * 给外界使用 用来完成刷新
+     *
      * @return
      */
     public PullToRefreshWebView getCurrentPullToRefreshWebView() {
         return currentPullToRefreshWebView;
     }
+
     public void setCurrentPullToRefreshWebView(PullToRefreshWebView currentPullToRefreshWebView) {
         this.currentPullToRefreshWebView = currentPullToRefreshWebView;
     }
