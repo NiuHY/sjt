@@ -14,14 +14,12 @@
     <script type="text/javascript" src="src/js/autoLayouter_v2.1.1.js"></script>
   </head>
 <body class="img-body">
-<!-- <div class="exhi-header-scroll">
-  <h3>世界艺展</h3>
-</div> -->
 <div class="exhi-header"></div>
 <div class="exhi-header-intro">
     <div class="header-text">
         <p class="en-title"><span>Exhibitions</span></p>
         <p class="title"><span>世界艺展</span></p>
+        <p class="recommed"></p>
     </div>
 </div>
 <div class="detail-wrap" id="detail-wrap">
@@ -33,7 +31,6 @@
     </div>
 </div>
 </div>
-
 <script type="text/javascript">
 var readed,readedArr = [];
 var totalTime = 1500;
@@ -47,7 +44,7 @@ var listWidth = $('.exhi-items').innerWidth();
 var storyOffset = 0;
 var storyLimit = 8;
 var noMoreList = false;
- // var ADS = {};
+//  var ADS = {};
 //  ADS.getSP = {
 //   "allId":[
 //     {"id":1},{"id":44},{"id":66},{"id":3}
@@ -66,6 +63,46 @@ function listLoad(){
     }
   }
 }
+function recommend(){
+  $.ajax({
+    url: host + '/api/exhibition/recommend/',
+    type:'get',
+    data:{
+      client_type:4,
+      client_version:1.0,
+      uuid:'abcdf'
+    },
+    success:function(data){
+      data = JSON.parse(data);
+      if(data.success){
+        data = data.data[0];
+        var id = data.exhibition_id.toString();
+        try{
+          ADS.setSP('exhibitionTitleId', id);
+        }catch(e){}
+        var bgObj = {};
+        var img = new Image();
+        $('.recommed').text(data.exhibition_title || '');
+        img.src = data.exhibition_cover;
+        img.onload = function(){
+          var imgW = img.width;
+          var imgH = img.height;
+          var bgHeight = imgH*screenWidth/imgW;
+          var topPos = (275-bgHeight)/2;
+          bgObj.bgUrl = data.exhibition_cover;
+          bgObj.pos = (275-bgHeight)/2;
+          bgObj.bgCss = {
+                'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
+                'background-size' : '100% auto',
+                'background-attachment' : 'fixed'
+           };
+           $('body').css(bgObj.bgCss);
+        }
+      }
+    }
+  });
+}
+recommend();
 function loadAjax(){
   $.ajax({
       type:'get',
@@ -85,18 +122,7 @@ function loadAjax(){
           var items = data.data;
           var imgArr = [];
           var leftWidth,rightWidth;
-          var coverSize = items.cover_size || '750,750';
-          var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
-          var topPos = (275-bgHeight)/2;
           storyOffset += storyLimit;
-          bgObj.bgUrl = items[0].exhibition_cover;
-          bgObj.pos = (275-bgHeight)/2;
-          bgObj.bgCss = {
-            'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
-            'background-size' : '100% auto',
-            'background-attachment' : 'fixed'
-          };
-          $('body').css(bgObj.bgCss);
           $.each(items,function(k,v){
             var isReaded = 0;
             if(readedArr && readedArr.length>0){
@@ -350,7 +376,7 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
    var $headerTitle = $headerText.find('.title').find('span').first();
    var $enTitle = $('.en-title');
    var offsetLeft = $headerTitle.offset().left;
-   var $dateText =  $headerText.find('.title').find('.header-date');
+   var $recommed = $('.recommed');
    distScorllTop = $headerTitle.offset().top;
    var titleWidth = $headerTitle.width();
    var $scrollHead = $('.exhi-header-scroll');
@@ -368,7 +394,7 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
         if(progress < 1){
           $headerTitle.stop().show().css({'-webkit-transform':'translate3d(' + trans.x + 'px,' + 0 + 'px,0)'});
           $enTitle.css({'opacity':Math.max(0,(1-progress*1.2))});
-          $dateText.css({'opacity':Math.max(0,(1-progress*1.2))});
+          $recommed.css({'opacity':Math.max(0,(1-progress*1.2))});
           if(isTitleShow){
             try{
               ADS.hideTitleView();

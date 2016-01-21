@@ -36,6 +36,9 @@ public class BaseApplication extends Application {
     //记录打开的Activity 的集合
     private static List<Activity> allActivity;
 
+    //记录用户信息的集合
+    private static UserInfo.MyInfo userInfo;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -45,8 +48,6 @@ public class BaseApplication extends Application {
             initFlag = true;
 //            UIUtils.showToastSafe("++"+a++);
         }
-
-
     }
 
     // 初始化
@@ -72,6 +73,23 @@ public class BaseApplication extends Application {
     //获取这个集合的方法
     public static List<Activity> getActivityList(){
         return allActivity;
+    }
+
+    //获取用户信息，删除用户信息
+    public static UserInfo.MyInfo getUserInfo(){
+
+        if (BaseApplication.userInfo == null){
+            synchronized (BaseApplication.class) {
+                if (BaseApplication.userInfo == null) {
+                    BaseApplication.userInfo = UserInfo.getUserInfo();
+                }
+            }
+        }
+        return BaseApplication.userInfo;
+    }
+    public static void setUserInfo() {
+        UserInfo.setUserInfo();
+        BaseApplication.userInfo = null;
     }
 
     public static BaseApplication getApplication() {

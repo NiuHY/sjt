@@ -90,9 +90,10 @@ public class DrawableUtils {
 
         } finally {
             // 回收
-            bitmap.recycle();
+            if (bitmap != null){
+                bitmap.recycle();
+            }
             System.gc();
-
 
             view.setDrawingCacheEnabled(false);
 

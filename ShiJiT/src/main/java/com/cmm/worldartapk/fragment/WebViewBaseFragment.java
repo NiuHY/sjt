@@ -93,6 +93,13 @@ public abstract class WebViewBaseFragment extends BaseFragment {
 
         // 给WebView 之上添加的按钮
         btn_group_view = View.inflate(UIUtils.getContext(), R.layout.home_btngroup_layout, null);
+        //按钮周围不响应触摸事件
+        btn_group_view.findViewById(R.id.button_pack).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
 
         //初始化标题和按钮
         initTitle(getPagerIndex());

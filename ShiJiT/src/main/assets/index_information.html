@@ -132,14 +132,15 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
     var getADS = setTimeout(waitADS,50);
     initTime += 50;
 }else{
-  // var ADS = {};
-  // ADS.getStringBySp = {
-  //   "allId":[
-  //     {"id":7},{"id":5}
-  //   ]
-  // };
- readed = ADS.getStringBySp('information');
- readed = JSON.parse(readed)['allId'];
+  readed = ADS.getStringBySp('information');
+  readed = JSON.parse(readed)['allId'];
+  
+ //  var ADS = {};
+ //  ADS.getStringBySp = {
+ //    "allId":[
+ //      {"id":7},{"id":5}
+ //    ]
+ //  };
  // readed = ADS.getStringBySp;
  // readed = readed['allId'];
  

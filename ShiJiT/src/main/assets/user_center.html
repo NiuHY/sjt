@@ -32,26 +32,22 @@
     </div>
   </div>
 </div>
-<div class="loadmore" style="position:fixed; bottom:10px; left:10px; z-index:99"><button>加载更多</button></div>
 <script type="text/javascript">
 var host = 'http://cmm.yuntoo.com/';
 // var host = '';
 var limit = 15;
-var bgArr = ['#eba850','#ff2942','#3ebdff'];
+var bgArr = ['#ffb95e','#ff3e54','#5bc7ff'];
 var totalTime = 1500;
 var initTime =50;
 var postImgArr = [];
-var ADS = {};
-ADS.getLoadCategory = function(){
-  return 2;
-}
-ADS.getUserInfo = function(session_key){
-  return 'c5862d0d1cdbaeb3339c8e7592cc532f72e167f285064eca8642e3ca4625e05b';
-} 
+// var ADS = {};
+// ADS.getLoadCategory = function(){
+//   return 2;
+// }
+// ADS.getUserInfo = function(session_key){
+//   return 'c5862d0d1cdbaeb3339c8e7592cc532f72e167f285064eca8642e3ca4625e05b';
+// } 
 var hammer = new Hammer(document.getElementsByTagName('body')[0]);
-// $('.loadmore button').on('click',function(){
-//   listLoad();
-// });
 var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
 var screenHeight = document.documentElement.clientHeight || document.body.clientHeight;
 var imgHight = (screenWidth/2 - 25) + 'px';
@@ -59,6 +55,13 @@ var imgStyle = {'height':imgHight};
 var isLoading = false;
 var noMoreList = false;
 var imgloadIndex = 0;
+var userCollectParam = {
+      client_type:5,
+      client_version:1.0,
+      uuid:'abcd',
+      offset:0,
+      limit:limit
+    };
 hammer.on('press',function(e){
   $('.del').toggle();
 });
@@ -118,14 +121,6 @@ function waitADS(){
     var Foo = {};
     var sessionKey = ADS.getUserInfo('session_key');
     var cateory = ADS.getLoadCategory();
-    var userCollectParam = {
-      session_key:sessionKey,
-      client_type:5,
-      client_version:1.0,
-      uuid:'abcd',
-      offset:0,
-      limit:limit
-    };
     var userInfoParam = {
       session_key:sessionKey,
       client_type:5,
@@ -140,6 +135,7 @@ function waitADS(){
       }
     });
     var $parent = $('.collect-item');
+    userCollectParam.session_key = sessionKey;
     myVue.imgStyle = imgStyle;
     try{
         $('.btm-layer').css('background',bgArr[cateory-1]);
@@ -198,8 +194,10 @@ function waitADS(){
             imgloadIndex = $('img').length;
             userCollectParam.offset += offset;
           }else{
-            $('body').remove('.collect-wrap');
-            $('body').css('height',screenHeight).addClass('fail-loading');
+            if(userCollectParam.offset === 0){
+              $('body').find('.collect-wrap').remove();
+              $('body').css('height',screenHeight).addClass('fail-loading');
+            }
             noMoreList = true;
           }
           try{
@@ -285,7 +283,7 @@ function waitADS(){
       html += '<div class="col-text-list">\
               <div>\
                 <div class="col-text-list-img"><img src="'+ obj.cover +'"/></div>\
-                <div class="col-text-list-text" data-cateory="'+ type +'">\
+                <div class="col-text-list-text" data-id="'+ obj.id +' "data-cateory="'+ type +'">\
                   <div class="del" data-cateory="'+ type +'" data-id="'+ obj.id +'"><div></div></div>\
                   <div>'+ obj.title +'</div>\
                 </div>\
@@ -362,7 +360,6 @@ function waitADS(){
       var type = typeName[$(this).data('cateory') - 1];
       var del_loading = false;
       var $this = $(this);
-      console.log(sessionKey)
       if(!del_loading){
         del_loading = true;
         $.ajax({
@@ -398,7 +395,7 @@ function waitADS(){
 $('body').on('click','.col-text-list',function(){
   var $target = $(this).find('.col-text-list-text');
   var type = $target.data('cateory');
-  var id = $target.data('id');
+  var id = $.trim($target.data('id'));
   try{
     ADS.startDetailActivity(id,type);
   }catch(e){

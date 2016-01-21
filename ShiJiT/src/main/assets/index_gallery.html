@@ -22,6 +22,7 @@
   <div class="header-text">
         <p class="en-title"><span>Art Gallery</span></p>
         <p class="title"><span>全球艺馆</p>
+        <p class="recommed"></p>
     </div>
 </div>
 <div id="galleryIndex">
@@ -73,27 +74,42 @@
                 }
               });
    tilt = screenWidth/Math.abs(parseInt($('.gallery-index').css('margin-top')));
-   $.ajax({
-    type:'get',
-    url:recommedUrl,
-    data:param,
-    success : function(data){
-      data = JSON.parse(data);
-      if(data.success){
-        var coverSize = data.data.cover_size || '750,750';
-        var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
-        var topPos = (275-bgHeight)/2;
-        bgObj.bgUrl = data.data[0].gallery_cover;
-        bgObj.pos = (275-bgHeight)/2;
-        bgObj.bgCss = {
-          'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
-          'background-size' : '100% auto',
-          'background-attachment' : 'fixed'
-        };
-        $('body').css(bgObj.bgCss);
+   function recommend(){
+     $.ajax({
+      type:'get',
+      url:recommedUrl,
+      data:param,
+      success : function(data){
+        data = JSON.parse(data);
+        if(data.success){
+          data = data.data[0];
+          var id = data.gallery_id.toString();
+          try{
+            ADS.setSP('galleryTitleId', id);
+          }catch(e){}
+          var bgObj = {};
+          var img = new Image();
+          $('.recommed').text(decodeURIComponent(data.gallery_name || ''));
+          img.src = data.gallery_cover;
+          img.onload = function(){
+            var imgW = img.width;
+            var imgH = img.height;
+            var bgHeight = imgH*screenWidth/imgW;
+            var topPos = (275-bgHeight)/2;
+            bgObj.bgUrl = data.gallery_cover;
+            bgObj.pos = (275-bgHeight)/2;
+            bgObj.bgCss = {
+                  'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
+                  'background-size' : '100% auto',
+                  'background-attachment' : 'fixed'
+             };
+             $('body').css(bgObj.bgCss);
+            }
+          }
       }
-    }
-   });
+     });
+   }
+   recommend();
    listLoad();
 function listLoad(){
   if(!isLoading && !noMoreList){
@@ -215,6 +231,7 @@ function loadAjax(){
    var $headerText = $('.gallery-header-intro');
    var $headerTitle = $headerText.find('.title').find('span').first();
    var $enTitle = $('.en-title');
+   var $recommed = $('.recommed');
    var offsetLeft = $headerTitle.offset().left;
    distScorllTop = $headerTitle.offset().top;
    var titleWidth = $headerTitle.width();
@@ -235,6 +252,7 @@ function loadAjax(){
        $headerTitle.stop().show().css({'transform':'translate3d(' + trans.x + 'px,' + 0 + 'px,0)'});
       // $headerText.find('.title').css({'transform':'translate3d(0,' + trans.y + 'px,0)'});
       $enTitle.css({'opacity':Math.max(0,(1-progress*1.2))});
+      $recommed.css({'opacity':Math.max(0,(1-progress*1.2))});
       if(isTitleShow){
         try{
           ADS.hideTitleView();

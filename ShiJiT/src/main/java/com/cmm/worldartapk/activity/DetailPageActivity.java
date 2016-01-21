@@ -194,7 +194,7 @@ public class DetailPageActivity extends BaseGestureActivity {
                 public void onClick(View v) {
                     //点击后调用JS代码 返回顶部
                     if (webView != null) {
-                        UIUtils.showToastSafe("返回顶部");
+//                        UIUtils.showToastSafe("返回顶部");
                         webView.loadUrl("javascript:goTop()");
                     }
                     //点击后隐藏
@@ -228,7 +228,8 @@ public class DetailPageActivity extends BaseGestureActivity {
                         JSONObject jsonObject = new JSONObject(shareJson);
 
                         String jsonId = jsonObject.getString("id");
-                        if (jsonId != null && TextUtils.equals(currentId, jsonId)) {
+
+                        if (jsonId != null && TextUtils.equals(currentId.trim(), jsonId.trim())) {
 
                             //打开分享页
                             showShareWindow();

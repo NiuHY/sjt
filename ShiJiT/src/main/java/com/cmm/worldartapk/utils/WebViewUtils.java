@@ -1,8 +1,10 @@
 package com.cmm.worldartapk.utils;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.view.View;
@@ -87,9 +89,12 @@ public class WebViewUtils {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                super.shouldOverrideUrlLoading(view, url);
-                view.loadUrl(url);
-                return false;
+                Intent intent = new Intent();
+                intent.setAction("android.intent.action.VIEW");
+                Uri content_url = Uri.parse(url);
+                intent.setData(content_url);
+                UIUtils.startActivity(intent);
+                return true;
             }
 
             @Override

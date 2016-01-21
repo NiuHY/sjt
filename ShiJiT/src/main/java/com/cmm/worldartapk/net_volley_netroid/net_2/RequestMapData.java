@@ -20,13 +20,13 @@ public class RequestMapData {
 
     /**
      * 搜索请求参数
-     *
+     * 外边写反了
      * @param offset 如果-1不加
      * @param limit  如果-1不加
      * @param key    搜索内容
      * @return 搜索Map
      */
-    public static Map<String, String> setSearchParams(String offset, String limit) {
+    public static Map<String, String> setSearchParams(String limit, String offset) {
         HashMap<String, String> paramsMap = new HashMap<String, String>(baseParamsMap());
 
         if (!TextUtils.equals(offset, "-1")) {

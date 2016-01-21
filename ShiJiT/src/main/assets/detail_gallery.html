@@ -31,7 +31,7 @@
             <p class="category"  v-if="gallery_category == 2">展览</p>
             <p class="category"  v-if="gallery_category == 3">专业作品</p>
             <p class="category"  v-if="gallery_category == 4">信息</p> -->
-            <p class="website"  v-if="gallery_url" v-text="decodeURIComponent(gallery_url)"></p>
+            <p class="website"  v-if="gallery_url"><a v-text="decodeURIComponent(gallery_url)" href="{{decodeURIComponent(gallery_url)}}" target="_blank"></a></p>
             <p class="phone"  v-if="gallery_phone" v-text="decodeURIComponent(gallery_phone)"></p>
         </div>
         <div class="powered-by clearfix">
@@ -62,6 +62,7 @@
 var totalTime = 1500;
 var initTime =50;
 var host = 'http://cmm.yuntoo.com/';
+
 // var host = '';
 var imgsArr =[];
 var imgIndex = 0;
@@ -138,6 +139,7 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
                 shareObj.id = data.gallery_id;
                 shareObj.href = host + 'share/gallery/' + shareObj.id +'/?client_version=1.0.0';
                 shareObj = JSON.stringify(shareObj);
+                // console.log(shareObj);
                 try{
                     ADS.setSP('share',shareObj);
                 }catch(e){

@@ -64,7 +64,12 @@ public class PullRefreshUtils {
             @Override
             public void onPullUpToRefresh(final PullToRefreshBase<WebView> refreshView) {
 
-                webView.loadUrl("javascript:listLoad()");
+
+
+
+                    webView.loadUrl("javascript:listLoad()");
+
+
 
                 if (BaseActivity.getForegroundActivity() instanceof MainActivity){
                     viewPager = ((MainActivity) BaseActivity.getForegroundActivity()).getViewPager();
@@ -87,8 +92,6 @@ public class PullRefreshUtils {
                     }
                 }, 4999L);
             }
-
-
         });
 
         return webView;

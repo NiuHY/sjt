@@ -1,7 +1,10 @@
 package com.cmm.worldartapk.activity;
 
 import android.content.Intent;
+import android.os.Handler;
+import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebView;
 import android.widget.ImageButton;
 
 import com.cmm.worldartapk.R;
@@ -9,6 +12,7 @@ import com.cmm.worldartapk.base.BaseGestureActivity;
 import com.cmm.worldartapk.publicinfo.ConstInfo;
 import com.cmm.worldartapk.ui.PullRefreshUtils;
 import com.cmm.worldartapk.utils.PreviewUtils;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 
 /**
@@ -80,14 +84,47 @@ public class UserActivity extends BaseGestureActivity {
         });
 
 
-
         //内容WebView
-        PullToRefreshWebView pullToRefreshWebView = (PullToRefreshWebView) findViewById(R.id.user_webview_fl);
+        final PullToRefreshWebView pullToRefreshWebView = (PullToRefreshWebView) findViewById(R.id.user_webview_fl);
         // 初始化 webView
         webView = PullRefreshUtils.setListener_PRWebView(pullToRefreshWebView);
+        //给当前Activity注册下拉刷新View
+        setCurrentPullToRefreshWebView(pullToRefreshWebView);
+
+        pullToRefreshWebView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<WebView>() {
+            @Override
+            public void onPullDownToRefresh(final PullToRefreshBase<WebView> refreshView) {
+                webView.reload();
+            }
+
+            @Override
+            public void onPullUpToRefresh(final PullToRefreshBase<WebView> refreshView) {
+
+                webView.loadUrl("javascript:waitADS().listLoad()");
+//                超时
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (pullToRefreshWebView.isRefreshing()) {
+                            pullToRefreshWebView.onRefreshComplete();
+                        }
+                    }
+                }, 4999L);
+            }
+        });
         // 当前Activity绑定的webView
         setWebView(webView);
 
+        //往右划关闭当前页
+        webView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+
+                gDetector.onTouchEvent(event);
+
+                return false;
+            }
+        });
 
         //加载 url
         webView.loadUrl(USER_URL);
@@ -96,6 +133,7 @@ public class UserActivity extends BaseGestureActivity {
 
     /**
      * 分享
+     *
      * @param imgsJson
      * @param index
      */
@@ -103,20 +141,6 @@ public class UserActivity extends BaseGestureActivity {
         PreviewUtils previewUtils = new PreviewUtils(this, loadCategory);
         previewUtils.showVPWindow(imgsJson, index);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 //    public void goLoad(View view){

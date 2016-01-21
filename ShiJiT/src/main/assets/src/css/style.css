@@ -130,6 +130,9 @@
       color: #3ebdff;
       background: url(../img/website.png) no-repeat 0 center;
       background-size: 13px auto; }
+      .detail-info > p.website a {
+        color: #3ebdff;
+        text-decoration: none; }
 
 .share_cont {
   overflow: hidden;
@@ -487,18 +490,23 @@
   background: rgba(255, 173, 66, 0.8);
   z-index: 7; }
   .info-header .header-text, .exhi-header .header-text, .gallery-header .header-text, .gallery-header-intro .header-text, .exhi-header-intro .header-text, .info-header-intro .header-text {
-    padding: 75px 15px 0; }
+    padding: 60px 15px 0; }
   .info-header p, .exhi-header p, .gallery-header p, .gallery-header-intro p, .exhi-header-intro p, .info-header-intro p {
     font-size: 30px;
     color: #fff;
     line-height: 36px;
     font-weight: bold;
     margin-bottom: 2px; }
+    .info-header p.recommed, .exhi-header p.recommed, .gallery-header p.recommed, .gallery-header-intro p.recommed, .exhi-header-intro p.recommed, .info-header-intro p.recommed {
+      font-size: 20px;
+      font-weight: bold;
+      line-height: 20px;
+      margin-top: 25px; }
     .info-header p:nth-child(2), .exhi-header p:nth-child(2), .gallery-header p:nth-child(2), .gallery-header-intro p:nth-child(2), .exhi-header-intro p:nth-child(2), .info-header-intro p:nth-child(2) {
       display: block;
       width: 100%;
-      height: 56px;
-      line-height: 56px;
+      height: 42px;
+      line-height: 42px;
       font-size: 20px; }
       .info-header p:nth-child(2) span, .exhi-header p:nth-child(2) span, .gallery-header p:nth-child(2) span, .gallery-header-intro p:nth-child(2) span, .exhi-header-intro p:nth-child(2) span, .info-header-intro p:nth-child(2) span {
         float: left;

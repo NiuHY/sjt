@@ -14,7 +14,7 @@ import android.widget.TextView;
 
 import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.activity.LoginActivity;
-import com.cmm.worldartapk.base.UserInfo;
+import com.cmm.worldartapk.base.BaseApplication;
 import com.cmm.worldartapk.publicinfo.ConstInfo;
 
 /**
@@ -78,11 +78,39 @@ public class SJT_UI_Utils {
      * @return 返回是否有 SESSION_KEY
      */
     public static boolean userState(){
-        if (TextUtils.isEmpty(UserInfo.getUserInfo().SESSION_KEY)){
+
+        if (TextUtils.isEmpty(BaseApplication.getUserInfo().SESSION_KEY)){
             return false;
-        }else{
+        }else {
             return true;
         }
+
+//        if (TextUtils.isEmpty(UserInfo.getUserInfo().SESSION_KEY)){
+//            //如果内存中没有用户记录，就查看sp中是否有信息，如果有就把其再次放到内存中，没有就是没登陆状态
+//            String uif = getSharedPreferences().getString("uif", "");
+//            if (TextUtils.isEmpty(uif)){
+////                LogUtils.e(uif + " 空");
+//                return false;
+//            }else {
+//                //转成对象
+//                try {
+//                    UserInfo.setUserInfo();
+//                    UserInfo.getUserInfo(new Gson().fromJson(CodeUtils.decodeByBase64(uif), UserInfo.MyInfo.class));
+//                    //如果能转换成功且有sessionKey就是登陆状态
+//                    if (TextUtils.isEmpty(UserInfo.getUserInfo().SESSION_KEY)){
+//                        return false;
+//                    }else {
+//                        return true;
+//                    }
+//                }catch (Exception e){
+//                    return false;
+//                }
+//            }
+//        }else{
+//
+////            LogUtils.e(UserInfo.getUserInfo().SESSION_KEY);
+//            return true;
+//        }
     }
 
     /**

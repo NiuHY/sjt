@@ -20,8 +20,8 @@ import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.SafeWebViewBridge.js.ConstJS_F;
 import com.cmm.worldartapk.activity.LoginActivity;
 import com.cmm.worldartapk.activity.UserActivity;
+import com.cmm.worldartapk.base.BaseApplication;
 import com.cmm.worldartapk.base.BaseFragment;
-import com.cmm.worldartapk.base.UserInfo;
 import com.cmm.worldartapk.bean.UserBean;
 import com.cmm.worldartapk.bean.parser.UserInfoParser;
 import com.cmm.worldartapk.net_volley_netroid.Const;
@@ -214,6 +214,10 @@ public class Load_Fragment extends BaseFragment {
                             UIUtils.showToastSafe("没有找到新浪微博客户端，请检查");
                             return;
                         }
+
+                        //暂时不可点击 在遮挡后才可以再次点击
+                        v.setEnabled(false);
+
                         //如果授权就移除授权信息
                         if (weibo.isValid()){
                             weibo.removeAccount();
@@ -233,6 +237,10 @@ public class Load_Fragment extends BaseFragment {
                             UIUtils.showToastSafe("没有找到微信客户端，请检查");
                             return;
                         }
+
+                        //暂时不可点击 在遮挡后才可以再次点击
+                        v.setEnabled(false);
+
                         if (wechat.isValid()){
                             wechat.removeAccount();
                         }
@@ -249,6 +257,20 @@ public class Load_Fragment extends BaseFragment {
                 }
             }
         });
+    }
+
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        if (mLoadIvWechat != null){
+            mLoadIvWechat.setEnabled(true);
+        }
+        if (mLoadIvWeibo != null){
+            mLoadIvWeibo.setEnabled(true);
+        }
     }
 
     /**
@@ -336,14 +358,23 @@ public class Load_Fragment extends BaseFragment {
                         load_3_Request(otherLoginParams);
                     }else {
                         //不是云图账号，登陆
-                        //先清空数据
-                        UserInfo.setUserInfo();
+//                        //先清空数据
+//                        UserInfo.setUserInfo();
+//
+//                        //保存用户登陆信息到 UserInfo 中
+//                        UserInfo.getUserInfo().USER_ID = user.data.user_id;
+//                        UserInfo.getUserInfo().SESSION_KEY = user.data.session_key;
+//                        //保存用户信息到sp
+//                        String uif = CodeUtils.encodeByBase64(new Gson().toJson(UserInfo.getUserInfo()));
+//                        SJT_UI_Utils.getSharedPreferences().edit().putString("uif", uif).apply();
 
-                        //保存用户登陆信息到 UserInfo 中
-                        UserInfo.getUserInfo().USER_ID = user.data.user_id;
-                        UserInfo.getUserInfo().SESSION_KEY = user.data.session_key;
+                        //保存用户信息
+                        BaseApplication.setUserInfo();
+                        BaseApplication.getUserInfo().USER_ID = user.data.user_id;
+                        BaseApplication.getUserInfo().SESSION_KEY = user.data.session_key;
 
-                        UIUtils.showToastSafe("登陆成功" + UserInfo.getUserInfo().USER_ID);
+
+                        UIUtils.showToastSafe("登陆成功");
                         // 登陆成功就关闭登陆页
                         getActivity().finish();
                     }
@@ -450,22 +481,41 @@ public class Load_Fragment extends BaseFragment {
                 boolean isSuccess = user.success.equals("1");
 
                 if (isSuccess){
-                    //先清空数据
-                    UserInfo.setUserInfo();
+//                    //先清空数据
+//                    UserInfo.setUserInfo();
+//
+//                    //保存用户登陆信息到 UserInfo 中
+//                    UserInfo.getUserInfo().USER_ID = user.data.user_id;
+//                    UserInfo.getUserInfo().SESSION_KEY = user.data.session_key;
+//                    UserInfo.getUserInfo().IS_BAND = user.data.is_band;
+//                    UserInfo.getUserInfo().AVATAR = params.get("avatar");
+//
+//
+//                    //判断是否是云图登陆，如果是就保存其用户简介
+//                    if (mLoadBtnUseYt.isChecked() && !TextUtils.isEmpty(yuntoo_user_intro)){
+//                        UserInfo.getUserInfo().USER_INTRO = yuntoo_user_intro;
+//                    }
+//                    //保存用户信息到sp
+//                    String uif = CodeUtils.encodeByBase64(new Gson().toJson(UserInfo.getUserInfo()));
+//                    SJT_UI_Utils.getSharedPreferences().edit().putString("uif", uif).apply();
 
-                    //保存用户登陆信息到 UserInfo 中
-                    UserInfo.getUserInfo().USER_ID = user.data.user_id;
-                    UserInfo.getUserInfo().SESSION_KEY = user.data.session_key;
-                    UserInfo.getUserInfo().IS_BAND = user.data.is_band;
-                    UserInfo.getUserInfo().AVATAR = params.get("avatar");
+
+                    //保存用户信息
+                    BaseApplication.setUserInfo();
+
+                    BaseApplication.getUserInfo().USER_ID = user.data.user_id;
+                    BaseApplication.getUserInfo().SESSION_KEY = user.data.session_key;
+                    BaseApplication.getUserInfo().IS_BAND = user.data.is_band;
+                    BaseApplication.getUserInfo().AVATAR = params.get("avatar");
 
 
                     //判断是否是云图登陆，如果是就保存其用户简介
                     if (mLoadBtnUseYt.isChecked() && !TextUtils.isEmpty(yuntoo_user_intro)){
-                        UserInfo.getUserInfo().USER_INTRO = yuntoo_user_intro;
+                        BaseApplication.getUserInfo().USER_INTRO = yuntoo_user_intro;
                     }
 
                     UIUtils.showToastSafe("登陆成功");
+
 
                     //判断是否是要进入个人中心，如果进入就在这里打开个人中心
                     Intent intent = getActivity().getIntent();

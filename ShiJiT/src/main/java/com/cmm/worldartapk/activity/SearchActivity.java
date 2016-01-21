@@ -280,7 +280,7 @@ public class SearchActivity extends BaseGestureActivity {
         showLoadingAnim();
 
         //艺术品
-        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + ARTWORK_URL + searchKey, RequestMapData.setSearchParams(limit_artwork + "", "10"), new SearchArtworkParser(), new MyNetWorkObject.SuccessListener() {
+        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + ARTWORK_URL + searchKey, RequestMapData.setSearchParams("10", limit_artwork + ""), new SearchArtworkParser(), new MyNetWorkObject.SuccessListener() {
             @Override
             public void onSuccess(Object data) {
                 artworkData = (SearchBean_Artwork) data;
@@ -316,7 +316,7 @@ public class SearchActivity extends BaseGestureActivity {
         showLoadingAnim();
 
         //艺术馆
-        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + GALLERY_URL + searchKey, RequestMapData.setSearchParams(limit_gallery + "", "12"), new SearchGalleryParser(), new MyNetWorkObject.SuccessListener() {
+        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + GALLERY_URL + searchKey, RequestMapData.setSearchParams("12", limit_gallery + ""), new SearchGalleryParser(), new MyNetWorkObject.SuccessListener() {
             @Override
             public void onSuccess(Object data) {
                 galleryData = (SearchBean_Gallery) data;
@@ -352,7 +352,7 @@ public class SearchActivity extends BaseGestureActivity {
         showLoadingAnim();
 
         //请求数据，获取搜索结果后填充搜索页  展览搜索
-        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + EXHIBITION_URL + searchKey, RequestMapData.setSearchParams(limit_exhibition + "", "12"), new SearchExhibitionParser(), new MyNetWorkObject.SuccessListener() {
+        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + EXHIBITION_URL + searchKey, RequestMapData.setSearchParams("12", limit_exhibition + ""), new SearchExhibitionParser(), new MyNetWorkObject.SuccessListener() {
             @Override
             public void onSuccess(Object data) {
                 exhibitionData = (SearchBean_Exhibition) data;

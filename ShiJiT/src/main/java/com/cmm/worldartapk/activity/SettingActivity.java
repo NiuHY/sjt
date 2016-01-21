@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.SafeWebViewBridge.js.ConstJS_F;
+import com.cmm.worldartapk.base.BaseApplication;
 import com.cmm.worldartapk.base.BaseGestureActivity;
 import com.cmm.worldartapk.base.UserInfo;
 import com.cmm.worldartapk.utils.DataCleanManager;
@@ -65,6 +66,7 @@ public class SettingActivity extends BaseGestureActivity {
 
     @Override
     protected void initView() {
+
         //返回按钮
         ImageButton myBack = (ImageButton) findViewById(R.id.bt_back);
         //关闭
@@ -139,8 +141,9 @@ public class SettingActivity extends BaseGestureActivity {
                             //确认退出
                             //清空 UserInfo类中保存的信息 清空sp中保存的 userInfo键
 //                        LogUtils.e("退出登陆前" + UserInfo.getUserInfo().SESSION_KEY);
-                            //清除用户信息
-                            UserInfo.setUserInfo();//设置为null
+                            //清除用户信息 包括sp中的用户信息
+                            SJT_UI_Utils.getSharedPreferences().edit().putString("uif", "").apply();
+                            BaseApplication.setUserInfo();//设置为null
 //                        LogUtils.e("退出登陆后" + UserInfo.getUserInfo().SESSION_KEY);
 
                             //点击按钮后 关闭对话框

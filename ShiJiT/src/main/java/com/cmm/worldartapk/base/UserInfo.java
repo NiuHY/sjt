@@ -13,8 +13,17 @@ public class UserInfo {
                     userInfo = new MyInfo();
                 }
             }
-
         }
+        return userInfo;
+    }
+
+    /**
+     * 由SP转成
+     * @param myInfo
+     * @return
+     */
+    public static MyInfo getUserInfo(MyInfo myInfo) {
+        userInfo = myInfo;
         return userInfo;
     }
 

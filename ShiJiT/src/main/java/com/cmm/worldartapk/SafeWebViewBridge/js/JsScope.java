@@ -163,6 +163,9 @@ public class JsScope {
         if (TextUtils.equals(key, "share")){
             //如果是分享数据
             sp.edit().putString(key, str).apply();
+        }else if (TextUtils.equals(key, "exhibitionTitleId") || TextUtils.equals(key, "galleryTitleId")){
+            //展览页和艺术馆页广告位
+            sp.edit().putString(key, str).apply();
         }else {
             //如果是记录已读
             int id = -1;
@@ -315,27 +318,37 @@ public class JsScope {
      * @return 返回用户信息
      */
     public static String getUserInfo(WebView webView, String info){
-        String userInfo = "";
-        switch (info){
-            case "test":
-                userInfo = UserInfo.getUserInfo().test;
-                break;
-            case "user_id":
-                userInfo = UserInfo.getUserInfo().USER_ID;
-                break;
-            case "session_key": //sessionKey
-                userInfo = UserInfo.getUserInfo().SESSION_KEY;
-                break;
-            case "user_intro": //云图用户信息
-                userInfo = UserInfo.getUserInfo().USER_INTRO;
-                break;
-            case "avatar": //用户头像
-                userInfo = UserInfo.getUserInfo().AVATAR;
-                break;
-            default:
-                break;
+
+        if (SJT_UI_Utils.userState()){
+            String userInfo = "";
+            switch (info){
+                case "test":
+                    userInfo = UserInfo.getUserInfo().test;
+                    break;
+                case "user_id":
+                    userInfo = UserInfo.getUserInfo().USER_ID;
+                    break;
+                case "session_key": //sessionKey
+                    userInfo = UserInfo.getUserInfo().SESSION_KEY;
+                    break;
+                case "user_intro": //云图用户信息
+                    userInfo = UserInfo.getUserInfo().USER_INTRO;
+                    break;
+                case "avatar": //用户头像
+                    userInfo = UserInfo.getUserInfo().AVATAR;
+                    break;
+                default:
+                    break;
+            }
+            return userInfo;
+        }else {
+
+            UIUtils.showToastSafe("没有登陆");
+
+            return "";
         }
-        return userInfo;
+
+
     }
 
     /**

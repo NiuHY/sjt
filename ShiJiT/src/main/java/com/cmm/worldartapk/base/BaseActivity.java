@@ -123,6 +123,10 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         //从Activity集合中移除
         UIUtils.getActivityList().remove(this);
+        //如果
+        if (UIUtils.getActivityList().isEmpty()){
+            SJT_UI_Utils.getSharedPreferences().edit().putString("uif", "").apply();
+        }
     }
 
     // 接收WebView对象
@@ -163,6 +167,10 @@ public abstract class BaseActivity extends AppCompatActivity {
                 //让应用退出虚拟机
                 //停止分享，释放资源
                 ShareSDK.stopSDK(this);
+
+                //清空登陆信息
+                SJT_UI_Utils.getSharedPreferences().edit().putString("uif", "").apply();
+
                 System.exit(0);
             }
             return true;
