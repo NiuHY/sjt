@@ -82,11 +82,10 @@ function waitADS(){
         $('body').on('click','.share_cont img,.share_cov img',function(){
             var imgJson = JSON.stringify(imgsArr);
             var imgIndex = $(this).data('imgindex');
-            console.log(imgIndex);
             try{
                 ADS.startImgPreview(imgJson, imgIndex);
             }catch(e){
-                console.log(e);
+                // console.log(e);
             }
         });
         $.ajax({
@@ -120,7 +119,7 @@ function waitADS(){
                     try{
                         ADS.setSP('share',shareObj);
                     }catch(e){
-                        console.log(e);
+                        // console.log(e);
                     }
                     bgObj.bgCss = {
                         'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
@@ -371,7 +370,7 @@ function waitADS(){
                 }
             },
             error : function(error){
-                console.log(error);
+                // console.log(error);
             } 
         });
     }

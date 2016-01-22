@@ -387,7 +387,7 @@ public class PreviewUtils {
 
                         BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
                         FileUtils.saveBitmap(bitmapDrawable.getBitmap());
-                        UIUtils.showToastSafe("已保存");
+//                        UIUtils.showToastSafe("已保存");
                         // TODO 保存图片
                         SJT_UI_Utils.showDialog(activity, "已保存", true, loadCategory);
                     }

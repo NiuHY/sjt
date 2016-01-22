@@ -207,7 +207,7 @@ public class MyNetWorkObject {
 
             @Override
             public void onError(NetroidError error) {
-                UIUtils.showToastSafe("连接服务器失败");
+//                UIUtils.showToastSafe("连接服务器失败");
                 if (successListener != null){
                     successListener.onError(error.toString());
                 }

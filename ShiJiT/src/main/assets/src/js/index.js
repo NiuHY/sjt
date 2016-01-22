@@ -18,4 +18,11 @@ var bgObj = {};
 // });
 function goTop(){
     document.getElementsByTagName('body')[0].scrollTop = 0;
+};
+//文档加载完成
+$(function(){
+function rotate(){
+	$('.detail-rotate').css({'border-left-width': (screenWidth) + 'px'});
 }
+rotate();
+})

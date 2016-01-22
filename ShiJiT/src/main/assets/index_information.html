@@ -76,6 +76,11 @@ function loadAjax(){
     success:function(data){
         var data = JSON.parse(data);
         isLoading = false;
+        try{
+          ADS.onRefreshComplete();
+        }catch(e){
+          // console.log(e);
+        }
         if(data.success){
           var items = data.data;
           var coverSize = data.cover_size || '750,750';
@@ -98,16 +103,15 @@ function loadAjax(){
               }
             });
           }
-          console.log(items);
           myVue.items = myVue.items.concat(items);
           storyOffset += storyLimit;
         }else if(!data.success){
           noMoreList = true;
-        }
-        try{
-          ADS.onRefreshComplete();
-        }catch(e){
-          console.log(e);
+          try{
+              ADS.onRefreshNotMore('无更多内容');
+          }catch(e){
+              // console.log(e);
+          }
         }
     },
     error: function(e){

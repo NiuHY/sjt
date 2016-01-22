@@ -25,6 +25,7 @@ import com.cmm.worldartapk.net_volley_netroid.net_2.MyNetWorkObject;
 import com.cmm.worldartapk.net_volley_netroid.net_2.NetUtils;
 import com.cmm.worldartapk.net_volley_netroid.net_2.RequestMapData;
 import com.cmm.worldartapk.utils.DrawableUtils;
+import com.cmm.worldartapk.utils.SJT_UI_Utils;
 import com.cmm.worldartapk.utils.UIUtils;
 
 /**
@@ -251,19 +252,21 @@ public class RegistFragment extends BaseFragment {
                 boolean isSuccess = userTemp.success.equals("1");
 
                 if (isSuccess){
-                    UIUtils.showToastSafe("注册成功");
+                    SJT_UI_Utils.showDialog(getActivity(), "注册成功", true, ((LoginActivity) getActivity()).getLoadCategory());
                     //保存用户数据到Activity中
                     ((LoginActivity)getActivity()).setUserTemp(new LoginActivity.UserTemp(email, pwd, ""));
                     // 返回登陆页
                     ((LoginActivity)getActivity()).backLoadPager();
                 }else{
-                    UIUtils.showToastSafe("注册失败：" + userTemp.error_message);
+                    SJT_UI_Utils.showDialog(getActivity(), "注册失败", false, ((LoginActivity) getActivity()).getLoadCategory());
+                    UIUtils.showToastSafe(userTemp.error_message);
                 }
             }
 
             @Override
             public void onError(String msg) {
-                UIUtils.showToastSafe("注册失败 ：" + msg);
+                SJT_UI_Utils.showDialog(getActivity(), "注册失败", false, ((LoginActivity) getActivity()).getLoadCategory());
+                UIUtils.showToastSafe("连接异常");
             }
         });
     }
@@ -292,7 +295,7 @@ public class RegistFragment extends BaseFragment {
 
         String password = editText.getText().toString().trim();
         String password2 = editText2.getText().toString().trim();
-        if (TextUtils.isEmpty(password) || TextUtils.isEmpty(password2) || !TextUtils.equals(password, password2)) {
+        if (TextUtils.isEmpty(password) || !password.matches("\\w{6,16}") || TextUtils.isEmpty(password2) || !TextUtils.equals(password, password2)) {
             return false;//错误
         } else {
             return true;

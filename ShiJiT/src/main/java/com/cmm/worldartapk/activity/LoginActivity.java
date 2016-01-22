@@ -8,7 +8,7 @@ import android.widget.ImageButton;
 
 import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.SafeWebViewBridge.js.ConstJS_F;
-import com.cmm.worldartapk.base.BaseActivity;
+import com.cmm.worldartapk.base.BaseGestureActivity;
 import com.cmm.worldartapk.fragment.Load_Fragment;
 import com.cmm.worldartapk.net_volley_netroid.Const;
 import com.cmm.worldartapk.publicinfo.ConstInfo;
@@ -18,7 +18,7 @@ import com.cmm.worldartapk.publicinfo.ConstInfo;
  * <p/>
  * 登陆页
  */
-public class LoginActivity extends BaseActivity {
+public class LoginActivity extends BaseGestureActivity {
 
     private View contentView;
     private int loadCategory;
@@ -28,6 +28,9 @@ public class LoginActivity extends BaseActivity {
 
     @Override
     protected void init() {
+
+        super.init();
+
         Intent intent = getIntent();
         //获取从哪里打开的登陆注册 (按钮颜色)
         loadCategory = intent.getIntExtra("loadCategory", Integer.parseInt(ConstJS_F.loadCategory));
@@ -169,5 +172,8 @@ public class LoginActivity extends BaseActivity {
     private int currentColor;
     public int getCurrentColor(){
         return currentColor;
+    }
+    public int getLoadCategory(){
+        return loadCategory;
     }
 }

@@ -2,11 +2,21 @@ package com.cmm.worldartapk.base;
 
 import android.app.Activity;
 import android.app.Application;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.format.Formatter;
 
 import com.cmm.worldartapk.net_volley_netroid.Netroid;
+import com.cmm.worldartapk.utils.FileUtils;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +52,45 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        //重写系统的异常处理器
+        Thread.currentThread().setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+
+            @Override
+            public void uncaughtException(Thread thread, Throwable ex) {
+                //出现异常时调用
+                //把异常信息输出到sd卡对应的文件中
+                StringBuilder sb = new StringBuilder();
+                //时间
+                sb.append("time: " + Formatter.formatFileSize(BaseApplication.this, System.currentTimeMillis()));
+                //编译信息
+                Field[] fields = Build.class.getDeclaredFields();
+                for (Field field : fields) {
+                    try {
+                        sb.append(field.getName() + " = " + field.get(null) + "\n");
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                //异常信息
+                StringWriter sw = new StringWriter();
+                PrintWriter pw = new PrintWriter(sw);
+                ex.printStackTrace(pw);
+                sb.append(sw.toString());
+
+                //把sb中的数据输出到 文件中
+                try {
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(new File(FileUtils.getExternalStoragePath() + "/exception.info")));
+                    bw.write(sb.toString());
+                    bw.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                //自杀
+                android.os.Process.killProcess(android.os.Process.myPid());
+            }
+        });
 
         if (! initFlag){
             init();

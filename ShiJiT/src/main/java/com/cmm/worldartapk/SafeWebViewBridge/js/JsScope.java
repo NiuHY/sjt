@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.Log;
 import android.webkit.WebView;
@@ -215,7 +216,6 @@ public class JsScope {
 
             sp.edit().putString(key, new Gson().toJson(isReadBean)).apply();
         }
-
     }
 
     /**
@@ -268,15 +268,17 @@ public class JsScope {
      */
     public static void startImgPreview(WebView webView, String imgsJson, int index) {
 
-//        LogUtils.e(imgsJson);
-
-        Context context = webView.getContext();
-        if (context instanceof DetailPageActivity) {
+        //点击后 1秒内不能再次点击
+        if (SystemClock.elapsedRealtime() - ConstJS_F.preoffsetTime > 800L){
+            Context context = webView.getContext();
+            if (context instanceof DetailPageActivity) {
 //            UIUtils.showToastSafe(imgsJson);
 //            System.out.println("================== " + imgsJson);
-              ((DetailPageActivity) context).showVPWindow(imgsJson, index);
-        }else if (context instanceof UserActivity){
-            ((UserActivity) context).showVPWindow(imgsJson, index);
+                ((DetailPageActivity) context).showVPWindow(imgsJson, index);
+            }else if (context instanceof UserActivity){
+                ((UserActivity) context).showVPWindow(imgsJson, index);
+            }
+            ConstJS_F.preoffsetTime = SystemClock.elapsedRealtime ();
         }
 
     }
@@ -286,7 +288,7 @@ public class JsScope {
      * @param webView
      */
     public static void contentLoad(WebView webView){
-        UIUtils.showToastSafe("加载完毕");
+//        UIUtils.showToastSafe("加载完毕");
     }
 
 

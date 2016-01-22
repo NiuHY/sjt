@@ -57,7 +57,7 @@
   // position: relative;
   margin-top: -31px;
   overflow: hidden;
-  // z-index: 8;
+  // z-index: 8; 
 }
 .wrap-rotate-gallery{
   position: relative;
@@ -124,7 +124,6 @@ $border:30px;
     &.gallery-title{
       margin-top: 0px; 
     }
-    
     &.date{
       color:#ff2942;
       background: url(../img/date.png) no-repeat 0 center;
@@ -159,6 +158,10 @@ $border:30px;
       color: #3ebdff;
       background: url(../img/website.png) no-repeat 0 center;
       background-size: 13px auto;
+      a{
+        color: #3ebdff;
+        text-decoration: none;
+      }
     }
   }
 }
@@ -400,19 +403,25 @@ $border:30px;
   z-index: 7;
   .header-text{
     // position: relative;
-    padding: 75px 15px 0;
+    padding: 60px 15px 0;
   }
   p{
     font-size: 30px;
     color: #fff;
     line-height: 36px;
     font-weight: bold;
-    margin-bottom: 2px; 
+    margin-bottom: 2px;
+    &.recommed{
+      font-size: 20px;
+      font-weight: bold;
+      line-height: 20px;
+      margin-top: 25px;
+    }
     &:nth-child(2){
       display: block;
       width: 100%;
-      height: 56px;
-      line-height: 56px;
+      height: 42px;
+      line-height: 42px;
       font-size: 20px;
       span{
         float: left;

@@ -59,17 +59,35 @@ public class PullRefreshUtils {
             @Override
             public void onPullDownToRefresh(final PullToRefreshBase<WebView> refreshView) {
                 webView.reload();
+
+                //屏蔽左右滑动
+                if (BaseActivity.getForegroundActivity() instanceof MainActivity){
+                    viewPager = ((MainActivity) BaseActivity.getForegroundActivity()).getViewPager();
+
+                    if (viewPager != null){
+                        viewPager.setIsCanScroll(false);
+                    }
+                }
+
+                // 超时
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (pullToRefreshWebView.isRefreshing()) {
+                            pullToRefreshWebView.onRefreshComplete();
+                            if (viewPager != null) {
+                                viewPager.setIsCanScroll(true);
+                            }
+                        }
+                    }
+                }, 3999L);
+
             }
 
             @Override
             public void onPullUpToRefresh(final PullToRefreshBase<WebView> refreshView) {
 
-
-
-
                     webView.loadUrl("javascript:listLoad()");
-
-
 
                 if (BaseActivity.getForegroundActivity() instanceof MainActivity){
                     viewPager = ((MainActivity) BaseActivity.getForegroundActivity()).getViewPager();

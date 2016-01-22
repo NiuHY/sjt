@@ -44,7 +44,7 @@ public abstract class BaseGestureActivity extends BaseActivity {
                     //上一页
 //                    prePage();
 
-                    finish();//关闭当前页
+                    setExitSwichLayout();//关闭当前页
                     return true;
                 }
 

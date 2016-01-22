@@ -21,7 +21,9 @@ import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.SafeWebViewBridge.InjectedChromeClient;
 import com.cmm.worldartapk.SafeWebViewBridge.JsCallJava;
 import com.cmm.worldartapk.SafeWebViewBridge.js.JsScope;
+import com.cmm.worldartapk.activity.MainActivity;
 import com.cmm.worldartapk.base.BaseActivity;
+import com.cmm.worldartapk.ui.MyViewPager;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 
 
@@ -116,6 +118,14 @@ public class WebViewUtils {
                     PullToRefreshWebView currentPullToRefreshWebView = ((BaseActivity) context).getCurrentPullToRefreshWebView();
                     if (currentPullToRefreshWebView != null && currentPullToRefreshWebView.isRefreshing()){
                         currentPullToRefreshWebView.onRefreshComplete();
+
+                        if (BaseActivity.getForegroundActivity() instanceof MainActivity){
+                            MyViewPager viewPager = ((MainActivity) BaseActivity.getForegroundActivity()).getViewPager();
+
+                            if (viewPager != null){
+                                viewPager.setIsCanScroll(true);
+                            }
+                        }
                     }
                 }
             }

@@ -19,7 +19,7 @@
     <div class="detail-head">
         <img v:src="cover"/>
     </div> 
-    <div class="detail-wrap" id="detail-wrap">
+    <div class="detail-wrap" id="detail-wrap" style="padding-bottom:15px;">
         <div class="detail-info">
             <h3 v-text="decodeURIComponent(exhibition_title)"></h3>
             <p class="date"><em v-text="exhibition_start_time | getDay"></em>-<em v-text="exhibition_end_time | getDay"></em><span>(<span v-text="exhibition_start_time | denyDay exhibition_end_time"></span>)</span></p>
@@ -100,7 +100,7 @@ function waitADS(){
         try{
             ADS.startImgPreview(imgJson, imgIndex);
         }catch(e){
-            console.log(e);
+            // console.log(e);
         }
     });
     $.ajax({
@@ -130,11 +130,11 @@ function waitADS(){
                 shareObj.id = data.exhibition_id;
                 shareObj.href = host + 'share/exhibition/' + shareObj.id +'/?client_version=1.0.0';
                 shareObj = JSON.stringify(shareObj);
-                console.log(shareObj);
+                // console.log(shareObj);
                 try{
                     ADS.setSP('share',shareObj);
                 }catch(e){
-                    console.log(e);
+                    // console.log(e);
                 }
                 bgObj.bgCss = {
                     'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
@@ -244,7 +244,7 @@ function waitADS(){
                         // }     
                     }
                 })
-                var $contDsc = $cont.find('.img_desc');  // 如果图片没有描述文字，则去掉图片下面的img_desc。
+                var $contDsc = $cont.find('.img_desc');  // 如果图片没有描述文字，则去掉图片下面的img_desc
                 for(var i=0;i<$contDsc.length;i++){
                     if(!$.trim($contDsc.eq(i).text())){
                        $contDsc.eq(i).remove();
@@ -383,7 +383,7 @@ function waitADS(){
             }         
         },
         error : function(error){
-            console.log(error);
+            // console.log(error);
         } 
     });
 // });

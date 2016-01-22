@@ -30,6 +30,7 @@ import com.cmm.worldartapk.net_volley_netroid.net_2.NetUtils;
 import com.cmm.worldartapk.net_volley_netroid.net_2.RequestMapData;
 import com.cmm.worldartapk.utils.DrawableUtils;
 import com.cmm.worldartapk.utils.LogUtils;
+import com.cmm.worldartapk.utils.SJT_UI_Utils;
 import com.cmm.worldartapk.utils.UIUtils;
 
 import java.util.HashMap;
@@ -373,20 +374,33 @@ public class Load_Fragment extends BaseFragment {
                         BaseApplication.getUserInfo().USER_ID = user.data.user_id;
                         BaseApplication.getUserInfo().SESSION_KEY = user.data.session_key;
 
+                        SJT_UI_Utils.showDialog(getActivity(), "登陆成功", true, ((LoginActivity) getActivity()).getLoadCategory());
 
-                        UIUtils.showToastSafe("登陆成功");
+                        //判断是否是要进入个人中心，如果进入就在这里打开个人中心
+                        Intent intent = getActivity().getIntent();
                         // 登陆成功就关闭登陆页
                         getActivity().finish();
+                        //同时打开个人中心
+                        if (intent != null && intent.getBooleanExtra("userActivity", false)){
+                            int loadCategory = intent.getIntExtra("loadCategory", -1);
+                            Intent userIntent = new Intent(getActivity(), UserActivity.class);
+                            userIntent.putExtra("loadCategory", loadCategory);
+                            //给JS保存
+                            ConstJS_F.loadCategory = loadCategory + "";
+                            startActivity(userIntent);
+                        }
                     }
 
                 }else{
-                    UIUtils.showToastSafe("登陆失败" + user.error_message);
+                    SJT_UI_Utils.showDialog(getActivity(), "登陆失败", false, ((LoginActivity) getActivity()).getLoadCategory());
+                    UIUtils.showToastSafe(user.error_message);
                 }
             }
 
             @Override
             public void onError(String msg) {
-                UIUtils.showToastSafe("登陆失败 ："+msg);
+                SJT_UI_Utils.showDialog(getActivity(), "登陆失败", false, ((LoginActivity) getActivity()).getLoadCategory());
+                UIUtils.showToastSafe("连接异常");
             }
         });
     }
@@ -514,7 +528,7 @@ public class Load_Fragment extends BaseFragment {
                         BaseApplication.getUserInfo().USER_INTRO = yuntoo_user_intro;
                     }
 
-                    UIUtils.showToastSafe("登陆成功");
+                    SJT_UI_Utils.showDialog(getActivity(), "登陆成功", true, ((LoginActivity) getActivity()).getLoadCategory());
 
 
                     //判断是否是要进入个人中心，如果进入就在这里打开个人中心
@@ -533,13 +547,15 @@ public class Load_Fragment extends BaseFragment {
 
 
                 }else {
-                    UIUtils.showToastSafe("登陆失败" + user.error_message);
+                    SJT_UI_Utils.showDialog(getActivity(), "登陆失败", false, ((LoginActivity) getActivity()).getLoadCategory());
+                    UIUtils.showToastSafe(user.error_message);
                 }
             }
 
             @Override
             public void onError(String msg) {
-                LogUtils.e("第三方登陆失败" + msg);
+                SJT_UI_Utils.showDialog(getActivity(), "登陆失败", false, ((LoginActivity) getActivity()).getLoadCategory());
+                LogUtils.e("第三方登陆失败");
             }
         });
     }
@@ -567,7 +583,7 @@ public class Load_Fragment extends BaseFragment {
     private boolean checkPassword(EditText editText) {
 
         String password = editText.getText().toString().trim();
-        if (TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(password) || !password.matches("\\w{6,16}")) {
             return false;//错误
         } else {
             return true;
@@ -584,6 +600,8 @@ public class Load_Fragment extends BaseFragment {
             //有数据，回显邮箱和密码
             mLoadEtEmail.setText(userTemp.email);
             mLoadEtPwd.setText(userTemp.password);
+            //取消勾选艺术云图
+            mLoadBtnUseYt.setChecked(false);
         }
         contentView.setVisibility(View.VISIBLE);
     }

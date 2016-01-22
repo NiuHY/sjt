@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -17,6 +18,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.view.animation.TranslateAnimation;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -174,6 +176,22 @@ public class DetailPageActivity extends BaseGestureActivity {
 
             //启用上拉加载
             mPullRefreshWebView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+
+            mPullRefreshWebView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<WebView>() {
+                @Override
+                public void onRefresh(PullToRefreshBase<WebView> refreshView) {
+                    webView.loadUrl("javascript:waitADS().waitADS().listLoad()");
+//                超时
+                    new Handler().postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (mPullRefreshWebView.isRefreshing()) {
+                                mPullRefreshWebView.onRefreshComplete();
+                            }
+                        }
+                    }, 4999L);
+                }
+            });
 
             //滚动监听
             mPullRefreshWebView.setOnScrollChangedCallback(new PullToRefreshWebView.OnScrollChangedCallback() {
@@ -817,7 +835,7 @@ public class DetailPageActivity extends BaseGestureActivity {
 
                         BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
                         FileUtils.saveBitmap(bitmapDrawable.getBitmap());
-                        UIUtils.showToastSafe("已保存");
+//                        UIUtils.showToastSafe("已保存");
                         // TODO 保存图片
                         SJT_UI_Utils.showDialog(DetailPageActivity.this, "已保存", true, loadCategory);
                     }

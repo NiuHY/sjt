@@ -2,7 +2,6 @@ package com.cmm.worldartapk.SafeWebViewBridge;
 
 import android.text.TextUtils;
 import android.webkit.WebView;
-import android.util.Log;
 
 import com.google.gson.Gson;
 
@@ -53,7 +52,7 @@ public class JsCallJava {
             sb.append(" initialization end\")})(window);");
             mPreloadInterfaceJS = sb.toString();
         } catch(Exception e){
-            Log.e(TAG, "init js error:" + e.getMessage());
+//            Log.e(TAG, "init js error:" + e.getMessage());
         }
     }
 
@@ -62,7 +61,7 @@ public class JsCallJava {
         Class[] argsTypes = method.getParameterTypes();
         int len = argsTypes.length;
         if (len < 1 || argsTypes[0] != WebView.class) {
-            Log.w(TAG, "method(" + sign + ") must use webview to be first parameter, will be pass");
+//            Log.w(TAG, "method(" + sign + ") must use webview to be first parameter, will be pass");
             return null;
         }
         for (int k = 1; k < len; k++) {
@@ -188,7 +187,7 @@ public class JsCallJava {
             insertRes = String.valueOf(result);
         }
         String resStr = String.format(RETURN_RESULT_FORMAT, stateCode, insertRes);
-        Log.d(TAG, mInjectedName + " call json: " + reqJson + " result:" + resStr);
+//        Log.d(TAG, mInjectedName + " call json: " + reqJson + " result:" + resStr);
         return resStr;
     }
 }

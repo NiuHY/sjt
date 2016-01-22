@@ -119,7 +119,7 @@ function listLoad(){
     try{
       ADS.onRefreshNotMore('无更多内容');
     }catch(e){
-      console.log(e);
+      // console.log(e);
     }
   }
 }
@@ -138,6 +138,11 @@ function loadAjax(){
     success:function(data){
       data = JSON.parse(data);
       isLoading = false;
+      try{
+        ADS.onRefreshComplete();
+      }catch(e){
+        // console.log(e);
+      }
       if(data.success){
         var items = data.data;
         myVue.items = myVue.items.concat(items);
@@ -145,13 +150,13 @@ function loadAjax(){
           setCanvas(myVue.items);
         }
         storyOffset += storyLimit;
-        try{
-          ADS.onRefreshComplete();
-        }catch(e){
-          console.log(e);
-        }
       }else{
         noMoreList = true;
+        try{
+          ADS.onRefreshNotMore('无更多内容');
+        }catch(e){
+          // console.log(e);
+        }
       }
     },
     error: function(e){
@@ -159,7 +164,7 @@ function loadAjax(){
       try{
         ADS.onRefreshComplete();
       }catch(e){
-        console.log(e);
+        // console.log(e);
       }
     }
   });
@@ -257,7 +262,7 @@ function loadAjax(){
         try{
           ADS.hideTitleView();
         }catch(e){
-          console.log(e);
+          // console.log(e);
         }
         isTitleShow = false;
       }
@@ -267,7 +272,7 @@ function loadAjax(){
         try{
           ADS.showTitleView();
         }catch(e){
-          console.log(e);
+          // console.log(e);
         }
         isTitleShow = true;
       }

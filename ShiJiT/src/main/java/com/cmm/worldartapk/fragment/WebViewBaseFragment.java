@@ -157,10 +157,8 @@ public abstract class WebViewBaseFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
 
-                UIUtils.showToastSafe("返回顶部");
                 //点击后调用JS代码 返回顶部
                 if (webView != null) {
-                    UIUtils.showToastSafe("返回顶部");
                     webView.loadUrl("javascript:goTop()");
                 }
             }
@@ -251,6 +249,8 @@ public abstract class WebViewBaseFragment extends BaseFragment {
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     intent.putExtra("userActivity", true);
                     intent.putExtra("loadCategory", getPagerIndex());
+                    //给JS保存
+                    ConstJS_F.loadCategory = getPagerIndex() + "";
                     startActivity(intent);
                 }
 

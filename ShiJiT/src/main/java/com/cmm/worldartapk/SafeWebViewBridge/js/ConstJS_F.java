@@ -8,4 +8,6 @@ public class ConstJS_F {
     public static String loadCategory = "-1";
 
     public static String json;
+
+    public static long preoffsetTime = 0;
 }

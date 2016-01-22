@@ -76,6 +76,7 @@ public class Netroid {
     // 批量加载图片
     public static void displayImage(String url, NetworkImageView imageView) {
         //TODO NetworkImageView默认图片
+        imageView.setBackgroundColor(0xffeeeeee);
         imageView.setErrorImageResId(R.drawable.load_failed);//加载失败图片
         imageView.setImageUrl(url, mImageLoader);
     }

@@ -35,7 +35,7 @@
             android:layout_height="28dp"/>
     </FrameLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:visibility="gone"
         android:background="#22000000"
         android:id="@+id/imagevp_btn_ll"
@@ -47,11 +47,11 @@
         <View
             android:id="@+id/imagepreview_blank"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_height="match_parent"
             />
 
         <LinearLayout
+            android:layout_gravity="bottom"
             android:id="@+id/imagevp_btngroup"
             android:orientation="vertical"
             android:layout_width="match_parent"
@@ -60,8 +60,8 @@
             <Button
                 android:id="@+id/imagevp_save"
                 android:background="@drawable/image_vp_btn_selector"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 android:textColor="#007aff"
                 android:text="保存到本地"
                 android:layout_width="match_parent"
@@ -69,9 +69,9 @@
             <Button
                 android:id="@+id/imagevp_add"
                 android:background="@drawable/image_vp_btn_selector"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
-                android:layout_marginTop="3dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="1dp"
                 android:textColor="#007aff"
                 android:text="添加到收藏夹"
                 android:layout_width="match_parent"
@@ -79,15 +79,15 @@
             <Button
                 android:id="@+id/imagevp_cancel"
                 android:background="#ffffff"
-                android:layout_marginTop="10dp"
-                android:layout_marginLeft="20dp"
-                android:layout_marginRight="20dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 android:text="取消"
                 android:textColor="#007aff"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
         </LinearLayout>
-    </LinearLayout>
+    </FrameLayout>
 
 </FrameLayout>

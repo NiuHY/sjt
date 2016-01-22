@@ -46,6 +46,7 @@ import com.cmm.worldartapk.net_volley_netroid.net_2.NetUtils;
 import com.cmm.worldartapk.net_volley_netroid.net_2.RequestMapData;
 import com.cmm.worldartapk.publicinfo.ConstInfo;
 import com.cmm.worldartapk.ui.ExtendedViewPager;
+import com.cmm.worldartapk.ui.MyViewPager;
 import com.cmm.worldartapk.ui.SearchTabView;
 import com.cmm.worldartapk.ui.TouchImageView;
 import com.cmm.worldartapk.utils.FileUtils;
@@ -79,6 +80,10 @@ public class SearchActivity extends BaseGestureActivity {
     private final String GALLERY_URL = "api/search/gallery/";
     private final String ARTWORK_URL = "api/search/artwork/";
 
+    private final int EXHIBITION_POSITION = 0;
+    private final int GALLERY_POSITION = 1;
+    private final int ARTWORK_POSITION = 2;
+
     private SearchBean_Exhibition exhibitionData; // 展览搜索结果
     private SearchBean_Gallery galleryData; // 艺术馆搜索结果
     private SearchBean_Artwork artworkData; // 艺术馆搜索结果
@@ -94,7 +99,7 @@ public class SearchActivity extends BaseGestureActivity {
     private GridViewAdapter mGridViewAdapter_e;
     private GridViewAdapter mGridViewAdapter_g;
     private GridViewAdapter mGridViewAdapter_a;
-    private ViewPager viewPager;
+    private MyViewPager viewPager;
     private View loadingPagerView;
     private InputMethodManager imm;
     private String searchKey;
@@ -211,15 +216,13 @@ public class SearchActivity extends BaseGestureActivity {
         mGridViewDatas_a.clear();//艺术品集合
 
         //初始化 limit
-        limit_artwork = 0;
-        limit_gallery = 0;
-        limit_exhibition = 0;
+        offset_artwork = 0;
+        offset_gallery = 0;
+        offset_exhibition = 0;
 
 
         //隐藏软键盘
         imm.hideSoftInputFromWindow(editText.getWindowToken(), 0);
-
-
 
 
         // 搜索内容
@@ -234,7 +237,7 @@ public class SearchActivity extends BaseGestureActivity {
         }
 
         //把ViewPager选中第一页 (默认)
-        if (viewPager != null){
+        if (viewPager != null) {
             viewPager.setCurrentItem(0);
         }
 
@@ -242,7 +245,7 @@ public class SearchActivity extends BaseGestureActivity {
         if (loadingPagerView == null) {
             loadingPagerView = View.inflate(UIUtils.getContext(), R.layout.loading_layout, null);
 
-            ((ViewGroup)viewPager.getParent()).addView(loadingPagerView);
+            ((ViewGroup) viewPager.getParent()).addView(loadingPagerView);
 
             View loadingAnim = loadingPagerView.findViewById(R.id.loading_anmi);
             //旋转动画
@@ -265,7 +268,6 @@ public class SearchActivity extends BaseGestureActivity {
         }
 
 
-
         //开始搜索 默认第一个搜索展讯， 其他在切换到的时候才进行搜索
 
         //展览
@@ -273,29 +275,44 @@ public class SearchActivity extends BaseGestureActivity {
 
     }
 
-    private int limit_artwork = 0;//limit
+    private int limit = 12;
+    private int offset_artwork = 0;//limit
+
     private void searchM_artwork() {
 
         //显示正在加载中
         showLoadingAnim();
 
         //艺术品
-        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + ARTWORK_URL + searchKey, RequestMapData.setSearchParams("10", limit_artwork + ""), new SearchArtworkParser(), new MyNetWorkObject.SuccessListener() {
+        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + ARTWORK_URL + searchKey, RequestMapData.setSearchParams(limit + "", offset_artwork + ""), new SearchArtworkParser(), new MyNetWorkObject.SuccessListener() {
             @Override
             public void onSuccess(Object data) {
                 artworkData = (SearchBean_Artwork) data;
                 //得到数据，刷新  如果请求到数据
                 if (artworkData != null && artworkData.success.equals("1")) {
 
-                    for (SearchBean_Artwork.ArtworkData sba : artworkData.data) {
-                        mGridViewDatas_a.add(new GridViewData(sba.image_url, sba.artwork_name, sba.artwork_id, sba.artwork_artist_name));
+                    if (artworkData.data != null && artworkData.data.size() > 0) {
+                        for (SearchBean_Artwork.ArtworkData sba : artworkData.data) {
+                            if (TextUtils.isEmpty(sba.image_url) || TextUtils.isEmpty(sba.image_id)) {
+                                continue;
+                            } else {
+                                mGridViewDatas_a.add(new GridViewData(sba.image_url, sba.artwork_name, sba.artwork_id, sba.artwork_artist_name));
+                            }
+                        }
+                        //得到数据，limit+1；
+                        int dataSize = artworkData.data.size();
+                        if (dataSize < limit){
+                            offset_artwork = offset_artwork + dataSize;
+                        }else {
+                            offset_artwork = offset_artwork + limit;
+                        }
                     }
-                    //得到数据，limit+1；
-                    limit_artwork++;
+                }else {
+                    UIUtils.showToastSafe("无更多内容");
                 }
                 // 刷新
                 mGridViewAdapter_a.notifyDataSetChanged();
-                hintLoadingAnim();//更新计数
+                hintLoadingAnim(ARTWORK_POSITION);//更新计数
             }
 
             @Override
@@ -304,34 +321,49 @@ public class SearchActivity extends BaseGestureActivity {
                 LogUtils.e(msg);
 
                 //请求失败，隐藏
-                hintLoadingAnim();//更新计数
+                hintLoadingAnim(ARTWORK_POSITION);//更新计数
             }
         });
     }
 
-    private int limit_gallery = 0;
+    private int offset_gallery = 0;
+
     private void searchM_gallery() {
 
         //显示正在加载中
         showLoadingAnim();
 
         //艺术馆
-        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + GALLERY_URL + searchKey, RequestMapData.setSearchParams("12", limit_gallery + ""), new SearchGalleryParser(), new MyNetWorkObject.SuccessListener() {
+        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + GALLERY_URL + searchKey, RequestMapData.setSearchParams(limit + "", offset_gallery + ""), new SearchGalleryParser(), new MyNetWorkObject.SuccessListener() {
             @Override
             public void onSuccess(Object data) {
                 galleryData = (SearchBean_Gallery) data;
                 //得到数据，刷新  如果请求到数据
                 if (galleryData != null && galleryData.success.equals("1")) {
 
-                    for (SearchBean_Gallery.GalleryData sbg : galleryData.data) {
-                        mGridViewDatas_g.add(new GridViewData(sbg.gallery_cover, sbg.gallery_name, sbg.gallery_id, sbg.gallery_description));
+                    if (galleryData.data != null && galleryData.data.size() > 0) {
+                        for (SearchBean_Gallery.GalleryData sbg : galleryData.data) {
+                            if (TextUtils.isEmpty(sbg.gallery_cover) || TextUtils.isEmpty(sbg.gallery_id)) {
+                                continue;
+                            } else {
+                                mGridViewDatas_g.add(new GridViewData(sbg.gallery_cover, sbg.gallery_name, sbg.gallery_id, sbg.gallery_description));
+                            }
+                        }
+                        int dataSize = galleryData.data.size();
+                        if (dataSize < limit){
+                            offset_gallery = offset_gallery + dataSize;
+                        }else {
+                            offset_gallery = offset_gallery + limit;
+                        }
                     }
-                    limit_gallery++;
 
+
+                }else {
+                    UIUtils.showToastSafe("无更多内容");
                 }
                 // 刷新
                 mGridViewAdapter_g.notifyDataSetChanged();
-                hintLoadingAnim();//更新计数
+                hintLoadingAnim(GALLERY_POSITION);//更新计数
             }
 
             @Override
@@ -340,42 +372,60 @@ public class SearchActivity extends BaseGestureActivity {
                 LogUtils.e(msg);
 
                 //请求失败，隐藏
-                hintLoadingAnim();//更新计数
+                hintLoadingAnim(GALLERY_POSITION);//更新计数
             }
         });
     }
 
-    private int limit_exhibition = 0;
+    private int offset_exhibition = 0;
+
     private void searchM_exhibition() {
 
         //显示正在加载中
         showLoadingAnim();
 
         //请求数据，获取搜索结果后填充搜索页  展览搜索
-        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + EXHIBITION_URL + searchKey, RequestMapData.setSearchParams("12", limit_exhibition + ""), new SearchExhibitionParser(), new MyNetWorkObject.SuccessListener() {
-            @Override
-            public void onSuccess(Object data) {
-                exhibitionData = (SearchBean_Exhibition) data;
-                //刷新适配器  如果请求到数据
-                if (exhibitionData != null && exhibitionData.success.equals("1")) {
+        NetUtils.getDataByNet(SearchActivity.this, Const.BASE_URL + EXHIBITION_URL + searchKey, RequestMapData.setSearchParams(limit + "", offset_exhibition + ""), new SearchExhibitionParser(), new MyNetWorkObject.SuccessListener() {
+                    @Override
+                    public void onSuccess(Object data) {
+                        exhibitionData = (SearchBean_Exhibition) data;
+                        //刷新适配器  如果请求到数据
+                        if (exhibitionData != null && exhibitionData.success.equals("1")) {
 
-                    for (SearchBean_Exhibition.Search_E_Data sed : exhibitionData.data) {
-//                        LogUtils.e(sed.toString());
-                        mGridViewDatas_e.add(new GridViewData(sed.exhibition_cover, sed.exhibition_title, sed.exhibition_id, ""));
+                            if (exhibitionData.data != null && exhibitionData.data.size() > 0) {
+                                for (SearchBean_Exhibition.Search_E_Data sed : exhibitionData.data) {
+                                    if (TextUtils.isEmpty(sed.exhibition_cover) || TextUtils.isEmpty(sed.exhibition_id)) {
+                                        continue;
+                                    } else {
+                                        mGridViewDatas_e.add(new GridViewData(sed.exhibition_cover, sed.exhibition_title, sed.exhibition_id, ""));
+                                    }
+                                }
+                                int dataSize = exhibitionData.data.size();
+                                if (dataSize < limit){
+                                    offset_exhibition = offset_exhibition + dataSize;
+                                }else {
+                                    offset_exhibition = offset_exhibition + limit;
+                                }
+
+                            }
+
+                        }else {
+                            UIUtils.showToastSafe("无更多内容");
+                        }
+                        // 刷新
+                        mGridViewAdapter_e.notifyDataSetChanged();
+
+                        hintLoadingAnim(EXHIBITION_POSITION);//更新计数
                     }
-                    limit_exhibition++;
-                }
-                // 刷新
-                mGridViewAdapter_e.notifyDataSetChanged();
-                hintLoadingAnim();//更新计数
-            }
 
-            @Override
-            public void onError(String msg) {
-                //请求失败，隐藏
-                hintLoadingAnim();//更新计数
-            }
-        });
+                    @Override
+                    public void onError(String msg) {
+                        //请求失败，隐藏
+                        hintLoadingAnim(EXHIBITION_POSITION);//更新计数
+                    }
+                }
+
+        );
     }
 
 
@@ -395,7 +445,7 @@ public class SearchActivity extends BaseGestureActivity {
 
         //tab  ViewPager
         final SearchTabView searchTabView = (SearchTabView) searchContentView.findViewById(R.id.search_content_searchTab);
-        viewPager = (ViewPager) searchContentView.findViewById(R.id.search_content_vp);
+        viewPager = (MyViewPager) searchContentView.findViewById(R.id.search_content_vp);
 
         searchTabView.setOnItemClicklistener(new SearchTabView.OnItemClicklistener() {
             @Override
@@ -425,17 +475,41 @@ public class SearchActivity extends BaseGestureActivity {
                 //如果没数据就去请求
                 switch (position) {
                     case 0:
-                        if (mGridViewDatas_e.isEmpty()) searchM_exhibition();
+                        if (mGridViewDatas_e.isEmpty()) {
+                            searchM_exhibition();
+                        } else {
+                            //有数据，判断是否显示了加载页，如果显示就暂时关闭
+                            if (loadingPagerView != null && loadingPagerView.getVisibility() == View.VISIBLE){
+                                loadingPagerView.setVisibility(View.GONE);
+                            }
+                        }
                         break;
                     case 1:
-                        if (mGridViewDatas_g.isEmpty()) searchM_gallery();
+                        if (mGridViewDatas_g.isEmpty()) {
+                            searchM_gallery();
+                        } else {
+                            //有数据，判断是否显示了加载页，如果显示就暂时关闭
+                            if (loadingPagerView != null && loadingPagerView.getVisibility() == View.VISIBLE){
+                                loadingPagerView.setVisibility(View.GONE);
+                            }
+                        }
                         break;
                     case 2:
-                        if (mGridViewDatas_a.isEmpty()) searchM_artwork();
+                        if (mGridViewDatas_a.isEmpty()) {
+                            searchM_artwork();
+                        } else {
+                            //有数据，判断是否显示了加载页，如果显示就暂时关闭
+                            if (loadingPagerView != null && loadingPagerView.getVisibility() == View.VISIBLE){
+                                loadingPagerView.setVisibility(View.GONE);
+                            }
+                        }
                         break;
                     default:
                         break;
                 }
+
+                //隐藏土司
+                UIUtils.hintToast();
             }
 
             @Override
@@ -454,15 +528,15 @@ public class SearchActivity extends BaseGestureActivity {
     /**
      * 显示加载中
      */
-    private synchronized void showLoadingAnim(){
+    private synchronized void showLoadingAnim() {
         //如果当前内容页是正在加载中的状态就不显示加载中
         //如果在刷新就结束刷新
         PullToRefreshGridView pullToRefreshGridView = null;
-        if (searchGridView_ptrs != null){
+        if (searchGridView_ptrs != null) {
             pullToRefreshGridView = searchGridView_ptrs.get(searchPagePosition);
         }
 
-        if (pullToRefreshGridView == null || !pullToRefreshGridView.isRefreshing()){
+        if (pullToRefreshGridView == null || !pullToRefreshGridView.isRefreshing()) {
 //            显示加载中
             if (loadingPagerView != null) {
                 loadingPagerView.setVisibility(View.VISIBLE);
@@ -476,13 +550,15 @@ public class SearchActivity extends BaseGestureActivity {
 
     /**
      * 隐藏加载动画
+     *
+     * @param position 请求的页面索引
      */
-    private synchronized void hintLoadingAnim() {
+    private synchronized void hintLoadingAnim(int position) {
 
-            //隐藏加载中
-            if (loadingPagerView != null) {
-                loadingPagerView.setVisibility(View.GONE);
-            }
+        //隐藏加载中
+        if (loadingPagerView != null) {
+            loadingPagerView.setVisibility(View.GONE);
+        }
 
 //        LogUtils.e(pagerList.get(0).tv_count.toString());
 //        if (mGridViewDatas_e == null) {
@@ -502,11 +578,11 @@ public class SearchActivity extends BaseGestureActivity {
 
         //如果在刷新就结束刷新
         PullToRefreshGridView pullToRefreshGridView = null;
-        if (searchGridView_ptrs != null){
-            pullToRefreshGridView = searchGridView_ptrs.get(searchPagePosition);
+        if (searchGridView_ptrs != null) {
+            pullToRefreshGridView = searchGridView_ptrs.get(position);
         }
 
-        if (pullToRefreshGridView != null && pullToRefreshGridView.isRefreshing()){
+        if (pullToRefreshGridView != null && pullToRefreshGridView.isRefreshing()) {
             pullToRefreshGridView.onRefreshComplete();
         }
     }
@@ -533,7 +609,7 @@ public class SearchActivity extends BaseGestureActivity {
 
             // 搜索结果 GridView
             //三个 PullToRefreshGridView 放到一个集合中
-            if (searchGridView_ptrs == null){
+            if (searchGridView_ptrs == null) {
                 searchGridView_ptrs = new ArrayList<>();
             }
             PullToRefreshGridView pullToRefreshGridView = new PullToRefreshGridView(UIUtils.getContext());
@@ -575,7 +651,7 @@ public class SearchActivity extends BaseGestureActivity {
             //gridView 空数据显示视图
             View emptyPager = View.inflate(UIUtils.getContext(), R.layout.empty_pager, null);
             emptyPager.setVisibility(View.GONE);
-            ((ViewGroup)gridView.getParent()).addView(emptyPager);// 把空页面 和 GridView放到一起
+            ((ViewGroup) gridView.getParent()).addView(emptyPager);// 把空页面 和 GridView放到一起
             gridView.setEmptyView(emptyPager);
 
 
@@ -658,6 +734,7 @@ public class SearchActivity extends BaseGestureActivity {
 
 
     private long evpClickTime;//ViewPager 点击延时
+
     /**
      * 图片预览的方法
      *
@@ -669,7 +746,7 @@ public class SearchActivity extends BaseGestureActivity {
 
         //添加一个窗口去预览图片
         //初始化窗体
-        if(windowManager == null){
+        if (windowManager == null) {
             windowManager = getWindowManager();
         }
 
@@ -733,7 +810,7 @@ public class SearchActivity extends BaseGestureActivity {
         blankView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (vp_ll_btViewnGroup != null){
+                if (vp_ll_btViewnGroup != null) {
                     vp_ll_btViewnGroup.setVisibility(View.GONE);
                 }
             }
@@ -760,7 +837,6 @@ public class SearchActivity extends BaseGestureActivity {
                 evpClickTime = SystemClock.currentThreadTimeMillis();
             }
         });
-
 
 
         //给ViewPager设置适配器
@@ -805,7 +881,7 @@ public class SearchActivity extends BaseGestureActivity {
                     gifImageView.setImageResource(R.drawable.ic_launcher);
 
                     //通过imagePath判断本地是否有缓存，有就从本地加载，没有才从网络加载
-                    if (FileUtils.findGifFile(imagePath)){
+                    if (FileUtils.findGifFile(imagePath)) {
                         //存在，直接从本地缓存加载
                         try {
                             GifDrawable gifDrawable = new GifDrawable(FileUtils.getGifpath(imagePath));
@@ -813,7 +889,7 @@ public class SearchActivity extends BaseGestureActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    }else {
+                    } else {
                         // 不存在，从网络获取，然后保存
                         NetUtils.getByteByNet(imagePath, new Listener<byte[]>() {
                             @Override
@@ -887,7 +963,7 @@ public class SearchActivity extends BaseGestureActivity {
     }
 
     // 长按图片 保存和收藏
-    private void showSaveImageWindow(final ImageView imageView, final String imageId){
+    private void showSaveImageWindow(final ImageView imageView, final String imageId) {
         imageView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -921,9 +997,9 @@ public class SearchActivity extends BaseGestureActivity {
                         //去 收藏，传 id 和收藏类型
                         // TODO 图片的 id
                         if (SJT_UI_Utils.userState()) {
-                            if (!TextUtils.isEmpty(ConstJS_F.detailId)){
+                            if (!TextUtils.isEmpty(ConstJS_F.detailId)) {
                                 collect(imageId);
-                            }else {
+                            } else {
                                 SJT_UI_Utils.showDialog(SearchActivity.this, "收藏失败", false, ConstInfo.YISHUGUAN);
                             }
 
@@ -943,7 +1019,7 @@ public class SearchActivity extends BaseGestureActivity {
 
                         BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
                         FileUtils.saveBitmap(bitmapDrawable.getBitmap());
-                        UIUtils.showToastSafe("已保存");
+//                        UIUtils.showToastSafe("已保存");
                         // TODO 保存图片
                         SJT_UI_Utils.showDialog(SearchActivity.this, "已保存", true, ConstInfo.YISHUGUAN);
                     }
@@ -957,6 +1033,7 @@ public class SearchActivity extends BaseGestureActivity {
 
     /**
      * 收藏的方法
+     *
      * @param artworkID 收藏目标的 id
      */
     private void collect(String artworkID) {
@@ -1006,7 +1083,7 @@ public class SearchActivity extends BaseGestureActivity {
     }
 
 
-    // 是否停止加载图片的标记
+// 是否停止加载图片的标记
 //    private boolean isLoadImage = false;
 
     /**
@@ -1038,9 +1115,9 @@ public class SearchActivity extends BaseGestureActivity {
          */
         public GridViewData(String imageUrl, String imageName, String id, String info) {
             this.imageUrl = imageUrl;
-            this.imageName = imageName;
             this.id = id;
-            this.info = info;
+            this.imageName = TextUtils.isEmpty(imageName) ? "" : imageName;
+            this.info = TextUtils.isEmpty(info) ? "" : info;
         }
 
         public GridViewData() {
@@ -1110,7 +1187,7 @@ public class SearchActivity extends BaseGestureActivity {
             //设置图片信息
             try {
                 gridViewHolder.textView.setText(URLDecoder.decode(datas.get(position).imageName, "UTF-8"));
-            } catch (UnsupportedEncodingException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             return convertView;

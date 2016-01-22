@@ -114,11 +114,11 @@ function getDate(value){
 // var cateory = 2;
 waitADS();
 function waitADS(){
+  var Foo = {};
   if(initTime < totalTime && typeof ADS == 'undefined'){
         var getADS = setTimeout(waitADS,50)
         initTime += 50;
   }else{
-    var Foo = {};
     var sessionKey = ADS.getUserInfo('session_key');
     var cateory = ADS.getLoadCategory();
     var userInfoParam = {
@@ -140,7 +140,7 @@ function waitADS(){
     try{
         $('.btm-layer').css('background',bgArr[cateory-1]);
     }catch(e){
-      console.log(e);
+      // console.log(e);
     };
     getUserInfo();
     // this.listLoad();
@@ -163,7 +163,7 @@ function waitADS(){
         try{
           ADS.onRefreshNotMore('无更多内容');
           }catch(e){
-            console.log(e);
+            // console.log(e);
           } 
       }
     }
@@ -199,11 +199,16 @@ function waitADS(){
               $('body').css('height',screenHeight).addClass('fail-loading');
             }
             noMoreList = true;
+            try{
+                ADS.onRefreshNotMore('无更多内容');
+            }catch(e){
+                // console.log(e);
+            }
           }
           try{
             ADS.onRefreshComplete();
           }catch(e){
-            console.log(e);
+            // console.log(e);
           } 
         },
         error: function(e){
@@ -211,7 +216,7 @@ function waitADS(){
           try{
             ADS.onRefreshComplete();
           }catch(e){
-            console.log(e);
+            // console.log(e);
           }
         }
       });
@@ -374,7 +379,7 @@ function waitADS(){
           success:function(data){
             data = JSON.parse(data);
             del_loading = false;
-            console.log(data);
+            // console.log(data);
             if(data.success){
               if(type == 'artwork'){
                 $this.closest('.col-gallery-list').remove();

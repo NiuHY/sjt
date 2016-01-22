@@ -89,130 +89,137 @@ var storyLimit = 10;
 // }
 waitADS();
 function waitADS(){
-if(initTime < totalTime && typeof ADS == 'undefined'){
-    var getADS = setTimeout(waitADS,50)
-    initTime += 50;
-}else{
-    clearTimeout('getADS');
-    // getADS = null;
-    var ADSid = ADS.getDetailId() + '';
-    var url = host + 'api/gallery/' + ADSid;
-    var storyUrl = host + 'api/gallery/' + ADSid + '/item_list';
-    $('.detail-rotate').css('border-left-width',screenWidth + 'px');
-    listLoad();
-    $('body').on('click','.gallery-story',function(){
-        var imgJson = JSON.stringify(imgsArr);
-        var imgIndex = $(this).index();
-        // console.log(imgsArr);
-        try{
-            ADS.startImgPreview(imgJson, imgIndex);
-        }catch(e){
-            console.log(e);
-        }
-    });
-    $.ajax({
-        url : url,
-        data:{
-            client_type:4,
-            client_version:1.0,
-            uuid:'abcd'
-        },
-        type : 'get',
-        success: function(data){
-            data = JSON.parse(data);
-            if(!data.success){
-                   $('body').empty().css('height',screenHeight).addClass('fail-loading');
-            }else if(data.success){
-                data = data.data;
-                data.gallery_country = data.gallery_country ? data.gallery_country : '';
-                data.gallery_province = data.gallery_province ? data.gallery_province : '';
-                data.gallery_city = data.gallery_city ? data.gallery_city : '';
-                data.gallery_location = data.gallery_location ? data.gallery_location : '';
-                var coverSize = data.cover_size || '750,750';
-                var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
-                var topPos = (275-bgHeight)/2;
-                bgObj.bgUrl = data.gallery_cover;
-                bgObj.pos = (275-bgHeight)/2;
-                shareObj.cover = data.gallery_cover;
-                shareObj.title = decodeURIComponent(data.gallery_name);
-                shareObj.intro = decodeURIComponent(data.gallery_description);
-                shareObj.id = data.gallery_id;
-                shareObj.href = host + 'share/gallery/' + shareObj.id +'/?client_version=1.0.0';
-                shareObj = JSON.stringify(shareObj);
-                // console.log(shareObj);
-                try{
-                    ADS.setSP('share',shareObj);
-                }catch(e){
-                    console.log(e);
-                }
-                $('title').text(decodeURIComponent(data.gallery_name));
-                bgObj.bgCss = {
-                        'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
-                        'background-size' : '100% auto',
-                        'background-attachment' : 'fixed'
-                    }
-                $('body').css(bgObj.bgCss);
-                new Vue({
-                  el: '#gallery-detail',
-                  data: data
-                });
+    var Foo = {};
+    if(initTime < totalTime && typeof ADS == 'undefined'){
+        var getADS = setTimeout(waitADS,50)
+        initTime += 50;
+    }else{
+        clearTimeout('getADS');
+        // getADS = null;
+        var ADSid = ADS.getDetailId() + '';
+        var url = host + 'api/gallery/' + ADSid;
+        var storyUrl = host + 'api/gallery/' + ADSid + '/item_list';
+        $('.detail-rotate').css('border-left-width',screenWidth + 'px');
+        $('body').on('click','.gallery-story',function(){
+            var imgJson = JSON.stringify(imgsArr);
+            var imgIndex = $(this).index();
+            // console.log(imgsArr);
+            try{
+                ADS.startImgPreview(imgJson, imgIndex);
+            }catch(e){
+                // console.log(e);
             }
-        },
-        error : function(error){
-            isLoading = false;
-            
-        } 
-    });
-}
-function listLoad(){
-    if(!isLoading && !noMoreList){
-        isLoading = true;
-        loadAjax();
-    }else if(noMoreList){
-        try{
-            ADS.onRefreshNotMore('无更多内容');
-        }catch(e){
-            console.log(e);
+        });
+        $.ajax({
+            url : url,
+            data:{
+                client_type:4,
+                client_version:1.0,
+                uuid:'abcd'
+            },
+            type : 'get',
+            success: function(data){
+                data = JSON.parse(data);
+                if(!data.success){
+                    $('body').empty().css('height',screenHeight).addClass('fail-loading');
+                }else if(data.success){
+                    data = data.data;
+                    data.gallery_country = data.gallery_country ? data.gallery_country : '';
+                    data.gallery_province = data.gallery_province ? data.gallery_province : '';
+                    data.gallery_city = data.gallery_city ? data.gallery_city : '';
+                    data.gallery_location = data.gallery_location ? data.gallery_location : '';
+                    var coverSize = data.cover_size || '750,750';
+                    var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
+                    var topPos = (275-bgHeight)/2;
+                    bgObj.bgUrl = data.gallery_cover;
+                    bgObj.pos = (275-bgHeight)/2;
+                    shareObj.cover = data.gallery_cover;
+                    shareObj.title = decodeURIComponent(data.gallery_name);
+                    shareObj.intro = decodeURIComponent(data.gallery_description);
+                    shareObj.id = data.gallery_id;
+                    shareObj.href = host + 'share/gallery/' + shareObj.id +'/?client_version=1.0.0';
+                    shareObj = JSON.stringify(shareObj);
+                    // console.log(shareObj);
+                    try{
+                        ADS.setSP('share',shareObj);
+                    }catch(e){
+                        // console.log(e);
+                    }
+                    $('title').text(decodeURIComponent(data.gallery_name));
+                    bgObj.bgCss = {
+                            'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
+                            'background-size' : '100% auto',
+                            'background-attachment' : 'fixed'
+                        }
+                    $('body').css(bgObj.bgCss);
+                    new Vue({
+                      el: '#gallery-detail',
+                      data: data
+                    });
+                }
+            },
+            error : function(error){
+                isLoading = false;
+                
+            } 
+        });
+        Foo.listLoad = function(){
+            if(!isLoading && !noMoreList){
+                isLoading = true;
+                loadAjax();
+            }else if(noMoreList){
+                try{
+                    ADS.onRefreshNotMore('无更多内容');
+                }catch(e){
+                    // console.log(e);
+                }
+            }
+        }
+        Foo.listLoad();
+        function loadAjax(){
+            $.ajax({
+                url:storyUrl,
+                data:{
+                    client_type:4,
+                    client_version:1.0,
+                    uuid:'abcd',
+                    offset:storyOffset,
+                    limit:storyLimit
+                },
+                success: function(data){
+                    var data = JSON.parse(data);
+                    var $parent = $('.water-full');
+                    isLoading = false;
+                    try{
+                      ADS.onRefreshComplete();
+                    }catch(e){
+                      // console.log(e);
+                    } 
+                    if(data.success){
+                        data = data.data;
+                        waterFull($parent,data);
+                        storyOffset += storyLimit;     
+                    }else{
+                        noMoreList = true;
+                        try{
+                            ADS.onRefreshNotMore('无更多内容');
+                        }catch(e){
+                            // console.log(e);
+                        }
+                    }
+                },
+                error:function(){
+                    isLoading = false;
+                    try{
+                      ADS.onRefreshComplete();
+                    }catch(e){
+                      // console.log(e);
+                    }
+                }
+            });
         }
     }
-}
-function loadAjax(){
-    $.ajax({
-        url:storyUrl,
-        data:{
-            client_type:4,
-            client_version:1.0,
-            uuid:'abcd',
-            offset:storyOffset,
-            limit:storyLimit
-        },
-        success: function(data){
-            var data = JSON.parse(data);
-            var $parent = $('.water-full');
-            isLoading = false;
-            if(data.success){
-                data = data.data;
-                waterFull($parent,data);
-                storyOffset += storyLimit;
-                try{
-                  ADS.onRefreshComplete();
-                }catch(e){
-                  console.log(e);
-                }       
-            }else{
-                noMoreList = true;
-            }
-        },
-        error:function(){
-            isLoading = false;
-            try{
-              ADS.onRefreshComplete();
-            }catch(e){
-              console.log(e);
-            }
-        }
-    });
-}
+    return Foo;
 }
 function waterFull(parent,data){
     loadEach(parent,data);

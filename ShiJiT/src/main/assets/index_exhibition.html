@@ -118,6 +118,11 @@ function loadAjax(){
       success:function(data){
         var data = JSON.parse(data);
         isLoading = false;
+        try{
+          ADS.onRefreshComplete();
+        }catch(e){
+          // console.log(e);
+        }
         if(data.success){
           var items = data.data;
           var imgArr = [];
@@ -188,25 +193,25 @@ function loadAjax(){
                 var $list = $('.exhi-list');
               }
               $.each($list,function(k,v){
-                  if(k%2 === 0){
-                      var $box = $(v).find('.exhi-list-body-right:empty()');
-                      var render = new RenderImg($box,imgArr[k]);
-                      render.typeOne($box);
-                      dateObj = null;
-                  }else if(k%2 === 1){
-                      var $box = $(v).find('.exhi-list-body-right:empty()');
-                      var render = new RenderImg($box,imgArr[k]);
-                      render.typeTwo($box);
-                      dateObj = null;
-                  }
+                if(k%2 === 0){
+                  var $box = $(v).find('.exhi-list-body-right:empty()');
+                  var render = new RenderImg($box,imgArr[k]);
+                  render.typeOne($box);
+                  dateObj = null;
+                }else if(k%2 === 1){
+                  var $box = $(v).find('.exhi-list-body-right:empty()');
+                  var render = new RenderImg($box,imgArr[k]);
+                  render.typeTwo($box);
+                  dateObj = null;
+                }
               });
-              try{
-                ADS.onRefreshComplete();
-              }catch(e){
-                console.log(e);
-              }
             }else{
               noMoreList = true;
+              try{
+                ADS.onRefreshNotMore('无更多内容');
+              }catch(e){
+                // console.log(e);
+              }
           }
       },
       error:function(e){
@@ -214,7 +219,7 @@ function loadAjax(){
         try{
           ADS.onRefreshComplete();
         }catch(e){
-          console.log(e);
+          // console.log(e);
         }
       }
    });
@@ -329,7 +334,7 @@ function GetDate(time){
                var month = this.time.getMonth();
                return getShortName(month);  
             }catch(e){
-                console.log(e);
+                // console.log(e);
             }  
         };
         this.getDate = function(){
@@ -337,7 +342,7 @@ function GetDate(time){
                var day = this.time.getDate();
                return day;  
             }catch(e){
-                console.log(e);
+                // console.log(e);
             }  
         }
         return this;

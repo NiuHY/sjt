@@ -20,21 +20,20 @@ public class RequestMapData {
 
     /**
      * 搜索请求参数
-     * 外边写反了
-     * @param offset 如果-1不加
-     * @param limit  如果-1不加
-     * @param key    搜索内容
+     * @param limit  如果-1不加 每页多少
+     * @param offset 如果-1不加 从哪开始
      * @return 搜索Map
      */
     public static Map<String, String> setSearchParams(String limit, String offset) {
         HashMap<String, String> paramsMap = new HashMap<String, String>(baseParamsMap());
 
-        if (!TextUtils.equals(offset, "-1")) {
-            paramsMap.put("offset", offset);
-        }
         if (!TextUtils.equals(limit, "-1")) {
             paramsMap.put("limit", limit);
         }
+        if (!TextUtils.equals(offset, "-1")) {
+            paramsMap.put("offset", offset);
+        }
+
 //        paramsMap.put("offset", offset);
 //        paramsMap.put("limit", limit);
 //        paramsMap.put("key", key);
