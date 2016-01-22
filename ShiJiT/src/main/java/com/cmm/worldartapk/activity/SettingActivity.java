@@ -5,21 +5,21 @@ import android.app.AlertDialog;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
 import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.SafeWebViewBridge.js.ConstJS_F;
 import com.cmm.worldartapk.base.BaseApplication;
 import com.cmm.worldartapk.base.BaseGestureActivity;
-import com.cmm.worldartapk.base.UserInfo;
 import com.cmm.worldartapk.utils.DataCleanManager;
 import com.cmm.worldartapk.utils.SJT_UI_Utils;
 import com.cmm.worldartapk.utils.UIUtils;
@@ -45,6 +45,7 @@ public class SettingActivity extends BaseGestureActivity {
     private boolean isWindowViewShow;
     private String downloadUrl;
     private int loadCategory;
+    private ScrollView scrollView;
 
     @Override
     protected void init() {
@@ -66,6 +67,16 @@ public class SettingActivity extends BaseGestureActivity {
 
     @Override
     protected void initView() {
+
+        //文本框
+        scrollView = (ScrollView) findViewById(R.id.scrollView);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //刚打开时滚动到顶部
+                scrollView.fullScroll(ScrollView.FOCUS_UP);
+            }
+        }, 20L);
 
         //返回按钮
         ImageButton myBack = (ImageButton) findViewById(R.id.bt_back);
@@ -181,26 +192,6 @@ public class SettingActivity extends BaseGestureActivity {
 
             }
         });
-    }
-
-
-    /**
-     * 遍历dialog中的View 设置其中TextView的字体颜色
-     *
-     * @param view  dialog根布局
-     * @param color 字体颜色
-     */
-    private void setViewFontColor(View view, int color) {
-        if (view instanceof ViewGroup) {
-            ViewGroup parent = (ViewGroup) view;
-            int count = parent.getChildCount();
-            for (int i = 0; i < count; i++) {
-                setViewFontColor(parent.getChildAt(i), color);
-            }
-        } else if (view instanceof TextView) {
-            TextView textview = (TextView) view;
-            textview.setTextColor(color);
-        }
     }
 
 

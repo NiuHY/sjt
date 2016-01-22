@@ -1,4 +1,5 @@
 var bgObj = {};
+var screenWidth = document.documentElement.clientWidth || document.body.clientWidth;
 // $(document).on('scroll',function(){
 //     var scrollTop = $(document).scrollTop();
 //     if($(document).scrollTop() > 375){

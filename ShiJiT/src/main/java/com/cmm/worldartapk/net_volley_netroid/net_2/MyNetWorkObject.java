@@ -32,7 +32,7 @@ public class MyNetWorkObject {
 
 //    private static boolean isLoad = false;
 
-    //请求成功的回调接口
+    //请求的回调接口
     public interface SuccessListener {
         public abstract void onSuccess(Object data);
         public abstract void onError(String msg);

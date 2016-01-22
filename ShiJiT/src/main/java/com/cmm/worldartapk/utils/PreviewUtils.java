@@ -64,6 +64,21 @@ public class PreviewUtils {
         this.loadCategory = loadCategory;
     }
 
+    /**
+     * @return 得到当前预览页是否被打开
+     */
+    public boolean isWindowViewShow() {
+        return isWindowViewShow;
+    }
+
+    /**
+     * 在onKeyDown中调用，在按返回键时首先关闭预览页
+     */
+    public void removeView() {
+        windowManager.removeView(dfWindowView);
+        isWindowViewShow = false;
+    }
+
     //图片类
     private class ImagePreInfo{
         /**
@@ -83,6 +98,8 @@ public class PreviewUtils {
          */
         public String imageDescription;
     }
+
+    //
 
     /**
      * 添加一个窗体来  图片预览

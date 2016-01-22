@@ -80,7 +80,7 @@ function getDate(value){
 //   url: '/api/signin/',
 //   type:'post',
 //   data:{
-//     client_type:5,
+//     client_type:4,
 //     client_version:'1.0',
 //     uuid:'abcd',
 //     email:'123456qwq@qq.com',
@@ -193,6 +193,7 @@ function waitADS(){
             });
             imgloadIndex = $('img').length;
             userCollectParam.offset += offset;
+            imgs = null;
           }else{
             if(userCollectParam.offset === 0){
               $('body').find('.collect-wrap').remove();
@@ -243,6 +244,7 @@ function waitADS(){
           tempArr.push(temp);
         }
       }
+      temp = null;
       return tempArr;
     };
     function preArr(data,obj,type){
@@ -302,37 +304,40 @@ function waitADS(){
       var information = obj.information;
       var gallery = obj.gallery;
       if(exhibition && exhibition.length > 0){
-        dom += '<div class="col-date">'+ getDate(obj.time) +'</div>';
+        dom += '<div class="collect-prelist-wrap"><div class="col-date">'+ getDate(obj.time) +'</div>';
         for(var i = 0; i < exhibition.length;i++){
           dom += inputDom(exhibition[i],2);
         }
+        dom += '</div>';
       }
       if(information && information.length>0){
-        dom += '<div class="col-date">'+ getDate(obj.time) +'</div>';
+        dom += '<div class="collect-prelist-wrap"><div class="col-date">'+ getDate(obj.time) +'</div>';
         for(var j = 0; j < information.length;j++){
           dom += inputDom(information[j],1);
         }
+        dom += '</div>';
       }
       if(gallery && gallery.length > 0){
-        dom += '<div class="col-date">'+ getDate(obj.time) +'</div>';
+        dom += '<div class="collect-prelist-wrap"><div class="col-date">'+ getDate(obj.time) +'</div>';
         for(var k = 0; k < gallery.length;k++){
           dom += inputDom(gallery[k],3);
         }
       }
+      dom += '</div>';
       return dom;
     }
     function imageDom(obj){
       var halfWidth = (screenWidth-30)/2 + 'px';
       var fullWidth = (screenWidth - 20) + 'px';
       var artwork = obj.artwork;
-      var dom = '<div class="col-gallery clearfix"><div class="col-date lm10">'+ getDate(obj.time) +'</div>';
-      var repeat = '';
+      var dom = '<div class="col-gallery"><div class="col-date lm10">'+ getDate(obj.time) +'</div>';
+      var repeat = '<div class="col-gallery-itmes clearfix">';
       var index = 0;
       if(artwork.length > 0){
         if(artwork.length%2 === 1){     //奇数张图片的时候
-          repeat = '<div class="col-gallery-list" style="height:'+ fullWidth +';width:'+ fullWidth +'">\
+          repeat += '<div class="col-gallery-list" style="height:'+ fullWidth +';width:'+ fullWidth +'">\
                    <div class="col-gallery-list-cont" data-id="'+ artwork[0].id +'" data-index="'+ index +'" data-des="'+ artwork[0].title +'">\
-                  <div class="del" data-id="'+ artwork[0].id +'" data-cateory="4"><div></div></div>\
+                  <div class="del" data-src="'+ artwork[0].cover +'" data-id="'+ artwork[0].id +'" data-cateory="4"><div></div></div>\
                   <div class="col-gallery-list-img"><img src="'+ artwork[0].cover +'" style="height:'+ fullWidth +';width:'+ fullWidth +'"/></div>\
                   <div class="col-gallery-list-text">\
                     <div>'+ artwork[0].title +'</div>\
@@ -345,7 +350,7 @@ function waitADS(){
         for(var i = 0;i < artwork.length;i++){    //偶数张图片
           repeat += '<div class="col-gallery-list" style="height:'+ halfWidth +';width:'+ halfWidth +'">\
                    <div class="col-gallery-list-cont" data-id="'+ artwork[i].id +'" data-index="'+ index +'" data-des="'+ artwork[i].title +'">\
-                  <div class="del" data-id="'+ artwork[i].id +'" data-cateory="4"><div></div></div>\
+                  <div class="del" data-src="'+ artwork[i].cover +'" data-id="'+ artwork[i].id +'" data-cateory="4"><div></div></div>\
                   <div class="col-gallery-list-img"><img src="'+ artwork[i].cover +'" style="height:'+ halfWidth +';width:'+ halfWidth +'"/></div>\
                   <div class="col-gallery-list-text">\
                     <div>'+ artwork[i].title +'</div>\
@@ -354,17 +359,19 @@ function waitADS(){
               </div>'
           index++;
         }
+        repeat += '</div>';
       }
       dom += repeat;
       dom += '</div>'
       return dom;
     }
-    $('body').on('click','.del',function(){
+    $('body').on('click','.del',function(event){
       var typeName = ['information','exhibition','gallery','artwork'];
       var id = $(this).data('id');
       var type = typeName[$(this).data('cateory') - 1];
       var del_loading = false;
       var $this = $(this);
+      event.stopPropagation();
       if(!del_loading){
         del_loading = true;
         $.ajax({
@@ -379,13 +386,43 @@ function waitADS(){
           success:function(data){
             data = JSON.parse(data);
             del_loading = false;
-            // console.log(data);
             if(data.success){
+              //是图片
               if(type == 'artwork'){
-                $this.closest('.col-gallery-list').remove();
-              }else{
-                $this.closest('.col-text-list').remove();
-              } 
+                var listLen = $this.closest('.col-gallery').find('.col-gallery-list').length;
+                var imgUrl = $this.data('src');
+                postImgArr.forEach(function(v,k){
+                  if(v.url === imgUrl){
+                    postImgArr.splice(k,1);
+                  }
+                });
+                if(listLen > 1){
+                  var $colsestList = $this.closest('.col-gallery-list');
+                  $colsestList.stop().animate({height:0},function(){
+                    $colsestList.remove();
+                  });
+                }else if(listLen === 1){
+                  var $colsestList = $this.closest('.col-gallery');
+                  $colsestList.stop().animate({height:0},function(){
+                    $colsestList.remove();
+                  });
+                }
+              }else{  //是图文排列
+                var listLen = $this.closest('.collect-prelist-wrap').find('.col-text-list').length;
+                if(listLen > 1){
+                  var $colsestList = $this.closest('.col-text-list');
+                  $colsestList.stop().animate({height:0},function(){
+                    $colsestList.remove();
+                  });
+                  
+                }else if(listLen === 1){
+                  var $colsestList = $this.closest('.collect-prelist-wrap');
+                  $colsestList.stop().animate({height:0},function(){
+                    $colsestList.remove();
+                  });
+                }
+              }
+              $this = null;               
             }
           },
           error:function(e){
@@ -404,13 +441,16 @@ $('body').on('click','.col-text-list',function(){
   try{
     ADS.startDetailActivity(id,type);
   }catch(e){
-  } 
+  }
+  $target = null; 
 });
 $('body').on('click','.col-gallery-list-cont',function(){
   var imgJson = [];
   var id = $(this).data('id');
-  var imgs = $('.col-gallery').find('img');
-  var imgIndex = $(this).data('index');
+  var imgs = $('.col-gallery-itmes').find('img');
+  var imgIndex = $(this).closest('.col-gallery-list').index();
+  console.log(imgIndex);
+  console.log(postImgArr[imgIndex].url);
   var des = $(this).data('des');
   for(var i = 0;i<imgs.length;i++){
     imgJson.push({
@@ -423,7 +463,7 @@ $('body').on('click','.col-gallery-list-cont',function(){
   imgJson = JSON.stringify(imgJson);
   try{
     ADS.startImgPreview(imgJson, imgIndex);
-  }catch(e){}
+  }catch(e){};
 });
 </script>
 </body>

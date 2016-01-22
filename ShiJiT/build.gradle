@@ -8,9 +8,30 @@ android {
         applicationId "com.cmm.worldartapk"
         minSdkVersion 16
         targetSdkVersion 23
+        versionCode 1
+        versionName "1.0.0"
     }
 
+    productFlavors {
 
+        baidu{}
+        wandoujia{}
+        yingyongbao{}
+        xiaomi{}
+        yuntooweb{}
+        huawei{}
+        oppo{}
+        ppzhushou{}
+        liantongwo{}
+        yidongmm{}
+        qihu360{}
+//        meizu{}
+
+        productFlavors.all { flavor ->
+            flavor.manifestPlaceholders = [UMENG_CHANNEL_VALUE: name]
+        }
+
+    }
     // 删
     signingConfigs {
         release {

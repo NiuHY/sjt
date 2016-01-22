@@ -2,6 +2,7 @@ package com.cmm.worldartapk.activity;
 
 import android.content.Intent;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.webkit.WebView;
@@ -24,6 +25,7 @@ public class UserActivity extends BaseGestureActivity {
     private int loadCategory;
     //用户中心对应的webView url
     private String USER_URL = "file:///android_asset/user_center.html";
+    private PreviewUtils previewUtils;
 
     @Override
     protected void init() {
@@ -130,7 +132,23 @@ public class UserActivity extends BaseGestureActivity {
         webView.loadUrl(USER_URL);
 
     }
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        //在按返回键时判断是否打开了窗口，如果打开了就先关闭它
+        if (keyCode == KeyEvent.KEYCODE_BACK && previewUtils != null &&  previewUtils.isWindowViewShow()) {
+            previewUtils.removeView();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (previewUtils != null && previewUtils.isWindowViewShow()) {
+            previewUtils.removeView();
+        }
+    }
     /**
      * 分享
      *
@@ -138,7 +156,7 @@ public class UserActivity extends BaseGestureActivity {
      * @param index
      */
     public void showVPWindow(String imgsJson, int index) {
-        PreviewUtils previewUtils = new PreviewUtils(this, loadCategory);
+        previewUtils = new PreviewUtils(this, loadCategory);
         previewUtils.showVPWindow(imgsJson, index);
     }
 

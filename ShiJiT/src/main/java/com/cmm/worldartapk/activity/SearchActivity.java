@@ -292,13 +292,7 @@ public class SearchActivity extends BaseGestureActivity {
                 if (artworkData != null && artworkData.success.equals("1")) {
 
                     if (artworkData.data != null && artworkData.data.size() > 0) {
-                        for (SearchBean_Artwork.ArtworkData sba : artworkData.data) {
-                            if (TextUtils.isEmpty(sba.image_url) || TextUtils.isEmpty(sba.image_id)) {
-                                continue;
-                            } else {
-                                mGridViewDatas_a.add(new GridViewData(sba.image_url, sba.artwork_name, sba.artwork_id, sba.artwork_artist_name));
-                            }
-                        }
+
                         //得到数据，limit+1；
                         int dataSize = artworkData.data.size();
                         if (dataSize < limit){
@@ -306,6 +300,15 @@ public class SearchActivity extends BaseGestureActivity {
                         }else {
                             offset_artwork = offset_artwork + limit;
                         }
+
+                        for (SearchBean_Artwork.ArtworkData sba : artworkData.data) {
+                            if (TextUtils.isEmpty(sba.image_url) || TextUtils.isEmpty(sba.image_id)) {
+                                continue;
+                            } else {
+                                mGridViewDatas_a.add(new GridViewData(sba.image_url, sba.artwork_name, sba.artwork_id, sba.artwork_artist_name));
+                            }
+                        }
+
                     }
                 }else {
                     UIUtils.showToastSafe("无更多内容");
@@ -342,6 +345,14 @@ public class SearchActivity extends BaseGestureActivity {
                 if (galleryData != null && galleryData.success.equals("1")) {
 
                     if (galleryData.data != null && galleryData.data.size() > 0) {
+
+                        int dataSize = galleryData.data.size();
+                        if (dataSize < limit){
+                            offset_gallery = offset_gallery + dataSize;
+                        }else {
+                            offset_gallery = offset_gallery + limit;
+                        }
+
                         for (SearchBean_Gallery.GalleryData sbg : galleryData.data) {
                             if (TextUtils.isEmpty(sbg.gallery_cover) || TextUtils.isEmpty(sbg.gallery_id)) {
                                 continue;
@@ -349,12 +360,7 @@ public class SearchActivity extends BaseGestureActivity {
                                 mGridViewDatas_g.add(new GridViewData(sbg.gallery_cover, sbg.gallery_name, sbg.gallery_id, sbg.gallery_description));
                             }
                         }
-                        int dataSize = galleryData.data.size();
-                        if (dataSize < limit){
-                            offset_gallery = offset_gallery + dataSize;
-                        }else {
-                            offset_gallery = offset_gallery + limit;
-                        }
+
                     }
 
 
@@ -392,7 +398,17 @@ public class SearchActivity extends BaseGestureActivity {
                         //刷新适配器  如果请求到数据
                         if (exhibitionData != null && exhibitionData.success.equals("1")) {
 
+
+
                             if (exhibitionData.data != null && exhibitionData.data.size() > 0) {
+
+                                int dataSize = exhibitionData.data.size();
+                                if (dataSize < limit){
+                                    offset_exhibition = offset_exhibition + dataSize;
+                                }else {
+                                    offset_exhibition = offset_exhibition + limit;
+                                }
+
                                 for (SearchBean_Exhibition.Search_E_Data sed : exhibitionData.data) {
                                     if (TextUtils.isEmpty(sed.exhibition_cover) || TextUtils.isEmpty(sed.exhibition_id)) {
                                         continue;
@@ -400,12 +416,7 @@ public class SearchActivity extends BaseGestureActivity {
                                         mGridViewDatas_e.add(new GridViewData(sed.exhibition_cover, sed.exhibition_title, sed.exhibition_id, ""));
                                     }
                                 }
-                                int dataSize = exhibitionData.data.size();
-                                if (dataSize < limit){
-                                    offset_exhibition = offset_exhibition + dataSize;
-                                }else {
-                                    offset_exhibition = offset_exhibition + limit;
-                                }
+
 
                             }
 
