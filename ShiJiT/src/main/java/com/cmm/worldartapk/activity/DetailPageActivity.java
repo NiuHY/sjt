@@ -438,7 +438,7 @@ public class DetailPageActivity extends BaseGestureActivity {
                         break;
                     case R.id.share_btn_collect:
 
-                        //点击后判断是否登陆，如果登陆就收藏成功，没有登陆就跳到登陆页面
+                        //点击后判断是否登录，如果登录就收藏成功，没有登录就跳到登录页面
                         //TODO 收藏 连
                         if (SJT_UI_Utils.userState()) {
                             if (!TextUtils.isEmpty(ConstJS_F.detailId)) {
@@ -463,7 +463,7 @@ public class DetailPageActivity extends BaseGestureActivity {
                             }
 
                         } else {
-                            UIUtils.showToastSafe("请登陆...");
+                            UIUtils.showToastSafe("请登录...");
                             startActivity(new Intent(DetailPageActivity.this, LoginActivity.class));
                         }
 
@@ -820,7 +820,7 @@ public class DetailPageActivity extends BaseGestureActivity {
                             }
 
                         } else {
-                            UIUtils.showToastSafe("请登陆...");
+                            UIUtils.showToastSafe("请登录...");
                             startActivity(new Intent(DetailPageActivity.this, LoginActivity.class));
                         }
                     }

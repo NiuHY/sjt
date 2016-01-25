@@ -120,10 +120,28 @@ function waitADS(){
                 var storyId = data.exhibition_ref_story_id;
                 var storyUrl = host + 'api/story/' + storyId;
                 var shareObj = {};
-                var coverSize = data.cover_size || '750,750';
-                var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
-                bgObj.bgUrl = data.exhibition_cover;
-                bgObj.pos = (275-bgHeight)/2;
+                var bgScale = 1;
+                 var bgObj = {};
+                var img = new Image();
+                img.src = data.exhibition_cover;
+                img.onload = function(){
+                    var imgW = img.width;
+                    var imgH = img.height;
+                    var bgHeight = imgH*screenWidth/imgW;
+                    var topPos = (275-bgHeight)/2;
+                    bgObj.bgUrl = data.exhibition_cover;
+                    bgObj.pos = (275-bgHeight)/2;
+                    if(bgHeight < 275){
+                      bgScale = 275/bgHeight;
+                      bgObj.pos = 0;
+                    }
+                    bgObj.bgCss = {
+                      'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
+                      'background-size' :  bgScale*100 + '% auto',
+                      'background-attachment' : 'fixed'
+                    }
+                    $('body').css(bgObj.bgCss);  
+                }
                 shareObj.cover = data.exhibition_cover;
                 shareObj.title = decodeURIComponent(data.exhibition_title);
                 shareObj.intro = data.exhibition_start_time.split(' ')[0].split('-').join('.') + ' - ' + data.exhibition_end_time.split(' ')[0].split('-').join('.');
@@ -138,7 +156,7 @@ function waitADS(){
                 }
                 bgObj.bgCss = {
                     'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
-                    'background-size' : '100% auto',
+                    'background-size' : 100*bgScale + '% auto',
                     'background-attachment' : 'fixed'
                 }
                 $('body').css(bgObj.bgCss);

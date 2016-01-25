@@ -89,6 +89,7 @@
           }catch(e){}
           var bgObj = {};
           var img = new Image();
+          var bgScale = 1;
           $('.recommed').text(decodeURIComponent(data.gallery_name || ''));
           img.src = data.gallery_cover;
           img.onload = function(){
@@ -96,11 +97,15 @@
             var imgH = img.height;
             var bgHeight = imgH*screenWidth/imgW;
             var topPos = (275-bgHeight)/2;
+            if(bgHeight < 275){
+              bgScale = 275/bgHeight;
+              bgObj.pos = 0;
+            }
             bgObj.bgUrl = data.gallery_cover;
             bgObj.pos = (275-bgHeight)/2;
             bgObj.bgCss = {
                   'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
-                  'background-size' : '100% auto',
+                  'background-size' : 100*bgScale + '% auto',
                   'background-attachment' : 'fixed'
              };
              $('body').css(bgObj.bgCss);

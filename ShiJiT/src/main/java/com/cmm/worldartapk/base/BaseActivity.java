@@ -168,7 +168,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 //停止分享，释放资源
                 ShareSDK.stopSDK(this);
 
-                //清空登陆信息
+                //清空登录信息
                 SJT_UI_Utils.getSharedPreferences().edit().putString("uif", "").apply();
 
                 System.exit(0);
@@ -198,6 +198,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     private ConnectivityManager mConnectivityManager;
     private NetworkInfo netInfo;
     private int inCount = 0;
+    protected boolean isRefush = false;
     private BroadcastReceiver myNetReceiver = new BroadcastReceiver() {
 
         @Override
@@ -217,6 +218,12 @@ public abstract class BaseActivity extends AppCompatActivity {
                         String name = netInfo.getTypeName();
 
                         UIUtils.showToastSafe("网络已经连接");
+//                        if (isRefush){
+//                            isRefush = false;
+//                            //关闭当前页面再次打开
+//                            setExitSwichLayout();
+//                            startActivity(new Intent(mForegroundActivity, MainActivity.class));
+//                        }
                         //重新加载
 
                         if (netInfo.getType() == ConnectivityManager.TYPE_WIFI) {

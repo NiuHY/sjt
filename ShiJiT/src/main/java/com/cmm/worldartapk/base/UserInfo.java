@@ -49,7 +49,7 @@ public class UserInfo {
          */
         public String NICKNAME;
         /**
-         * 用户登陆后的session_key
+         * 用户登录后的session_key·
          */
         public String SESSION_KEY;
 

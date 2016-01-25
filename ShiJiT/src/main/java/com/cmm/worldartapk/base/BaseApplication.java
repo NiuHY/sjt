@@ -9,6 +9,7 @@ import android.text.format.Formatter;
 
 import com.cmm.worldartapk.net_volley_netroid.Netroid;
 import com.cmm.worldartapk.utils.FileUtils;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -106,6 +107,9 @@ public class BaseApplication extends Application {
 
         //初始化分享
         ShareSDK.initSDK(this);
+
+        //友盟统计初始化  Activity + Fragment 不使用默认统计
+        MobclickAgent.openActivityDurationTrack(false);
 
         //给成员变量初始化
         this.mContext = this;

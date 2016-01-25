@@ -82,6 +82,7 @@ function recommend(){
         }catch(e){}
         var bgObj = {};
         var img = new Image();
+        var bgScale = 1;
         $('.recommed').text(data.exhibition_title || '');
         img.src = data.exhibition_cover;
         img.onload = function(){
@@ -91,9 +92,13 @@ function recommend(){
           var topPos = (275-bgHeight)/2;
           bgObj.bgUrl = data.exhibition_cover;
           bgObj.pos = (275-bgHeight)/2;
+          if(bgHeight < 275){
+            bgScale = 275/bgHeight;
+            bgObj.pos = 0;
+          }
           bgObj.bgCss = {
                 'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
-                'background-size' : '100% auto',
+                'background-size' : bgScale*100 + '% auto',
                 'background-attachment' : 'fixed'
            };
            $('body').css(bgObj.bgCss);

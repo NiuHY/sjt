@@ -83,17 +83,28 @@ function loadAjax(){
         }
         if(data.success){
           var items = data.data;
-          var coverSize = data.cover_size || '750,750';
-          var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
-          var topPos = (275-bgHeight)/2;
-          bgObj.bgUrl = items[0].information_cover;
-          bgObj.pos = (275-bgHeight)/2;
-          bgObj.bgCss = {
-            'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
-            'background-size' : '100% auto',
-            'background-attachment' : 'fixed'
-          };
-          $('body').css(bgObj.bgCss);
+          var bgScale = 1;
+          var img = new Image();
+          var bgObj = {};
+          img.src = items[0].information_cover;
+          img.onload = function(){
+            var imgW = img.width;
+            var imgH = img.height;
+            var bgHeight = imgH*screenWidth/imgW;
+            var topPos = (275-bgHeight)/2;
+            bgObj.bgUrl = items[0].information_cover;
+            bgObj.pos = (275-bgHeight)/2;
+            if(bgHeight < 275){
+                bgScale = 275/bgHeight;
+                bgObj.pos = 0;
+            }
+            bgObj.bgCss = {
+                'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
+                'background-size' :  bgScale*100 + '% auto',
+                'background-attachment' : 'fixed'
+            }
+            $('body').css(bgObj.bgCss);  
+            }
           if(readedArr && readedArr.length>0){
             items.forEach(function(v,k){
               if(readedArr.indexOf(v['information_id']) > -1){

@@ -197,7 +197,7 @@ public class RegistFragment extends BaseFragment {
         //获取邮箱
         final String email = mLoadEtEmail.getText().toString().trim();
         if (TextUtils.isEmpty(email) || !email.matches("\\w{1,16}@\\w{1,7}.\\w{1,5}(.\\w{1,5})*")) {
-            UIUtils.showToastSafe("邮箱有误");
+            UIUtils.showToastSafe("请输入正确的邮箱格式");
 
             if (anim == null) {
                 anim = AnimationUtils.loadAnimation(UIUtils.getContext(), R.anim.shake_anim);
@@ -209,7 +209,7 @@ public class RegistFragment extends BaseFragment {
         //获取密码
         final String pwd = mLoadEtPwd.getText().toString().trim();
         if ( ! checkPassword(mLoadEtPwd, mLoadEtPwd_2)) {
-            UIUtils.showToastSafe("密码输入错误");
+            UIUtils.showToastSafe("密码至少6位且两次需要输入一致");
 
             if (anim == null) {
                 anim = AnimationUtils.loadAnimation(UIUtils.getContext(), R.anim.shake_anim);
@@ -232,7 +232,7 @@ public class RegistFragment extends BaseFragment {
 
         //是否选中RadioButton
         if (!mRigestRadiobutton.isChecked()){
-            UIUtils.showToastSafe("不同意");
+            UIUtils.showToastSafe("不同意注册条款，无法注册");
             if (anim == null) {
                 anim = AnimationUtils.loadAnimation(UIUtils.getContext(), R.anim.shake_anim);
             }
@@ -259,7 +259,7 @@ public class RegistFragment extends BaseFragment {
                     ((LoginActivity)getActivity()).backLoadPager();
                 }else{
                     SJT_UI_Utils.showDialog(getActivity(), "注册失败", false, ((LoginActivity) getActivity()).getLoadCategory());
-                    UIUtils.showToastSafe(userTemp.error_message);
+//                    UIUtils.showToastSafe(userTemp.error_message);
                 }
             }
 

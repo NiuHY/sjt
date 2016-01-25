@@ -234,7 +234,7 @@ public abstract class WebViewBaseFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
 
-                //没有登陆就去登陆页，登陆就去个人中心，去登陆页时带标记
+                //没有登录就去登录页，登录就去个人中心，去登录页时带标记
                 if (SJT_UI_Utils.userState()) {
 
                     //打开个人中心页，记录从哪个页面打开
@@ -245,7 +245,7 @@ public abstract class WebViewBaseFragment extends BaseFragment {
                     startActivity(intent);
 
                 } else {
-                    UIUtils.showToastSafe("请登陆...");
+                    UIUtils.showToastSafe("请登录...");
                     Intent intent = new Intent(getActivity(), LoginActivity.class);
                     intent.putExtra("userActivity", true);
                     intent.putExtra("loadCategory", getPagerIndex());

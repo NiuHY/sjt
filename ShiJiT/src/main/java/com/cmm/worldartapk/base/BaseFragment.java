@@ -4,11 +4,13 @@ package com.cmm.worldartapk.base;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.cmm.worldartapk.utils.ViewUtils;
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * Created by Administrator on 2015/12/24.
@@ -16,12 +18,16 @@ import com.cmm.worldartapk.utils.ViewUtils;
 public abstract class BaseFragment extends Fragment {
 
     private View fragmentContentView;
+    private String className;
 
     // 初始化布局
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        //缓存View对象
 
+        //当前类名
+        className = this.getClass().getSimpleName();
+
+        //缓存View对象
         if (fragmentContentView == null){
             fragmentContentView = initFragmentView(inflater, container, savedInstanceState);
         }else{
@@ -66,13 +72,19 @@ public abstract class BaseFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        if (TextUtils.isEmpty(className)){
+            className = this.getClass().getSimpleName();
+        }
+        MobclickAgent.onPageStart(className);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-
+        if (TextUtils.isEmpty(className)){
+            className = this.getClass().getSimpleName();
+        }
+        MobclickAgent.onPageEnd(className);
     }
 
     @Override

@@ -34,17 +34,17 @@ public class MyViewPager extends ViewPager {
     //是否可以左右滑动
     private boolean isCanScroll = true;
 
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        // 魅族 待
-        if (isCanScroll){
-            return super.onTouchEvent(ev);
-        }else{
-            return false;
-        }
-
-//        return super.onTouchEvent(ev);
-    }
+//    @Override
+//    public boolean onTouchEvent(MotionEvent ev) {
+//        // 魅族 待
+//        if (isCanScroll){
+//            return super.onTouchEvent(ev);
+//        }else{
+//            return false;
+//        }
+//
+////        return super.onTouchEvent(ev);
+//    }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {

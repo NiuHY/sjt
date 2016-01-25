@@ -32,7 +32,7 @@ public class LogUtils {
 	private static String mTag = "NIU === LOG";
 
 	/** 开关log  -----  是否允许输出log */
-	private final static int mDebuggable = 44;
+	private final static int mDebuggable = -1;
 
 	/** 用于记时的变量 */
 	private static long mTimestamp = 0;

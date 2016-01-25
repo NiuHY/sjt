@@ -166,7 +166,7 @@ public class UserActivity extends BaseGestureActivity {
 ////        String json = JsScope.getStringBySp(null, "information");
 ////        LogUtils.e(json);
 //
-////        // 打开登陆注册页面
+////        // 打开登录注册页面
 ////        Intent intent = new Intent(this, LoginActivity.class);
 ////        intent.putExtra("loadCategory", loadCategory);
 ////        startActivity(intent);

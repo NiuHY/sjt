@@ -345,7 +345,7 @@ public class JsScope {
             return userInfo;
         }else {
 
-            UIUtils.showToastSafe("没有登陆");
+            UIUtils.showToastSafe("没有登录");
 
             return "";
         }

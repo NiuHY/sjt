@@ -1,7 +1,10 @@
 package com.cmm.worldartapk.base;
 
+import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+
+import com.umeng.analytics.MobclickAgent;
 
 /**
  * Created by Administrator on 2016/1/18.
@@ -12,9 +15,14 @@ public abstract class BaseGestureActivity extends BaseActivity {
 
     //手势监听
     protected GestureDetector gDetector;
+    private String className;
 
     @Override
     protected void init() {
+
+        //当前类名
+        className = this.getClass().getSimpleName();
+
         //初始化手势监听
         //手势检测
         gDetector = new GestureDetector(this, new GestureDetector.SimpleOnGestureListener() {
@@ -59,5 +67,26 @@ public abstract class BaseGestureActivity extends BaseActivity {
         // 手势检测 --> 检测触摸事件
         gDetector.onTouchEvent(event);
         return super.onTouchEvent(event);
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (TextUtils.isEmpty(className)){
+            className = this.getClass().getSimpleName();
+        }
+        MobclickAgent.onPageEnd(className);
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (TextUtils.isEmpty(className)){
+            className = this.getClass().getSimpleName();
+        }
+        MobclickAgent.onPageStart(className);
+        MobclickAgent.onResume(this);
     }
 }

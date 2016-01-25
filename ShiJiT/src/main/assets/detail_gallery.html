@@ -123,16 +123,36 @@ function waitADS(){
                 if(!data.success){
                     $('body').empty().css('height',screenHeight).addClass('fail-loading');
                 }else if(data.success){
+                    var bgObj = {};
                     data = data.data;
                     data.gallery_country = data.gallery_country ? data.gallery_country : '';
                     data.gallery_province = data.gallery_province ? data.gallery_province : '';
                     data.gallery_city = data.gallery_city ? data.gallery_city : '';
                     data.gallery_location = data.gallery_location ? data.gallery_location : '';
-                    var coverSize = data.cover_size || '750,750';
-                    var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
-                    var topPos = (275-bgHeight)/2;
-                    bgObj.bgUrl = data.gallery_cover;
-                    bgObj.pos = (275-bgHeight)/2;
+                    // var coverSize = data.cover_size || '750,750';
+                    // var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
+                    // var topPos = (275-bgHeight)/2;
+                    var bgScale = 1;
+                    var img = new Image();
+                    img.src = data.gallery_cover;
+                    img.onload = function(){
+                        var imgW = img.width;
+                        var imgH = img.height;
+                        var bgHeight = imgH*screenWidth/imgW;
+                        var topPos = (275-bgHeight)/2;
+                        bgObj.bgUrl = data.gallery_cover;
+                        bgObj.pos = (275-bgHeight)/2;
+                        if(bgHeight < 275){
+                            bgScale = 275/bgHeight;
+                            bgObj.pos = 0;
+                        }
+                        bgObj.bgCss = {
+                            'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
+                            'background-size' :  bgScale*100 + '% auto',
+                            'background-attachment' : 'fixed'
+                        }
+                        $('body').css(bgObj.bgCss);  
+                    }
                     shareObj.cover = data.gallery_cover;
                     shareObj.title = decodeURIComponent(data.gallery_name);
                     shareObj.intro = decodeURIComponent(data.gallery_description);
@@ -148,7 +168,7 @@ function waitADS(){
                     $('title').text(decodeURIComponent(data.gallery_name));
                     bgObj.bgCss = {
                             'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
-                            'background-size' : '100% auto',
+                            'background-size' : 100*bgScale + '% auto',
                             'background-attachment' : 'fixed'
                         }
                     $('body').css(bgObj.bgCss);

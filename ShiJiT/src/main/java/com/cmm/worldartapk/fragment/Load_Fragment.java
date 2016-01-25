@@ -43,7 +43,7 @@ import cn.sharesdk.wechat.friends.Wechat;
 
 /**
  * Created by Administrator on 2015/12/24.
- * 登陆页
+ * 登录页
  */
 public class Load_Fragment extends BaseFragment {
 
@@ -52,11 +52,11 @@ public class Load_Fragment extends BaseFragment {
 
     private EditText mLoadEtEmail; //邮箱
     private EditText mLoadEtPwd; //密码
-    private TextView mLoadBtnLoad; //登陆
+    private TextView mLoadBtnLoad; //登录
     private CheckBox mLoadBtnUseYt; //忘记密码
     private TextView mLoadBtnRegist; //注册
-    private ImageView mLoadIvWeibo; //新浪微博登陆
-    private ImageView mLoadIvWechat; //微信登陆
+    private ImageView mLoadIvWeibo; //新浪微博登录
+    private ImageView mLoadIvWechat; //微信登录
     private View contentView;
     private int currentColor;
     private PAListener paListener;
@@ -160,7 +160,7 @@ public class Load_Fragment extends BaseFragment {
                         et_pwd = false;
                     }
                 }
-                //登陆按钮变色
+                //登录按钮变色
                 changeButtonBG();
             }
 
@@ -191,12 +191,12 @@ public class Load_Fragment extends BaseFragment {
             @Override
             public void onClick(View v) {
 
-                UIUtils.showToastSafe("正在打开请求授权信息页面，请稍后...");
+
 
                 switch (v.getId()) {
-                    case R.id.load_btn_load: //登陆
+                    case R.id.load_btn_load: //登录
 
-                        //点击登陆按钮   判断邮箱格式，提交服务器邮箱和密码得到反馈判断是否登陆成功，成功保存对应信息
+                        //点击登录按钮   判断邮箱格式，提交服务器邮箱和密码得到反馈判断是否登录成功，成功保存对应信息
                         userLoad();
 
                         break;
@@ -207,8 +207,8 @@ public class Load_Fragment extends BaseFragment {
                         getActivity().getSupportFragmentManager().beginTransaction().add(R.id.load_regist_content_fl, new RegistFragment()).addToBackStack(null).commit();
                         break;
                     case R.id.load_iv_weibo: //微博
-
-                        //新浪微博登陆
+                        UIUtils.showToastSafe("正在打开请求授权信息页面，请稍后...");
+                        //新浪微博登录
                         Platform weibo = ShareSDK.getPlatform(getActivity(), SinaWeibo.NAME);
 
                         if (!weibo.isClientValid()){
@@ -232,7 +232,7 @@ public class Load_Fragment extends BaseFragment {
 
                         break;
                     case R.id.load_iv_wechat: //微信
-
+                        UIUtils.showToastSafe("正在打开请求授权信息页面，请稍后...");
                         Platform wechat = ShareSDK.getPlatform(getActivity(), Wechat.NAME);
                         if (!wechat.isClientValid()){
                             UIUtils.showToastSafe("没有找到微信客户端，请检查");
@@ -275,7 +275,7 @@ public class Load_Fragment extends BaseFragment {
     }
 
     /**
-     * 用户登陆的方法
+     * 用户登录的方法
      */
     private void userLoad() {
         //抖动动画
@@ -283,7 +283,7 @@ public class Load_Fragment extends BaseFragment {
 
         //获取邮箱
         String email = mLoadEtEmail.getText().toString().trim();
-        if (TextUtils.isEmpty(email) || !email.matches("\\w{1,16}@\\w{1,7}.\\w{1,5}(.\\w{1,5})*")) {
+        if (!checkEmail(mLoadEtEmail)) {
             UIUtils.showToastSafe("检查邮箱格式");
 
             if (anim == null) {
@@ -295,8 +295,8 @@ public class Load_Fragment extends BaseFragment {
 
         //获取密码
         final String pwd = mLoadEtPwd.getText().toString().trim();
-        if (TextUtils.isEmpty(pwd)) {
-            UIUtils.showToastSafe("密码不能为空");
+        if (!checkPassword(mLoadEtPwd)) {
+            UIUtils.showToastSafe("密码至少6位");
 
             if (anim == null) {
                 anim = AnimationUtils.loadAnimation(UIUtils.getContext(), R.anim.shake_anim);
@@ -305,19 +305,19 @@ public class Load_Fragment extends BaseFragment {
             return;
         }
 
-        // 判断是否使用云图账号登陆，如果不使用，就用注册的账号登陆，如果使用更换请求url
-        // 登陆url  http://h5.yuntoo.com/api/signin/
+        // 判断是否使用云图账号登录，如果不使用，就用注册的账号登录，如果使用更换请求url
+        // 登录url  http://h5.yuntoo.com/api/signin/
         String loginUrl = Const.BASE_URL;
 
         if (mLoadBtnUseYt.isChecked()){
-            //选中 云图登陆
+            //选中 云图登录
             loginUrl = "http://h5.yuntoo.com/api/signin/";
         }else{
             loginUrl = loginUrl + URL_SIGNIN;
         }
 
 
-        //拿到邮箱和密码，请求登陆
+        //拿到邮箱和密码，请求登录
         NetUtils.getDataByNet_POST(getActivity(), loginUrl, RequestMapData.params_load(email, pwd), new UserInfoParser(), new MyNetWorkObject.SuccessListener() {
             @Override
             public void onSuccess(Object data) {
@@ -326,7 +326,7 @@ public class Load_Fragment extends BaseFragment {
 
                 if (isSuccess){
 
-                    //如果用云图账号，就继续请求第三方登陆
+                    //如果用云图账号，就继续请求第三方登录
                     if (mLoadBtnUseYt.isChecked()){
                         //得到信息
 //                        // 云图用户专有的 介绍什么的
@@ -351,18 +351,18 @@ public class Load_Fragment extends BaseFragment {
                         otherLoginParams.put("user_id", user.data.user_id); // 用户id
                         otherLoginParams.put("user_intro", user.data.user_intro); // 用户介绍
 
-                        //用户介绍保存一份，用来在登陆成功时记录
+                        //用户介绍保存一份，用来在登录成功时记录
                         yuntoo_user_intro = user.data.user_intro;
 
 
-                        //请求第三方登陆接口
+                        //请求第三方登录接口
                         load_3_Request(otherLoginParams);
                     }else {
-                        //不是云图账号，登陆
+                        //不是云图账号，登录
 //                        //先清空数据
 //                        UserInfo.setUserInfo();
 //
-//                        //保存用户登陆信息到 UserInfo 中
+//                        //保存用户登录信息到 UserInfo 中
 //                        UserInfo.getUserInfo().USER_ID = user.data.user_id;
 //                        UserInfo.getUserInfo().SESSION_KEY = user.data.session_key;
 //                        //保存用户信息到sp
@@ -374,11 +374,11 @@ public class Load_Fragment extends BaseFragment {
                         BaseApplication.getUserInfo().USER_ID = user.data.user_id;
                         BaseApplication.getUserInfo().SESSION_KEY = user.data.session_key;
 
-                        SJT_UI_Utils.showDialog(getActivity(), "登陆成功", true, ((LoginActivity) getActivity()).getLoadCategory());
+                        SJT_UI_Utils.showDialog(getActivity(), "登录成功", true, ((LoginActivity) getActivity()).getLoadCategory());
 
                         //判断是否是要进入个人中心，如果进入就在这里打开个人中心
                         Intent intent = getActivity().getIntent();
-                        // 登陆成功就关闭登陆页
+                        // 登录成功就关闭登录页
                         getActivity().finish();
                         //同时打开个人中心
                         if (intent != null && intent.getBooleanExtra("userActivity", false)){
@@ -392,20 +392,20 @@ public class Load_Fragment extends BaseFragment {
                     }
 
                 }else{
-                    SJT_UI_Utils.showDialog(getActivity(), "登陆失败", false, ((LoginActivity) getActivity()).getLoadCategory());
-                    UIUtils.showToastSafe(user.error_message);
+                    SJT_UI_Utils.showDialog(getActivity(), "登录失败", false, ((LoginActivity) getActivity()).getLoadCategory());
+//                    UIUtils.showToastSafe(user.error_message);
                 }
             }
 
             @Override
             public void onError(String msg) {
-                SJT_UI_Utils.showDialog(getActivity(), "登陆失败", false, ((LoginActivity) getActivity()).getLoadCategory());
+                SJT_UI_Utils.showDialog(getActivity(), "登录失败", false, ((LoginActivity) getActivity()).getLoadCategory());
                 UIUtils.showToastSafe("连接异常");
             }
         });
     }
 
-    //第三方 新浪微信登陆 回调
+    //第三方 新浪微信登录 回调
     private class PAListener implements PlatformActionListener {
         @Override
         public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
@@ -460,7 +460,7 @@ public class Load_Fragment extends BaseFragment {
                 }
 
 
-            //得到对应参数，第三方登陆请求
+            //得到对应参数，第三方登录请求
             load_3_Request(otherLoginParams);
 
         }
@@ -480,7 +480,7 @@ public class Load_Fragment extends BaseFragment {
     }
 
     /**
-     * 第三方登陆请求，需要信息参数
+     * 第三方登录请求，需要信息参数
      * @param params  请求参数
      */
     private void load_3_Request(final HashMap<String, String> params) {
@@ -498,14 +498,14 @@ public class Load_Fragment extends BaseFragment {
 //                    //先清空数据
 //                    UserInfo.setUserInfo();
 //
-//                    //保存用户登陆信息到 UserInfo 中
+//                    //保存用户登录信息到 UserInfo 中
 //                    UserInfo.getUserInfo().USER_ID = user.data.user_id;
 //                    UserInfo.getUserInfo().SESSION_KEY = user.data.session_key;
 //                    UserInfo.getUserInfo().IS_BAND = user.data.is_band;
 //                    UserInfo.getUserInfo().AVATAR = params.get("avatar");
 //
 //
-//                    //判断是否是云图登陆，如果是就保存其用户简介
+//                    //判断是否是云图登录，如果是就保存其用户简介
 //                    if (mLoadBtnUseYt.isChecked() && !TextUtils.isEmpty(yuntoo_user_intro)){
 //                        UserInfo.getUserInfo().USER_INTRO = yuntoo_user_intro;
 //                    }
@@ -523,17 +523,17 @@ public class Load_Fragment extends BaseFragment {
                     BaseApplication.getUserInfo().AVATAR = params.get("avatar");
 
 
-                    //判断是否是云图登陆，如果是就保存其用户简介
+                    //判断是否是云图登录，如果是就保存其用户简介
                     if (mLoadBtnUseYt.isChecked() && !TextUtils.isEmpty(yuntoo_user_intro)){
                         BaseApplication.getUserInfo().USER_INTRO = yuntoo_user_intro;
                     }
 
-                    SJT_UI_Utils.showDialog(getActivity(), "登陆成功", true, ((LoginActivity) getActivity()).getLoadCategory());
+                    SJT_UI_Utils.showDialog(getActivity(), "登录成功", true, ((LoginActivity) getActivity()).getLoadCategory());
 
 
                     //判断是否是要进入个人中心，如果进入就在这里打开个人中心
                     Intent intent = getActivity().getIntent();
-                    // 登陆成功就关闭登陆页
+                    // 登录成功就关闭登录页
                     getActivity().finish();
                     //同时打开个人中心
                     if (intent != null && intent.getBooleanExtra("userActivity", false)){
@@ -547,15 +547,15 @@ public class Load_Fragment extends BaseFragment {
 
 
                 }else {
-                    SJT_UI_Utils.showDialog(getActivity(), "登陆失败", false, ((LoginActivity) getActivity()).getLoadCategory());
+                    SJT_UI_Utils.showDialog(getActivity(), "登录失败", false, ((LoginActivity) getActivity()).getLoadCategory());
                     UIUtils.showToastSafe(user.error_message);
                 }
             }
 
             @Override
             public void onError(String msg) {
-                SJT_UI_Utils.showDialog(getActivity(), "登陆失败", false, ((LoginActivity) getActivity()).getLoadCategory());
-                LogUtils.e("第三方登陆失败");
+                SJT_UI_Utils.showDialog(getActivity(), "登录失败", false, ((LoginActivity) getActivity()).getLoadCategory());
+                LogUtils.e("第三方登录失败");
             }
         });
     }

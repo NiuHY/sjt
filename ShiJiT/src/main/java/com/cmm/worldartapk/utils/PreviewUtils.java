@@ -389,7 +389,7 @@ public class PreviewUtils {
                             }
 
                         } else {
-                            UIUtils.showToastSafe("请登陆...");
+                            UIUtils.showToastSafe("请登录...");
                             activity.startActivity(new Intent(activity, LoginActivity.class));
                         }
                     }

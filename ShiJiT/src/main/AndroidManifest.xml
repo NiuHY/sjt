@@ -5,6 +5,8 @@
     android:versionName="1.0.0"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
+
+
     <uses-permission android:name="android.permission.GET_TASKS"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
@@ -18,9 +20,9 @@
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 
-    <meta-data
-        android:name="UMENG_CHANNEL"
-        android:value="${UMENG_CHANNEL_VALUE}" />
+    <!-- 友盟统计 -->
+    <uses-sdk android:minSdkVersion="4"></uses-sdk>
+
 
     <application
         android:name=".base.BaseApplication"
@@ -30,6 +32,13 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         >
+        <!-- 友盟 渠道号 -->
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="${UMENG_CHANNEL_VALUE}" />
+        <!-- 友盟appKey -->
+        <meta-data android:name="UMENG_APPKEY" android:value="566b7b0667e58e73710053ce"></meta-data>
+
 
         <!-- 欢迎页 -->
         <activity android:name=".activity.SplashActivity"
@@ -121,7 +130,7 @@
 
         </activity>
 
-        <!-- 登陆注册Activity -->
+        <!-- 登录注册Activity -->
         <activity
             android:launchMode="singleTop"
             android:name=".activity.LoginActivity"

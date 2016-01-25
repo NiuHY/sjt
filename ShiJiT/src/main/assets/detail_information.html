@@ -55,7 +55,7 @@ var imgIndex = 0;
 var shareObj ={};
 // var ADS = {};
 // ADS.getDetailId = function(){
-//     return 8;
+//     return 33;
 // }
 waitADS();
 function waitADS(){
@@ -104,12 +104,32 @@ function waitADS(){
                     data = data.data;
                     var storyId = data.information_ref_story_id;
                     var storyUrl = host + 'api/story/' + storyId;
+                    var bgScale = 1;
+                    var bgObj = {};
                     // var $textIntro = $('.text_intro');
-                    var coverSize = data.cover_size || '750,750';
-                    var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
-                    var topPos = (275-bgHeight)/2;
-                    bgObj.bgUrl = data.information_cover;
-                    bgObj.pos = (275-bgHeight)/2;
+                    // var coverSize = data.cover_size || '750,750';
+                    // var bgHeight = coverSize.split(',')[1]*screenWidth/coverSize.split(',')[0];
+                    // var topPos = (275-bgHeight)/2;
+                    var img = new Image();
+                    img.src = data.information_cover;
+                    img.onload = function(){
+                        var imgW = img.width;
+                        var imgH = img.height;
+                        var bgHeight = imgH*screenWidth/imgW;
+                        var topPos = (275-bgHeight)/2;
+                        bgObj.bgUrl = data.information_cover;
+                        bgObj.pos = (275-bgHeight)/2;
+                        if(bgHeight < 275){
+                            bgScale = 275/bgHeight;
+                            bgObj.pos = 0;
+                        }
+                        bgObj.bgCss = {
+                            'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
+                            'background-size' :  bgScale*100 + '% auto',
+                            'background-attachment' : 'fixed'
+                        }
+                        $('body').css(bgObj.bgCss);  
+                    }
                     shareObj.cover = data.information_cover;
                     shareObj.title = decodeURIComponent(data.information_title);
                     shareObj.intro = decodeURIComponent(data.information_description);
@@ -121,12 +141,6 @@ function waitADS(){
                     }catch(e){
                         // console.log(e);
                     }
-                    bgObj.bgCss = {
-                        'background':'url(' + bgObj.bgUrl + ') no-repeat 0 ' + bgObj.pos + 'px',
-                        'background-size' : '100% auto',
-                        'background-attachment' : 'fixed'
-                    }
-                    $('body').css(bgObj.bgCss);
                     new Vue({
                       el: '#information-detail',
                       data: data

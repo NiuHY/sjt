@@ -45,7 +45,7 @@ public class RequestMapData {
      * @param client_type    客户端类型 Android 5
      * @param uuid           设备id
      * @param client_version 客户端版本
-     * @param session_key    登陆用户session
+     * @param session_key    登录用户session
      * @return 基本请求参数
      */
     public static Map<String, String> baseParamsMap() {
@@ -70,7 +70,7 @@ public class RequestMapData {
     }
 
     /**
-     * 登陆请求参数
+     * 登录请求参数
      * @return
      */
     public static Map<String, String> params_load(String email, String password) {
@@ -82,7 +82,6 @@ public class RequestMapData {
 
         paramsMap.put("email", email);
         paramsMap.put("password", password);
-        paramsMap.put("nickname", "aaaa");
 
         return paramsMap;
     }
@@ -116,7 +115,7 @@ public class RequestMapData {
     }
 
     /**
-     * 第三方登陆
+     * 第三方登录
      * @param params 参数 map集合
      * @return
      */

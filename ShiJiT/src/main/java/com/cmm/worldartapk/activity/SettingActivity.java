@@ -129,7 +129,7 @@ public class SettingActivity extends BaseGestureActivity {
             @Override
             public void onClick(View v) {
 
-                //判断是否登陆，如果登陆才退出
+                //判断是否登录，如果登录才退出
                 if (SJT_UI_Utils.userState()){
                     //获得view对象
                     View view = View.inflate(SettingActivity.this, R.layout.setting_exit_dialog, null);
@@ -151,11 +151,11 @@ public class SettingActivity extends BaseGestureActivity {
                         public void onClick(View v) {
                             //确认退出
                             //清空 UserInfo类中保存的信息 清空sp中保存的 userInfo键
-//                        LogUtils.e("退出登陆前" + UserInfo.getUserInfo().SESSION_KEY);
+//                        LogUtils.e("退出登录前" + UserInfo.getUserInfo().SESSION_KEY);
                             //清除用户信息 包括sp中的用户信息
                             SJT_UI_Utils.getSharedPreferences().edit().putString("uif", "").apply();
                             BaseApplication.setUserInfo();//设置为null
-//                        LogUtils.e("退出登陆后" + UserInfo.getUserInfo().SESSION_KEY);
+//                        LogUtils.e("退出登录后" + UserInfo.getUserInfo().SESSION_KEY);
 
                             //点击按钮后 关闭对话框
                             dialog.dismiss();
@@ -185,8 +185,8 @@ public class SettingActivity extends BaseGestureActivity {
 
                     dialog.show();
                 }else {
-                    //还没登陆
-                    SJT_UI_Utils.showDialog(SettingActivity.this, "还没登陆", false, loadCategory);
+                    //还没登录
+                    SJT_UI_Utils.showDialog(SettingActivity.this, "还没登录", false, loadCategory);
                 }
 
 

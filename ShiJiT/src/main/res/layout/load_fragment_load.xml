@@ -7,7 +7,7 @@
 
     <TextView
         android:layout_marginTop="29dp"
-        android:text="登陆"
+        android:text="登录"
         android:textColor="#333333"
         android:textSize="15sp"
         android:layout_gravity="center_horizontal"
@@ -61,7 +61,7 @@
         android:background="#ffbbbbbb"
         android:textColor="#ffffff"
         android:textSize="15sp"
-        android:text="登陆"
+        android:text="登录"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 <!--
@@ -84,7 +84,7 @@
             android:id="@+id/load_btn_ytload"
             android:background="#0000"
             android:textColor="@drawable/load_lostpwd_selector"
-            android:text="使用云图账号登陆"
+            android:text="使用云图账号登录"
             android:textSize="26sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
@@ -114,7 +114,7 @@
             />
 
         <TextView
-            android:text="第三方登陆"
+            android:text="第三方登录"
             android:textColor="#bbbbbb"
             android:textSize="13dp"
             android:layout_marginLeft="10dp"

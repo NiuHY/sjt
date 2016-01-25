@@ -19,12 +19,14 @@ import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.base.BaseActivity;
 import com.cmm.worldartapk.fragment.FragmentFactory;
 import com.cmm.worldartapk.fragment.WebViewBaseFragment;
+import com.cmm.worldartapk.net_volley_netroid.net_2.NetUtils;
 import com.cmm.worldartapk.publicinfo.ConstInfo;
 import com.cmm.worldartapk.ui.MyViewPager;
 import com.cmm.worldartapk.utils.DrawableUtils;
 import com.cmm.worldartapk.utils.LogUtils;
 import com.cmm.worldartapk.utils.UIUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,11 +108,17 @@ public class MainActivity extends BaseActivity {
         intiHomeVP();
 
         // 判断是否已经打开了应用，如果打开就不再显示欢迎；页
-        if(!ConstInfo.isOpenApp){
+        if (!ConstInfo.isOpenApp) {
             startActivity(new Intent(this, SplashActivity.class));
             ConstInfo.isOpenApp = true;
         }
 
+        //判断是否有网络没有网络就弹出对话框退出
+        if (!NetUtils.hasConnectedNetwork()) {
+            NetUtils.openNetworkSetting(this);
+            //记录刚刚进行了联网设置
+            isRefush = true;
+        }
     }
 
     private void intiHomeVP() {
@@ -124,7 +132,7 @@ public class MainActivity extends BaseActivity {
 
         //进入时是第二页
         viewPager.setCurrentItem(1);
-        ((WebViewBaseFragment)myFragmentAdapter.getItem(1)).setOnFinishListener(new WebViewBaseFragment.OnFinishListener() {
+        ((WebViewBaseFragment) myFragmentAdapter.getItem(1)).setOnFinishListener(new WebViewBaseFragment.OnFinishListener() {
             @Override
             public void onFinish() {
                 initRegistWebView(1);
@@ -174,7 +182,7 @@ public class MainActivity extends BaseActivity {
                 } else { // (1,+Infinity]
                     // This page is way off-screen to the right.
                     //透明度变化
-                   // view.setAlpha(MIN_ALPHA);
+                    // view.setAlpha(MIN_ALPHA);
                 }
             }
         });
@@ -184,7 +192,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 PullToRefreshWebView currentPullToRefreshWebView = getCurrentPullToRefreshWebView();
-                if (currentPullToRefreshWebView != null && currentPullToRefreshWebView.isRefreshing()){
+                if (currentPullToRefreshWebView != null && currentPullToRefreshWebView.isRefreshing()) {
                     //currentPullToRefreshWebView.onRefreshComplete();
 
                 }
@@ -221,8 +229,6 @@ public class MainActivity extends BaseActivity {
 
 
     }
-
-
 
 
     //每一页的截图背景
@@ -281,17 +287,17 @@ public class MainActivity extends BaseActivity {
 //        }
 
 
-
     }
 
     /**
      * 初始化WebView和Activity的关联
+     *
      * @param position
      */
     private void initRegistWebView(int position) {
 
         //初始化注册等
-        if (myFragmentAdapter != null){
+        if (myFragmentAdapter != null) {
             final WebViewBaseFragment currentFragment = (WebViewBaseFragment) myFragmentAdapter.getItem(position);
 
             //当前TitleView
@@ -335,13 +341,14 @@ public class MainActivity extends BaseActivity {
     /**
      * 显示TitleView
      */
-    public void showTitleView(){
+    public void showTitleView() {
         titleView.setVisibility(View.VISIBLE);
     }
+
     /**
      * 隐藏TitleView
      */
-    public void hideTitleView(){
+    public void hideTitleView() {
         titleView.setVisibility(View.GONE);
     }
 
@@ -370,7 +377,21 @@ public class MainActivity extends BaseActivity {
 
 
     private static MyViewPager mainActivityViewPager;
-    public static MyViewPager getViewPager(){
+
+    public static MyViewPager getViewPager() {
         return mainActivityViewPager;
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);
     }
 }

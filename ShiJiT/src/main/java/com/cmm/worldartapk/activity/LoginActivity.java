@@ -16,7 +16,7 @@ import com.cmm.worldartapk.publicinfo.ConstInfo;
 /**
  * Created by Administrator on 2015/12/23.
  * <p/>
- * 登陆页
+ * 登录页
  */
 public class LoginActivity extends BaseGestureActivity {
 
@@ -32,7 +32,7 @@ public class LoginActivity extends BaseGestureActivity {
         super.init();
 
         Intent intent = getIntent();
-        //获取从哪里打开的登陆注册 (按钮颜色)
+        //获取从哪里打开的登录注册 (按钮颜色)
         loadCategory = intent.getIntExtra("loadCategory", Integer.parseInt(ConstJS_F.loadCategory));
         if (loadCategory == -1){
             loadCategory = ConstInfo.JINTAN;
@@ -55,7 +55,7 @@ public class LoginActivity extends BaseGestureActivity {
         // 找到Framelayout 添加注册页
 //        frameLayout = (FrameLayout) findViewById(R.id.load_regist_content_fl);
 
-        // 第一次打开，加载登陆页
+        // 第一次打开，加载登录页
         loadFragment = new Load_Fragment();
         getSupportFragmentManager().beginTransaction().replace(R.id.load_regist_content_fl, loadFragment).commit();
     }
@@ -94,7 +94,7 @@ public class LoginActivity extends BaseGestureActivity {
             public void onClick(View v) {
 //
                 if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                    //有注册页，先返回登陆页
+                    //有注册页，先返回登录页
                     backLoadPager();
 
                 } else {
@@ -117,7 +117,7 @@ public class LoginActivity extends BaseGestureActivity {
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK){
             if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
-                //有注册页，先返回登陆页
+                //有注册页，先返回登录页
                 backLoadPager();
                 return true;
             }
@@ -126,7 +126,7 @@ public class LoginActivity extends BaseGestureActivity {
     }
 
     /**
-     * 返回登陆页的方法
+     * 返回登录页的方法
      */
     public void backLoadPager(){
         //关闭注册页

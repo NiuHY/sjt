@@ -1015,7 +1015,7 @@ public class SearchActivity extends BaseGestureActivity {
                             }
 
                         } else {
-                            UIUtils.showToastSafe("请登陆...");
+                            UIUtils.showToastSafe("请登录...");
                             startActivity(new Intent(SearchActivity.this, LoginActivity.class));
                         }
                     }

@@ -136,6 +136,7 @@ public class NetUtils {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
                 // TODO Auto-generated method stub
                 Intent intent = null;
                 //判断手机系统的版本  即API大于10 就是3.0或以上版本
@@ -145,6 +146,7 @@ public class NetUtils {
                     intent = new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS);
                 }
                 context.startActivity(intent);
+                System.exit(0);
             }
         }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
 
@@ -152,6 +154,7 @@ public class NetUtils {
             public void onClick(DialogInterface dialog, int which) {
                 // TODO Auto-generated method stub
                 dialog.dismiss();
+                System.exit(0);
             }
         }).show();
     }

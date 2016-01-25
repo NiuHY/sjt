@@ -74,7 +74,7 @@ public class SJT_UI_Utils {
     }
 
     /**
-     * 判断用户是否登陆
+     * 判断用户是否登录
      * @return 返回是否有 SESSION_KEY
      */
     public static boolean userState(){
@@ -86,7 +86,7 @@ public class SJT_UI_Utils {
         }
 
 //        if (TextUtils.isEmpty(UserInfo.getUserInfo().SESSION_KEY)){
-//            //如果内存中没有用户记录，就查看sp中是否有信息，如果有就把其再次放到内存中，没有就是没登陆状态
+//            //如果内存中没有用户记录，就查看sp中是否有信息，如果有就把其再次放到内存中，没有就是没登录状态
 //            String uif = getSharedPreferences().getString("uif", "");
 //            if (TextUtils.isEmpty(uif)){
 ////                LogUtils.e(uif + " 空");
@@ -96,7 +96,7 @@ public class SJT_UI_Utils {
 //                try {
 //                    UserInfo.setUserInfo();
 //                    UserInfo.getUserInfo(new Gson().fromJson(CodeUtils.decodeByBase64(uif), UserInfo.MyInfo.class));
-//                    //如果能转换成功且有sessionKey就是登陆状态
+//                    //如果能转换成功且有sessionKey就是登录状态
 //                    if (TextUtils.isEmpty(UserInfo.getUserInfo().SESSION_KEY)){
 //                        return false;
 //                    }else {
@@ -114,7 +114,7 @@ public class SJT_UI_Utils {
     }
 
     /**
-     * 判断用户登陆状态，如没登陆就跳转到登陆页
+     * 判断用户登录状态，如没登录就跳转到登录页
      */
     public static void isOpenLoadPage(Activity activity){
         if (!userState()){

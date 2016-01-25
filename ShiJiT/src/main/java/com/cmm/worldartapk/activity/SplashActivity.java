@@ -33,4 +33,15 @@ public class SplashActivity extends BaseActivity {
             }
         }, 3000L);
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
 }
