@@ -4,6 +4,7 @@ import android.text.TextUtils;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
+import com.cmm.worldartapk.utils.UIUtils;
 import com.umeng.analytics.MobclickAgent;
 
 /**
@@ -31,13 +32,13 @@ public abstract class BaseGestureActivity extends BaseActivity {
                                    float velocityX, float velocityY) {
                 //判断错误的手势
                 //x轴移动太慢 取绝对值
-                if (Math.abs(velocityX) < 200) {
+                if (Math.abs(velocityX) < UIUtils.dip2Px(100)) {
 //                    Log.i("GestureDetector", "x轴速度移动慢");
                     return true;
                 }
                 //y轴移动距离过长
                 //Returns the original raw Y coordinate of this event
-                if (Math.abs(e1.getRawY()-e2.getRawY()) > 120) {
+                if (Math.abs(e1.getRawY()-e2.getRawY()) > UIUtils.dip2Px(80)) {
 //                    Log.i("GestureDetector", "y轴移动距离过长");
                     return true;
                 }
@@ -48,7 +49,7 @@ public abstract class BaseGestureActivity extends BaseActivity {
 //                    return true;
 //                }
                 //后退
-                if ((e2.getRawX()-e1.getRawX()) > 180) {
+                if ((e2.getRawX()-e1.getRawX()) > UIUtils.dip2Px(80)) {
                     //上一页
 //                    prePage();
 

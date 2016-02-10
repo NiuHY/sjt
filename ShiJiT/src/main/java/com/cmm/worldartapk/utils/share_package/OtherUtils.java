@@ -31,12 +31,13 @@ public class OtherUtils {
 
     /**
      * 设置分享数据
+     *
      * @param title 分享标题
-     * @param url 点击url
-     * @param info 内容
+     * @param url   点击url
+     * @param info  内容
      * @param image 图片
      */
-    public static void setShareData(Activity activity, String title, String url, String info, Bitmap image, int loadCategory){
+    public static void setShareData(Activity activity, String title, String url, String info, Bitmap image, int loadCategory) {
 
         OtherUtils.activity = activity;
 
@@ -46,14 +47,16 @@ public class OtherUtils {
         OtherUtils.image = image;
         OtherUtils.loadCategory = loadCategory;
     }
+
     /**
      * 设置分享数据
-     * @param title 分享标题
-     * @param url 点击url
-     * @param info 内容
+     *
+     * @param title    分享标题
+     * @param url      点击url
+     * @param info     内容
      * @param imageUrl 图片
      */
-    public static void setShareData(Activity activity, String title, String url, String info, String imageUrl, int loadCategory){
+    public static void setShareData(Activity activity, String title, String url, String info, String imageUrl, int loadCategory) {
 
         OtherUtils.activity = activity;
 
@@ -66,6 +69,7 @@ public class OtherUtils {
 
     /**
      * 分享方法  QQ分享  新浪微博  微信好友  微信朋友圈
+     *
      * @param target 平台名 例：QQ.NAME
      */
     public static void shareMethod(String target) {
@@ -73,14 +77,13 @@ public class OtherUtils {
         Platform.ShareParams shareParams = new Platform.ShareParams();
 
 
-
         //分享的标题(链接)，文本，图片。。。
 
-        if (target.equals(SinaWeibo.NAME)){
+        if (target.equals(SinaWeibo.NAME)) {
             //新浪微博的参数
             shareParams.setText(title + " " + url);
             shareParams.setImageUrl(imageUrl);
-        }else{
+        } else {
             shareParams.setTitle(title);
             shareParams.setText(info);
             shareParams.setImageUrl(imageUrl);
@@ -93,11 +96,10 @@ public class OtherUtils {
 //        shareParams.setImageUrl("http://f1.sharesdk.cn/imgs/2014/02/26/owWpLZo_638x960.jpg");
 
 
-
         //根据目标设置回调
         Platform platform = ShareSDK.getPlatform(target);
 
-        if (!platform.isClientValid()){
+        if (!platform.isClientValid()) {
             SJT_UI_Utils.showDialog(activity, "分享失败", false, loadCategory);
 
             UIUtils.showToastSafe("没有找到客户端，请检查");
@@ -135,6 +137,10 @@ public class OtherUtils {
 
         //分享
         platform.share(shareParams);
+
+
+
+
 
     }
 }

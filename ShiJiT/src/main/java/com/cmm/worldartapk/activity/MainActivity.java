@@ -25,7 +25,6 @@ import com.cmm.worldartapk.ui.MyViewPager;
 import com.cmm.worldartapk.utils.DrawableUtils;
 import com.cmm.worldartapk.utils.LogUtils;
 import com.cmm.worldartapk.utils.UIUtils;
-import com.handmark.pulltorefresh.library.PullToRefreshWebView;
 import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
@@ -191,11 +190,7 @@ public class MainActivity extends BaseActivity {
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                PullToRefreshWebView currentPullToRefreshWebView = getCurrentPullToRefreshWebView();
-                if (currentPullToRefreshWebView != null && currentPullToRefreshWebView.isRefreshing()) {
-                    //currentPullToRefreshWebView.onRefreshComplete();
 
-                }
             }
 
             @Override
@@ -393,5 +388,12 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         MobclickAgent.onResume(this);
+
+        if (!viewPager.isCanScroll()){
+            viewPager.setIsCanScroll(true);
+            if (currentPullToRefreshWebView != null && currentPullToRefreshWebView.isRefreshing()){
+                currentPullToRefreshWebView.onRefreshComplete();
+            }
+        }
     }
 }

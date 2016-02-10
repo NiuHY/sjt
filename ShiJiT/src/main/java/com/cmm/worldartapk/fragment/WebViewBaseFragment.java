@@ -1,6 +1,7 @@
 package com.cmm.worldartapk.fragment;
 
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -10,7 +11,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.LinearInterpolator;
-import android.view.animation.RotateAnimation;
 import android.view.animation.TranslateAnimation;
 import android.webkit.WebView;
 import android.widget.ImageView;
@@ -22,7 +22,7 @@ import com.cmm.worldartapk.activity.LoginActivity;
 import com.cmm.worldartapk.activity.SearchActivity;
 import com.cmm.worldartapk.activity.UserActivity;
 import com.cmm.worldartapk.base.BaseFragment;
-import com.cmm.worldartapk.ui.PullRefreshUtils;
+import com.cmm.worldartapk.ui.PullToRefreshWebViewUtils;
 import com.cmm.worldartapk.utils.SJT_UI_Utils;
 import com.cmm.worldartapk.utils.UIUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
@@ -74,7 +74,7 @@ public abstract class WebViewBaseFragment extends BaseFragment {
         View contentView = inflater.inflate(R.layout.home_fragment_layout, null);
         mPullRefreshWebView = (PullToRefreshWebView) contentView.findViewById(R.id.pull_refresh_webview);
         // 初始化WebView 传入其父控件（内容布局）
-        webView = PullRefreshUtils.setListener_PRWebView(mPullRefreshWebView);
+        webView = PullToRefreshWebViewUtils.setListener_PRWebView(mPullRefreshWebView);
 
 //        LogUtils.e(webView.toString());
 
@@ -267,8 +267,7 @@ public abstract class WebViewBaseFragment extends BaseFragment {
      */
     private void quickHint() {
         isShow_btn = false;
-        btn_more.clearAnimation();
-        btn_more.setRotation(0f);
+        btn_more.setImageResource(R.drawable.icon_more);
         btn_search.setVisibility(View.GONE);
         btn_user.setVisibility(View.GONE);
 
@@ -287,10 +286,14 @@ public abstract class WebViewBaseFragment extends BaseFragment {
 //        ObjectAnimator.ofFloat(btn_more, "rotation", 0f, 45f).setDuration(250L).start();
 //        btn_more.invalidate();
 
-        final RotateAnimation rotateAnimation = new RotateAnimation(0f, 45f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotateAnimation.setDuration(250L);
-        rotateAnimation.setFillAfter(true);
-        btn_more.startAnimation(rotateAnimation);
+        btn_more.setImageResource(R.drawable.icon_more_anim_show);
+        AnimationDrawable animationDrawable = (AnimationDrawable) btn_more.getDrawable();
+        animationDrawable.start();
+
+//        final RotateAnimation rotateAnimation = new RotateAnimation(0f, 45f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+//        rotateAnimation.setDuration(250L);
+////        rotateAnimation.setFillAfter(true);
+//        btn_more.startAnimation(rotateAnimation);
 //        btn_more.setImageResource(R.drawable.icon_more_45);
 //        rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
 //            @Override
@@ -330,10 +333,14 @@ public abstract class WebViewBaseFragment extends BaseFragment {
 //        ObjectAnimator.ofFloat(btn_more, "rotation", 45f, 0f).setDuration(250L).start();
 //        btn_more.invalidate();
 
-        RotateAnimation rotateAnimation = new RotateAnimation(45f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        rotateAnimation.setDuration(250L);
-        rotateAnimation.setFillAfter(true);
-        btn_more.startAnimation(rotateAnimation);
+        btn_more.setImageResource(R.drawable.icon_more_anim_hide);
+        AnimationDrawable animationDrawable = (AnimationDrawable) btn_more.getDrawable();
+        animationDrawable.start();
+
+//        RotateAnimation rotateAnimation = new RotateAnimation(45f, 0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
+//        rotateAnimation.setDuration(250L);
+////        rotateAnimation.setFillAfter(true);
+//        btn_more.startAnimation(rotateAnimation);
 //        btn_more.setImageResource(R.drawable.icon_more);
 //        rotateAnimation.setAnimationListener(new Animation.AnimationListener() {
 //            @Override

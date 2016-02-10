@@ -15,13 +15,13 @@ public class SplashActivity extends BaseActivity {
 
     @Override
     protected void init() {
-
     }
 
     @Override
     protected View getContentView() {
-        View contentView = View.inflate(UIUtils.getContext(), R.layout.splash_activity, null);
-        return contentView;
+        View view = new View(UIUtils.getContext());
+        view.setBackgroundResource(R.drawable.startimg);
+        return view;
     }
 
     @Override
@@ -31,7 +31,7 @@ public class SplashActivity extends BaseActivity {
             public void run() {
                 setExitSwichLayout();
             }
-        }, 3000L);
+        }, 2500L);
     }
 
     @Override

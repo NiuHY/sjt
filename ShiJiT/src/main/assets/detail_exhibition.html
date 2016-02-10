@@ -23,7 +23,7 @@
         <div class="detail-info">
             <h3 v-text="decodeURIComponent(exhibition_title)"></h3>
             <p class="date"><em v-text="exhibition_start_time | getDay"></em>-<em v-text="exhibition_end_time | getDay"></em><span>(<span v-text="exhibition_start_time | denyDay exhibition_end_time"></span>)</span></p>
-            <p class="place" v-if="exhibition_location" v-text="decodeURIComponent(exhibition_location)"></p>
+            <p class="place" v-if="exhibition_location || exhibition_country || exhibition_city" v-text="exhibition_country + exhibition_province + exhibition_city + exhibition_location"></p>
             <p class="time" v-if="exhibition_open_time" v-text="exhibition_open_time"></p>
         </div>
         <div class="story-wrap">
@@ -57,7 +57,7 @@ var screenWidth = document.documentElement.clientWidth || document.body.clientWi
 var screenHeight = document.documentElement.clientHeight || document.body.clientHeight;
 // var ADS = {};
 // ADS.getDetailId = function(){
-//     return 88;
+//     return 102;
 // };
 waitADS();
 function waitADS(){
@@ -85,7 +85,7 @@ function waitADS(){
         var end = new Date(value2.split(' ')[0].replace(/-/g,'/'));
         var timer;
         if(now - start < 0 ){
-            timer = Math.floor((now - start)/(1000*60*60*24));
+            timer = -Math.floor((now - start)/(1000*60*60*24));
             return '还有' + timer + '天开始';
         }else if(now - start > 0 && now - end < 0){
             return '进行中';
@@ -117,11 +117,15 @@ function waitADS(){
                    $('body').empty().css('height',screenHeight).addClass('fail-loading'); 
             }else if(data.success){
                 data = data.data;
+                data.exhibition_country = data.exhibition_country ? data.exhibition_country : '';
+                data.exhibition_province = data.exhibition_province ? data.exhibition_province : '';
+                data.exhibition_city = data.exhibition_city ? data.exhibition_city : '';
+                data.exhibition_location = data.exhibition_location ? data.exhibition_location : '';
                 var storyId = data.exhibition_ref_story_id;
                 var storyUrl = host + 'api/story/' + storyId;
                 var shareObj = {};
                 var bgScale = 1;
-                 var bgObj = {};
+                var bgObj = {};
                 var img = new Image();
                 img.src = data.exhibition_cover;
                 img.onload = function(){

@@ -25,8 +25,8 @@
         <div class="information-detail">
             <div class="ditail-type">
                 <div v-if="information_type == 1" class="red-type"><span>展览</span></div>
-                <div v-if="information_type == 2" class="green-type"><span>活动</span></div>
-                <div v-if="information_type == 3" class="blue-type"><span>演出</span></div>
+                <div v-if="information_type == 2" class="blue-type"><span>演出</span></div>
+                <div v-if="information_type == 3" class="green-type"><span>活动</span></div>
             </div>
             <p v-text="decodeURIComponent(information_description)"></p>
         </div>

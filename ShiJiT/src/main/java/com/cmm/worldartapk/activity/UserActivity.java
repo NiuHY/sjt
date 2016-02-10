@@ -11,7 +11,7 @@ import android.widget.ImageButton;
 import com.cmm.worldartapk.R;
 import com.cmm.worldartapk.base.BaseGestureActivity;
 import com.cmm.worldartapk.publicinfo.ConstInfo;
-import com.cmm.worldartapk.ui.PullRefreshUtils;
+import com.cmm.worldartapk.ui.PullToRefreshWebViewUtils;
 import com.cmm.worldartapk.utils.PreviewUtils;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshWebView;
@@ -89,7 +89,7 @@ public class UserActivity extends BaseGestureActivity {
         //内容WebView
         final PullToRefreshWebView pullToRefreshWebView = (PullToRefreshWebView) findViewById(R.id.user_webview_fl);
         // 初始化 webView
-        webView = PullRefreshUtils.setListener_PRWebView(pullToRefreshWebView);
+        webView = PullToRefreshWebViewUtils.setListener_PRWebView(pullToRefreshWebView);
         //给当前Activity注册下拉刷新View
         setCurrentPullToRefreshWebView(pullToRefreshWebView);
 

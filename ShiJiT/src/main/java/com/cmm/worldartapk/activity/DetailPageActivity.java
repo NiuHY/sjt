@@ -36,7 +36,7 @@ import com.cmm.worldartapk.net_volley_netroid.net_2.NetUtils;
 import com.cmm.worldartapk.net_volley_netroid.net_2.RequestMapData;
 import com.cmm.worldartapk.publicinfo.ConstInfo;
 import com.cmm.worldartapk.ui.ExtendedViewPager;
-import com.cmm.worldartapk.ui.PullRefreshUtils;
+import com.cmm.worldartapk.ui.PullToRefreshWebViewUtils;
 import com.cmm.worldartapk.ui.TouchImageView;
 import com.cmm.worldartapk.utils.FileUtils;
 import com.cmm.worldartapk.utils.SJT_UI_Utils;
@@ -157,7 +157,7 @@ public class DetailPageActivity extends BaseGestureActivity {
         mPullRefreshWebView.setMode(PullToRefreshBase.Mode.DISABLED);
 
         // 初始化 webView
-        webView = PullRefreshUtils.setListener_PRWebView(mPullRefreshWebView);
+        webView = PullToRefreshWebViewUtils.setListener_PRWebView(mPullRefreshWebView);
 
         //往右划关闭当前页
         webView.setOnTouchListener(new View.OnTouchListener() {

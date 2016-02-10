@@ -60,7 +60,10 @@ public abstract class BaseActivity extends AppCompatActivity {
         init();
         //设置内容页布局
         contentView = getContentView();
-        setContentView(contentView);
+        if (contentView != null){
+            setContentView(contentView);
+        }
+
 
         //进入动画
         setEnterSwichLayout();
@@ -169,7 +172,7 @@ public abstract class BaseActivity extends AppCompatActivity {
                 ShareSDK.stopSDK(this);
 
                 //清空登录信息
-                SJT_UI_Utils.getSharedPreferences().edit().putString("uif", "").apply();
+//                SJT_UI_Utils.getSharedPreferences().edit().putString("uif", "").apply();
 
                 System.exit(0);
             }

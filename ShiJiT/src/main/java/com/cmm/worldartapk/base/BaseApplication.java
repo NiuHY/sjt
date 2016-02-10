@@ -59,6 +59,10 @@ public class BaseApplication extends Application {
 
             @Override
             public void uncaughtException(Thread thread, Throwable ex) {
+
+                //友盟统计
+                MobclickAgent.reportError(getApplication(), ex);
+
                 //出现异常时调用
                 //把异常信息输出到sd卡对应的文件中
                 StringBuilder sb = new StringBuilder();

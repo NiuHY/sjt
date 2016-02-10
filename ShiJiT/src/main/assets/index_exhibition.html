@@ -44,11 +44,11 @@ var listWidth = $('.exhi-items').innerWidth();
 var storyOffset = 0;
 var storyLimit = 8;
 var noMoreList = false;
-//  var ADS = {};
-//  ADS.getSP = {
-//   "allId":[
-//     {"id":1},{"id":44},{"id":66},{"id":3}
-//   ]
+// var ADS = {};
+// ADS.getStringBySp = {
+// "allId":[
+//   {"id":19},{"id":72},{"id":97},{"id":102}
+// ]
 // };
 waitADS();
 function listLoad(){
@@ -133,10 +133,11 @@ function loadAjax(){
           var imgArr = [];
           var leftWidth,rightWidth;
           storyOffset += storyLimit;
+          console.log(items);
           $.each(items,function(k,v){
             var isReaded = 0;
             if(readedArr && readedArr.length>0){
-              isReaded = readedArr.indexOf(v['exhibition_id']) > -1 ? 1 : 0;
+              isReaded = readedArr.indexOf(v.exhibition_id) > -1 ? 1 : 0;
             }
             if(k%2 === 0){
                 var dateObj = new GetDate(v.exhibition_start_time.split(' ')[0]);
@@ -362,23 +363,24 @@ if(initTime < totalTime && typeof ADS == 'undefined'){
     var getADS = setTimeout(waitADS,50);
     initTime += 50;
 }else{
- // readed = ADS.getStringBySp('exhibition');
- // readed = JSON.parse(readed)['allId'];
- // if(readed.length > 0){
- //  readed.forEach(function(v,k){
- //    readedArr.push(v.id);
- //  });
- // }
+ readed = ADS.getStringBySp('exhibition');
+ readed = JSON.parse(readed)['allId'];
+ // readed = ADS.getStringBySp['allId'];  //本地
+ if(readed.length > 0){
+  readed.forEach(function(v,k){
+    readedArr.push(v.id);
+  });
+ }
  listLoad();
     $('body').on('click','.exhi-list',function(){
-        var id = $(this).data('getId') + '';
-        var obj = {id:id};
-        $(this).addClass('readed');
-        obj = JSON.stringify(obj);
-        if(typeof ADS != 'undefined'){
-            ADS.startDetailActivity (id,2);
-            ADS.setSP('exhibition',id);
-        }
+      var id = $(this).data('getId') + '';
+      var obj = {id:id};
+      $(this).addClass('readed');
+      obj = JSON.stringify(obj);
+      if(typeof ADS != 'undefined'){
+          ADS.startDetailActivity (id,2);
+          ADS.setSP('exhibition',id);
+      }
    });
    var progress,dist,distScorllTop;
    var ischange = true;

@@ -25,14 +25,14 @@
                 <p class="gallery-title en-name" v-text="decodeURIComponent(gallery_en_name)"></p>
             </h3>
             <p class="time" v-if="gallery_open_time" v-text="gallery_open_time"></p>
-            <p class="place"  v-if="gallery_location" v-text="gallery_country + gallery_province + gallery_city + decodeURIComponent(gallery_location)"></p>
+            <p class="place" v-if="gallery_country || gallery_province || gallery_city ||gallery_location" v-text="gallery_country + gallery_province + gallery_city + decodeURIComponent(gallery_location)"></p>
             <p class="build-time"  v-if="gallery_build_time" v-text="decodeURIComponent(gallery_build_time)"></p>
             <!-- <p class="category"  v-if="gallery_category == 1">艺术馆</p>
             <p class="category"  v-if="gallery_category == 2">展览</p>
             <p class="category"  v-if="gallery_category == 3">专业作品</p>
             <p class="category"  v-if="gallery_category == 4">信息</p> -->
-            <p class="website"  v-if="gallery_url"><a v-text="decodeURIComponent(gallery_url)" href="{{decodeURIComponent(gallery_url)}}" target="_blank"></a></p>
-            <p class="phone"  v-if="gallery_phone" v-text="decodeURIComponent(gallery_phone)"></p>
+            <p class="website" v-if="gallery_url"><a v-text="decodeURIComponent(gallery_url)" href="{{decodeURIComponent(gallery_url)}}" target="_blank"></a></p>
+            <p class="phone" v-if="gallery_phone"><a href="tel:{{gallery_phone}}"  v-text="gallery_phone"></a></p>
         </div>
         <div class="powered-by clearfix">
             <div class="powered-cont">
@@ -85,7 +85,7 @@ var storyOffset = 0;
 var storyLimit = 10;
 // var ADS = {};
 // ADS.getDetailId = function(){
-//     return 125;
+//     return 293;
 // }
 waitADS();
 function waitADS(){

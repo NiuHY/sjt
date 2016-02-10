@@ -255,6 +255,8 @@ public class SearchActivity extends BaseGestureActivity {
             rotateAnimation.setRepeatMode(Animation.RESTART);
             rotateAnimation.setInterpolator(new LinearInterpolator());
 
+            loadingAnim.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+
             //开启动画
             loadingAnim.startAnimation(rotateAnimation);
 

@@ -126,6 +126,9 @@
       color: #3ebdff;
       background: url(../img/phone.png) no-repeat 0 center;
       background-size: 12px auto; }
+      .detail-info > p.phone a {
+        color: #3ebdff;
+        text-decoration: none; }
     .detail-info > p.website {
       color: #3ebdff;
       background: url(../img/website.png) no-repeat 0 center;

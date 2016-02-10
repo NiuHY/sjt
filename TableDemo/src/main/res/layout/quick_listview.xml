@@ -1,0 +1,48 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <!--列表-->
+    <ListView
+        android:background="#ffffff"
+        android:id="@+id/lv"
+        android:divider="@null"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:footerDividersEnabled="false"
+        android:headerDividersEnabled="false"
+        >
+
+    </ListView>
+    <!--提示文本默认隐藏-->
+    <TextView
+        android:id="@+id/letter_tv"
+        android:visibility="invisible"
+        android:text="A"
+        android:textSize="60sp"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:background="@drawable/letter_bg"
+        android:layout_centerInParent="true"
+        android:layout_width="100dp"
+        android:layout_height="100dp" />
+
+    <FrameLayout
+        android:padding="3dp"
+        android:layout_alignParentRight="true"
+        android:background="#ffffff"
+        android:layout_width="20dp"
+        android:layout_height="match_parent">
+        <!--自定义的快速索引条-->
+        <demo.xxx.cn.mydemo.demo3_pinyin.QuickIndexBar
+            android:id="@+id/quickindexbar"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            android:layout_gravity="center"
+            />
+    </FrameLayout>
+
+
+</RelativeLayout>
